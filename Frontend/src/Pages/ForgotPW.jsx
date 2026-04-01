@@ -1,7 +1,9 @@
 import React from 'react';
 import Forgot from '../Images/forgot.png';
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPW = () => {
+	const navigate = useNavigate();
 	return (
 		<div className="flex h-[calc(100vh-2.5rem)] w-[calc(100vw-2.5rem)] overflow-hidden font-inter m-5 rounded-3xl bg-white shadow-2xl">
 			{/* Left Side */}
@@ -78,7 +80,8 @@ const ForgotPW = () => {
 						</button>
 					</form>
 
-					<button className="w-full text-center text-xs font-bold text-gray-400 hover:text-gray-700 transition-all uppercase tracking-widest py-4">
+					<button onClick={()=>navigate('/login')}
+					className="w-full text-center text-xs font-bold text-gray-400 hover:text-gray-700 transition-all uppercase tracking-widest py-4">
 						← Back to Login
 					</button>
 				</div>

@@ -1,8 +1,10 @@
 import React from 'react';
 import LoginImg from '../Images/screen.png';
 import Logo from '../Images/logo.png';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex h-[calc(100vh-2.5rem)] w-[calc(100vw-2.5rem)] overflow-hidden font-inter m-5 rounded-3xl bg-white shadow-2xl">
       {/* Left Side*/}
@@ -50,7 +52,7 @@ const Login = () => {
               <div className="relative">
                 <div className="flex items-center justify-between mb-1">
                   <label htmlFor="password" name="password" className="block text-sm font-medium text-gray-700">Password</label>
-                  <button type="button" className="text-xs font-semibold text-blue-600 hover:underline">Forgot password?</button>
+                  <button type="button" className="text-xs font-semibold text-blue-600 hover:underline" onClick={()=>navigate('/forgot-password')}>Forgot password?</button>
                 </div>
                 <input
                   id="password"
@@ -100,7 +102,8 @@ const Login = () => {
 
           <p className="mt-10 text-center text-sm text-gray-500">
             Don't have an account?{' '}
-            <button className="font-semibold text-black hover:underline transition-colors">Register for free</button>
+            <button className="font-semibold text-black hover:underline transition-colors"
+            onClick={()=>navigate('/register')}>Register for free</button>
           </p>
         </div>
       </div>

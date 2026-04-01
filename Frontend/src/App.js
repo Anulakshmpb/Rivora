@@ -4,16 +4,25 @@ import ForgotPW from './Pages/ForgotPW';
 import Otp from './Pages/Otp';
 import NavBar from './Pages/NavBar';
 import Footer from './Pages/Footer';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Home from './Pages/Home';
 
 function App() {
   return (
     <div className="App">
-      {/* <Login/> */}
-      {/* <Register/> */}
-      {/* <ForgotPW/> */}
-      {/* <Otp/> */}
-      <NavBar/>
-      <Footer/>
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPW />} />
+          <Route path="/otp" element={<Otp />} />
+          <Route path="/navbar" element={<NavBar />} />
+          <Route path="/footer" element={<Footer />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
     </div>
   );
 }

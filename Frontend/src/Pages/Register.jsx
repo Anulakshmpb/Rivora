@@ -1,8 +1,11 @@
 import React from 'react';
 import LoginImg from '../Images/screen.png';
 import Account from '../Images/account.png';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Register = () => {
+	const navigate = useNavigate();
+	
     return (
 		<div className="flex h-[calc(100vh-0.5rem)] w-[calc(100vw-2.5rem)] overflow-hidden font-inter m-2 rounded-3xl bg-white shadow-2xl">
 		{/* Left Side*/}
@@ -95,7 +98,8 @@ const Register = () => {
   
 			<p className="mt-10 text-center text-sm text-gray-500">
 			  Already have an account?{' '}
-			  <button className="font-semibold text-black hover:underline transition-colors">Sign In</button>
+			  <button className="font-semibold text-black hover:underline transition-colors"
+			  onClick={()=>navigate('/login')}>Sign In</button>
 			</p>
 			<div className="relative mt-10">
 			  <div className="absolute inset-0 flex items-center" aria-hidden="true">
