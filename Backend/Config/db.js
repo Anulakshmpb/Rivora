@@ -23,13 +23,8 @@ class DbConnection {
 				console.log("url missing");
 			}
 			const options = {
-				useNewUrlParser: true,
-				useUnifiedTopology: true,
 				maxPoolSize: 10,
-				minPoolSize: 2,
 				serverSelectionTimeoutMS: 5000,
-				socketTimeoutMS: 45000,
-				family: 4
 			}
 			await mongoose.connect(config.MONGO_URL, options);
 			this.isConnected = true;
@@ -39,13 +34,13 @@ class DbConnection {
 
 
 		} catch (error) {
-			console.log("error");
+			console.log("Database connection error:", error);
 			process.exit(1);
 		}
 	}
 	registerEvents() {
 		mongoose.connection.on('connected', () => {
-			console.log("conneced");
+			console.log("connected");
 		})
 		mongoose.connection.on('disconnect', () => {
 			console.log("disconnected");
