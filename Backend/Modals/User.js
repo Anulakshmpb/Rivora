@@ -63,4 +63,34 @@ const UserSchema = new mongoose.Schema({
     timestamps: true
 });
 
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    try {
+        this.password = await bcrypt.hash(this.password, 10);
+        next();
+
+    } catch (error) {
+        next(error);
+    }
+
+});
+
+UserSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.getPublicProfile = function () {
+    const userObject = this.toObject();
+    delete userObject.password;
+    return userObject;
+};
+
+UserSchema.statics.findActiveUsers = function () {
+    return this.find({ status: 'active' });
+};
+
+UserSchema.statics.findByEmail = function (email) {
+    return this.findOne({ email: email.toLowerCase() });
+};
+
 module.exports = mongoose.model('User', UserSchema);
