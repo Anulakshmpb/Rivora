@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Modals/User');
 const { generateUserToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const { AuthenticationError, ConflictError, NotFoundError } = require('../utils/errors');
@@ -139,6 +139,76 @@ class AuthService {
 		catch (error) {
 
 			logger.error("Login error", error);
+
+			throw error;
+
+		}
+
+	}
+
+	/* ================= UPDATE PROFILE ================= */
+
+	static async updateProfile(userId, updateData) {
+
+		try {
+
+			const user = await User.findByIdAndUpdate(
+				userId,
+				{ $set: updateData },
+				{ new: true, runValidators: true }
+			);
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			logger.info(`Profile updated for user: ${user.email}`);
+
+			return user.getPublicProfile();
+
+		} catch (error) {
+
+			logger.error("Update profile error", error);
+
+			throw error;
+
+		}
+
+	}
+
+	/* ================= CHANGE PASSWORD ================= */
+
+	static async changePassword(userId, data) {
+
+		try {
+
+			const { currentPassword, newPassword } = data;
+
+			const user = await User.findById(userId).select("+password");
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			// Verify current password
+			const isMatch = await user.comparePassword(currentPassword);
+
+			if (!isMatch) {
+				throw new AuthenticationError("Invalid current password");
+			}
+
+			// Update and save (this will trigger the pre-save hook for hashing)
+			user.password = newPassword;
+
+			await user.save();
+
+			logger.info(`Password changed for user: ${user.email}`);
+
+			return true;
+
+		} catch (error) {
+
+			logger.error("Change password error", error);
 
 			throw error;
 

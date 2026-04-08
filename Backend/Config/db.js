@@ -19,14 +19,14 @@ class DbConnection {
 				console.log("already connected");
 				return;
 			}
-			if (!config.MONGO_URL) {
+			if (!config.MONGODB_URI) {
 				console.log("url missing");
 			}
 			const options = {
 				maxPoolSize: 10,
 				serverSelectionTimeoutMS: 5000,
 			}
-			await mongoose.connect(config.MONGO_URL, options);
+			await mongoose.connect(config.MONGODB_URI, options);
 			this.isConnected = true;
 			console.log("db connected");
 			this.registerEvents();
