@@ -109,7 +109,8 @@ export default function NavBar() {
                         </button>
                     </div>
 
-                    <button className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={()=>navigate('/profile')}
+                    className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <UserIcon />
                     </button>
 

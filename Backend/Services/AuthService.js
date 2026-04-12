@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Modals/User');
 const { generateUserToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const { AuthenticationError, ConflictError, NotFoundError } = require('../utils/errors');
@@ -18,7 +18,10 @@ class AuthService {
 			const existingUser = await User.findOne({ email: userData.email });
 
 			if (existingUser) {
-				throw new ConflictError("User already exists");
+				throw new ConflictError("User already exists", { 
+					userId: existingUser._id, 
+					isVerified: existingUser.isVerified 
+				});
 			}
 
 			// Create user
@@ -74,6 +77,11 @@ class AuthService {
 
 			if (!user) {
 				throw new AuthenticationError("Invalid credentials");
+			}
+
+			// Enforce OTP Registration Check
+			if (!user.isVerified) {
+			    throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
 			}
 
 			// Check account lock
@@ -139,6 +147,108 @@ class AuthService {
 		catch (error) {
 
 			logger.error("Login error", error);
+
+			throw error;
+
+		}
+
+	}
+
+	/* ================= VERIFY EMAIL ================= */
+	static async markUserVerified(userId) {
+		try {
+			const user = await User.findByIdAndUpdate(
+				userId,
+				{ isVerified: true },
+				{ new: true }
+			);
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			// Generate token for auto-login
+			const token = generateUserToken({
+				id: user._id,
+				email: user.email,
+				role: user.role
+			});
+
+			logger.info(`Email verified for user: ${user.email}`);
+
+			return {
+				user: user.getPublicProfile(),
+				token
+			};
+		} catch (error) {
+			logger.error("Mark user verified error", error);
+			throw error;
+		}
+	}
+
+	/* ================= UPDATE PROFILE ================= */
+
+	static async updateProfile(userId, updateData) {
+
+		try {
+
+			const user = await User.findByIdAndUpdate(
+				userId,
+				{ $set: updateData },
+				{ new: true, runValidators: true }
+			);
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			logger.info(`Profile updated for user: ${user.email}`);
+
+			return user.getPublicProfile();
+
+		} catch (error) {
+
+			logger.error("Update profile error", error);
+
+			throw error;
+
+		}
+
+	}
+
+	/* ================= CHANGE PASSWORD ================= */
+
+	static async changePassword(userId, data) {
+
+		try {
+
+			const { currentPassword, newPassword } = data;
+
+			const user = await User.findById(userId).select("+password");
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			// Verify current password
+			const isMatch = await user.comparePassword(currentPassword);
+
+			if (!isMatch) {
+				throw new AuthenticationError("Invalid current password");
+			}
+
+			// Update and save (this will trigger the pre-save hook for hashing)
+			user.password = newPassword;
+
+			await user.save();
+
+			logger.info(`Password changed for user: ${user.email}`);
+
+			return true;
+
+		} catch (error) {
+
+			logger.error("Change password error", error);
 
 			throw error;
 

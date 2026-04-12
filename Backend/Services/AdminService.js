@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const { generateUserToken } = require('../utils/jwt');
+const Admin = require('../Modals/Admin');
+const { generateAdminToken } = require('../utils/jwt');
 const logger = require('../utils/logger');
 const { AuthenticationError, NotFoundError } = require('../utils/errors');
 
@@ -15,12 +15,12 @@ class AdminAuthService {
 			const normalizedEmail =
 				email.toLowerCase().trim();
 
-			// Find user with password
-			const user = await User
+			// Find admin with password
+			const admin = await Admin
 				.findOne({ email: normalizedEmail })
 				.select("+password");
 
-			if (!user) {
+			if (!admin) {
 
 				throw new AuthenticationError(
 					"Invalid admin credentials"
@@ -29,7 +29,7 @@ class AdminAuthService {
 			}
 
 			// Check role
-			if (user.role !== "admin") {
+			if (admin.role !== "admin") {
 
 				throw new AuthenticationError(
 					"Access denied. Admin only"
@@ -37,18 +37,14 @@ class AdminAuthService {
 
 			}
 
-			// Check account verification
-			if (!user.isVerified) {
-
-				throw new AuthenticationError(
-					"Admin account not verified"
-				);
-
-			}
+			// Check account verification (Admin schema currently doesn't have isVerified but we check status)
+			if (admin.status === "banned") {
+                throw new AuthenticationError("Admin account banned");
+            }
 
 			// Check password
 			const isValid =
-				await user.comparePassword(password);
+				await admin.comparePassword(password);
 
 			if (!isValid) {
 
@@ -58,26 +54,27 @@ class AdminAuthService {
 
 			}
 
-			// Update last login
-			user.lastLogin = new Date();
 
-			await user.save();
+			// Update last login
+			admin.lastLogin = new Date();
+
+			await admin.save();
 
 			// Generate token
-			const token = generateUserToken({
+			const token = generateAdminToken({
 
-				id: user._id,
-				role: user.role
+				id: admin._id,
+				role: admin.role
 
 			});
 
 			logger.info(
-				`Admin login: ${user.email}`
+				`Admin login: ${admin.email}`
 			);
 
 			return {
 
-				admin: user.getPublicProfile(),
+				admin: admin.getPublicProfile(),
 				token
 
 			};
