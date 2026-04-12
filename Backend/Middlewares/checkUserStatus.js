@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Modals/User');
 const { verifyUserToken , verifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 

@@ -33,8 +33,9 @@ class NotFoundError extends AppError {
     }
 }
 class ConflictError extends AppError {
-    constructor(message = 'Resource Conflict') {
+    constructor(message = 'Resource Conflict', details = null) {
         super(message, 409, 'CONFLICT')
+        this.details = details;
     }
 }
 class RateLimitError extends AppError {
@@ -155,7 +156,7 @@ class ErrorUtils {
             }
         };
 
-        if (error instanceof ValidationError && error.details) {
+        if (error.details) {
             formattedError.error.details = error.details;
         }
 

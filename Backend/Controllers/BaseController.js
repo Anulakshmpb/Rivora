@@ -23,6 +23,7 @@ class BaseController {
             }catch(error){
                 logger.error("Request failed",{
                     error:error.message,
+                    details:error.details || null,
                     method:req.method,
                     url:req.originalUrl
                 });

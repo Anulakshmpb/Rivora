@@ -15,7 +15,7 @@ const errorHandler = (err,req,res,next)=>{
     });
 
     if(err instanceof AppError)
-        return sendError(res,err.message,err.statusCode);
+        return sendError(res, err.message, err.statusCode, err.details);
 
     if(err.name === "CastError")
         return sendError(res,"Resource not found",404);

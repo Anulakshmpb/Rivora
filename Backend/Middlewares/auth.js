@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Modals/User');
 const { verifyUserToken, verifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 const logger = require('../utils/logger');
@@ -53,6 +53,12 @@ const authenticateUser = async (req, res, next) => {
     }
 };
 
+const Admin = require('../Modals/Admin');
+
+const findAdmin = async (id) => {
+    return await Admin.findById(id).select("-password");
+};
+
 const authenticateAdmin = async (req,res,next)=>{
     try{
 
@@ -63,7 +69,7 @@ const authenticateAdmin = async (req,res,next)=>{
 
         const decoded = verifyAdminToken(token);
 
-        const admin = await findUser(decoded.id);
+        const admin = await findAdmin(decoded.id);
 
         if(!admin)
             return sendError(res,"Admin not found",403);

@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Forgot from '../Images/forgot.png';
 import { useNavigate } from 'react-router-dom';
+import authService from '../api/authService';
 
 const ForgotPW = () => {
 	const navigate = useNavigate();
+	const [email, setEmail] = useState('');
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState('');
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		if (!email) {
+			setError("Email is required");
+			return;
+		}
+		
+		setLoading(true);
+		setError('');
+		
+		try {
+			const response = await authService.forgotPassword({ email });
+			const userId = response.data?.userId || response.data?.data?.userId || response.userId || response.data?.user?._id;
+			
+			if (userId) {
+				navigate('/verify-otp', { state: { userId } });
+			} else {
+				// Fallback if backend doesn't send userId properly, log it
+				console.error("userId missing from response from forgot-password:", response);
+				setError("Failed to process request. Please try again.");
+			}
+		} catch (err) {
+			console.error("Forgot password error:", err);
+			const errorInfo = err.error || err;
+			setError(errorInfo.message || "Failed to send reset link. User may not exist.");
+		} finally {
+			setLoading(false);
+		}
+	};
 	return (
 		<div className="flex h-[calc(100vh-2.5rem)] w-[calc(100vw-2.5rem)] overflow-hidden font-inter m-5 rounded-3xl bg-white shadow-2xl">
 			{/* Left Side */}
@@ -57,7 +91,13 @@ const ForgotPW = () => {
 						</p>
 					</div>
 
-					<form className="space-y-6">
+					{error && (
+						<div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
+							<p className="text-sm text-red-700">{error}</p>
+						</div>
+					)}
+
+					<form className="space-y-6" onSubmit={handleSubmit}>
 						<div className="space-y-2">
 							<label htmlFor="email" className="block text-xs font-bold text-gray-700 uppercase tracking-wider ml-1">
 								Email Address
@@ -67,6 +107,11 @@ const ForgotPW = () => {
 								name="email"
 								type="email"
 								required
+								value={email}
+								onChange={(e) => {
+									setEmail(e.target.value);
+									if (error) setError('');
+								}}
 								className="block w-full rounded-2xl border-2 border-gray-100 bg-gray-50 px-5 py-4 text-gray-900 placeholder-gray-400 focus:border-black focus:bg-white focus:ring-0 transition-all outline-none shadow-sm"
 								placeholder="name@example.com"
 							/>
@@ -74,9 +119,10 @@ const ForgotPW = () => {
 
 						<button
 							type="submit"
-							className="w-full rounded-2xl bg-black py-4 text-sm font-bold text-white shadow-xl hover:translate-y-1 hover:shadow-2xl transition-all active:scale-[0.98] tracking-widest uppercase"
+							disabled={loading}
+							className={`w-full rounded-2xl bg-black py-4 text-sm font-bold text-white shadow-xl hover:translate-y-1 hover:shadow-2xl transition-all active:scale-[0.98] tracking-widest uppercase ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
 						>
-							Request Reset Link
+							{loading ? 'Sending OTP...' : 'Request Reset Link'}
 						</button>
 					</form>
 
