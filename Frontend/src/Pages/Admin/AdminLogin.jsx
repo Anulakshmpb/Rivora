@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import LoginImg from '../Images/screen.png';
-import Logo from '../Images/logo.png';
+import LoginImg from '../../Images/screen.png';
+import Logo from '../../Images/logo.png';
 import { useNavigate } from 'react-router-dom';
-import authService from '../api/authService';
+import authService from '../../api/authService';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ const AdminLogin = () => {
         try {
             const data = await authService.adminLogin(formData);
             console.log('Admin login successful:', data);
-            
+
             // Redirect to admin dashboard
             navigate('/admin/dashboard');
         } catch (err) {
@@ -49,7 +49,7 @@ const AdminLogin = () => {
                     src={LoginImg}
                     alt="Admin Control"
                 />
-                <div className="absolute inset-0 bg-indigo-900/40 bg-gradient-to-t from-slate-950 to-transparent flex flex-col justify-end p-12 text-white">
+                <div className="absolute inset-0 bg-indigo-900/40 flex flex-col justify-end p-12 text-white">
                     <h2 className="text-3xl font-bold mb-4 leading-tight">Admin Terminal</h2>
                     <p className="text-lg opacity-90 max-w-md">Secure access to the RIVORA management suite.</p>
                 </div>
@@ -89,7 +89,7 @@ const AdminLogin = () => {
                                 />
                             </div>
                             <div className="relative">
-                                <label htmlFor="password" class="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Master Password</label>
+                                <label htmlFor="password" className="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">Master Password</label>
                                 <input
                                     id="password"
                                     name="password"

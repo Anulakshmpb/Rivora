@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import authService from '../api/authService';
+import authService from '../../api/authService';
 
 const Otp = () => {
     const navigate = useNavigate();
@@ -15,8 +15,7 @@ const Otp = () => {
 
     useEffect(() => {
         console.log('Otp Page Loaded. userId from state:', userId);
-        
-        // If no userId is present, redirect to register
+
         if (!userId) {
             console.warn('No userId found in state, redirecting to register');
             navigate('/register');
@@ -34,9 +33,16 @@ const Otp = () => {
         setMessage('');
 
         try {
-            await authService.verifyEmail({ userId, otp });
-            setMessage('Email verified successfully! Redirecting to home...');
-            setTimeout(() => navigate('/'), 2000);
+            if (location.state?.isReset) {
+                const response = await authService.verifyResetOTP({ userId, otp });
+                const resetToken = response.data?.resetToken || response.data?.data?.resetToken || response.resetToken;
+                setMessage('OTP verified successfully! Redirecting to reset password...');
+                setTimeout(() => navigate('/reset-password', { state: { userId, resetToken } }), 2000);
+            } else {
+                await authService.verifyEmail({ userId, otp });
+                setMessage('Email verified successfully! Redirecting to home...');
+                setTimeout(() => navigate('/'), 2000);
+            }
         } catch (err) {
             const message = err.error?.message || err.message || 'Invalid OTP. Please try again.';
             setError(message);
@@ -116,14 +122,14 @@ const Otp = () => {
                     </form>
 
                     <div className="flex items-center justify-between mt-6">
-                        <button 
+                        <button
                             onClick={handleResend}
                             disabled={resending}
                             className={`text-xs font-bold text-gray-500 hover:text-gray-700 transition-all uppercase tracking-widest py-2 ${resending ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             {resending ? 'Resending...' : 'Resend Code'}
                         </button>
-                        <button 
+                        <button
                             onClick={() => navigate('/login')}
                             className="text-xs font-bold text-gray-500 hover:text-gray-700 transition-all uppercase tracking-widest py-2"
                         >

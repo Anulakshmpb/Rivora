@@ -7,12 +7,12 @@ const { otpLimiter } = require('../Middlewares/otpLimiter');
 const router = express.Router();
 
 router.post('/register', AuthController.register);
-router.post('/login', checkUserStatus, AuthController.login);
-router.post('/verify', AuthController.verifyEmail);
+router.post('/login', AuthController.login);
+router.post('/verify', otpLimiter, AuthController.verifyEmail);
 router.post('/resend', otpLimiter, AuthController.resendOTP);
 router.post('/forgot-password', otpLimiter, AuthController.forgotPassword);
 router.post('/verify-reset-otp', otpLimiter, AuthController.verifyResetOTP);
-router.post('/reset-password', AuthController.resetPassword);
+router.post('/reset-password', otpLimiter, AuthController.resetPassword);
 
 router.get('/get-profile', checkUserStatus, authenticateUser, AuthController.getProfile);
 router.put('/profile', checkUserStatus, authenticateUser, AuthController.updateProfile);

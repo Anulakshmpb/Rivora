@@ -1,5 +1,5 @@
 const { sendSuccess, sendError, sendValidationError } = require('../utils/response');
-const { ValidationError, ApiError } = require('../utils/errors');
+const { ValidationError, AppError } = require('../utils/errors');
 const logger = require('../utils/logger');
 
 class BaseController {
@@ -11,7 +11,7 @@ class BaseController {
         return async (req,res,next)=>{
             const start = Date.now();
             try{
- await fn(req,res,next);
+                await fn(req,res,next);
                 const duration = Date.now() - start;
                 logger.info("Request completed",{
                     method:req.method,
@@ -104,7 +104,7 @@ class BaseController {
 
 
     /* ================================
-       PAGINATION (SAFE VERSION)
+       PAGINATION
     ================================= */
     static getPaginationOptions(query){
         const page =

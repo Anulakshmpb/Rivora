@@ -10,30 +10,24 @@ class AuthService {
 	static async register(userData) {
 
 		try {
-
 			// Normalize email
 			userData.email = userData.email.toLowerCase().trim();
-
 			// Check existing user
 			const existingUser = await User.findOne({ email: userData.email });
-
 			if (existingUser) {
-				throw new ConflictError("User already exists", { 
-					userId: existingUser._id, 
-					isVerified: existingUser.isVerified 
+				throw new ConflictError("User already exists", {
+					userId: existingUser._id,
+					isVerified: existingUser.isVerified
 				});
 			}
-
 			// Create user
 			const user = await User.create(userData);
-
 			// Generate token
 			const token = generateUserToken({
 				id: user._id,
 				email: user.email,
 				role: user.role
 			});
-
 			logger.info(`User registered: ${user.email}`);
 
 			return {
@@ -81,7 +75,7 @@ class AuthService {
 
 			// Enforce OTP Registration Check
 			if (!user.isVerified) {
-			    throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
+				throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
 			}
 
 			// Check account lock

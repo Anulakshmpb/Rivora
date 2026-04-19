@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Forgot from '../Images/forgot.png';
+import Forgot from '../../Images/forgot.png';
 import { useNavigate } from 'react-router-dom';
-import authService from '../api/authService';
+import authService from '../../api/authService';
 
 const ForgotPW = () => {
 	const navigate = useNavigate();
@@ -24,7 +24,7 @@ const ForgotPW = () => {
 			const userId = response.data?.userId || response.data?.data?.userId || response.userId || response.data?.user?._id;
 			
 			if (userId) {
-				navigate('/verify-otp', { state: { userId } });
+				navigate('/verify-otp', { state: { userId, isReset: true } });
 			} else {
 				// Fallback if backend doesn't send userId properly, log it
 				console.error("userId missing from response from forgot-password:", response);
@@ -76,7 +76,8 @@ const ForgotPW = () => {
 			<div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-1/2 overflow-y-auto">
 				<div className="w-full max-w-md space-y-10">
 					<div className="flex justify-end">
-						<button className="text-xs font-medium tracking-wide text-gray-500 hover:text-black transition-all flex items-center gap-2">
+						<button onClick={() => navigate('/')}
+							className="text-xs font-medium tracking-wide text-gray-500 hover:text-black transition-all flex items-center gap-2">
 							<span className="text-lg">←</span> RETURN TO COLLECTIONS
 						</button>
 					</div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Account from '../Images/account.png';
+import Account from '../../Images/account.png';
 import { useNavigate } from 'react-router-dom';
-import authService from '../api/authService';
+import authService from '../../api/authService';
 
 const Register = () => {
     const navigate = useNavigate();

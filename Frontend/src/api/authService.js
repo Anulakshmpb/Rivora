@@ -92,6 +92,30 @@ const authService = {
     },
 
     /**
+     * Verify Password Reset OTP
+     * @param {Object} data { userId, otp }
+     */
+    verifyResetOTP: async (data) => {
+        try {
+            return await axiosInstance.post('/api/auth/verify-reset-otp', data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
+     * Reset Password with token
+     * @param {Object} data { userId, resetToken, newPassword }
+     */
+    resetPassword: async (data) => {
+        try {
+            return await axiosInstance.post('/api/auth/reset-password', data);
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
      * Logout user
      */
     logout: async () => {

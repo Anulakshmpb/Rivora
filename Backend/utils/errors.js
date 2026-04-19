@@ -90,14 +90,14 @@ class ErrorFactory {
 
 class ErrorUtils {
     static isOperational(error) {
-        return error instanceof AppError && error.isOperational;
+        return (error instanceof AppError || error.isOperational === true);
     }
     //  this.isOperational = true; ==> This is an expected error.
     //  Return true only if: Custom error /Expected error
 
     static extractMessage(error) {
         // If it's your custom error → return message.
-        if (error instanceof AppError) {
+        if (error instanceof AppError || error.isOperational === true) {
             return error.message;
         }
 
@@ -125,7 +125,7 @@ class ErrorUtils {
         return error.message || 'Internal server error';
     }
     static getStatusCode(error) {
-        if (error instanceof AppError) {
+        if (error instanceof AppError || error.statusCode) {
             return error.statusCode;
         }
 
