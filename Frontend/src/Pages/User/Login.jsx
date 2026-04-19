@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import LoginImg from '../Images/screen.png';
-import Logo from '../Images/logo.png';
+import LoginImg from '../../Images/screen.png';
+import Logo from '../../Images/logo.png';
 import { useNavigate } from 'react-router-dom';
-import authService from '../api/authService';
+import authService from '../../api/authService';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -29,7 +29,7 @@ const Login = () => {
         try {
             const data = await authService.login(formData);
             console.log('Login successful:', data);
-            
+
             // Redirect to home or dashboard based on role
             if (data?.user?.role === 'admin') {
                 navigate('/admin/dashboard');
@@ -63,7 +63,8 @@ const Login = () => {
             <div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-1/2">
                 <div className="w-full max-w-md space-y-6">
                     <div className='flex justify-end'>
-                        <button className="text-xs font-medium tracking-wide text-gray-500 hover:text-gray-700 transition-colors">
+                        <button onClick={() => navigate('/')}
+                            className="text-xs font-medium tracking-wide text-gray-500 hover:text-gray-700 transition-colors">
                             ← RETURN TO COLLECTIONS
                         </button>
                     </div>
@@ -99,7 +100,7 @@ const Login = () => {
                             </div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-1">
-                                    <label htmlFor="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                                     <button type="button" className="text-xs font-semibold text-blue-600 hover:underline" onClick={() => navigate('/forgot-password')}>Forgot password?</button>
                                 </div>
                                 <input

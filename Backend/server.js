@@ -6,6 +6,7 @@ const { setupMiddleware } = require('./Middlewares/setup');
 const { setupRoutes } = require('./Routes/index');
 const { errorHandler, notFound } = require('./Middlewares/errorHandler');
 const logger = require('./utils/logger');
+const { runSeeders } = require('./utils/seeder');
 
 class Server {
     constructor() {
@@ -19,6 +20,9 @@ class Server {
             // 1. Connect to Database
             await DBConnect.connect();
             logger.info('Connected to Database successfully');
+
+            // 1.1 Run Seeders
+            await runSeeders();
 
             // 2. Setup Global Middlewares
             setupMiddleware(this.app);
@@ -40,7 +44,7 @@ class Server {
 
             // Handle unhandled rejections
             process.on('unhandledRejection', (err) => {
-                logger.error('UNHANDLED REJECTION! 💥 Shutting down...', {
+                logger.error('UNHANDLED REJECTION! Shutting down...', {
                     error: err.message,
                     stack: err.stack
                 });
@@ -49,7 +53,7 @@ class Server {
 
             // Handle uncaught exceptions
             process.on('uncaughtException', (err) => {
-                logger.error('UNCAUGHT EXCEPTION! 💥 Shutting down...', {
+                logger.error('UNCAUGHT EXCEPTION! Shutting down...', {
                     error: err.message,
                     stack: err.stack
                 });
@@ -68,7 +72,7 @@ class Server {
 
     async gracefulShutdown() {
         logger.info('SIGTERM/SIGINT received. Shutting down gracefully...');
-        
+
         if (this.server) {
             this.server.close(() => {
                 logger.info('Process terminated. Closed remaining connections.');
@@ -88,7 +92,7 @@ class Server {
 
 // Global handlers for immediate errors before server initialization
 process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION! 💥', err.message, err.stack);
+    console.error('UNCAUGHT EXCEPTION!', err.message, err.stack);
     process.exit(1);
 });
 
