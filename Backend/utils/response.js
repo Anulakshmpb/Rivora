@@ -151,11 +151,21 @@ const sendSuccess = (res, message, data = null, statusCode = 200) => {
 	return ResponseFormatter.success(res, message, data, statusCode);
 };
 
-const sendError = (res, message, statusCode = 500, details = null) => {
-	const error = new Error(message);
-	error.statusCode = statusCode;
+const sendError = (res, messageOrError, statusCode = 500, details = null) => {
+	let error;
+	if (messageOrError instanceof Error) {
+		error = messageOrError;
+		// If custom status was provided but not already on the error, add it
+		if (statusCode && statusCode !== 500 && !error.statusCode) {
+			error.statusCode = statusCode;
+		}
+	} else {
+		error = new Error(messageOrError);
+		error.statusCode = statusCode;
+	}
+
 	if (details) error.details = details;
-	return ResponseFormatter.error(res, error, statusCode);
+	return ResponseFormatter.error(res, error, error.statusCode || statusCode);
 };
 
 const sendValidationError = (res, validationResult) => {

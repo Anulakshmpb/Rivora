@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Logo from '../Images/logo.png';
-import { useNavigate } from 'react-router-dom';
+import Logo from '../../Images/logo.png';
+import { useNavigate, useLocation } from 'react-router-dom';
+import authService from '../../api/authService';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-    
+
+    const location = useLocation();
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
@@ -15,6 +19,25 @@ export default function NavBar() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem('token'));
+    }, [location]);
+
+    const handleLogout = async () => {
+        try {
+            await authService.logout();
+            setIsLoggedIn(false);
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            // Even if the server logout fails, we should clear local state
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            setIsLoggedIn(false);
+            navigate('/login');
+        }
+    };
 
     const SearchIcon = () => (
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
@@ -55,8 +78,8 @@ export default function NavBar() {
         <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter ${isScrolled ? 'py-0' : 'py-4'
             }`}>
             <div className={`mx-auto transition-all duration-500 ${isScrolled
-                    ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
-                    : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl rounded-[1.5rem] mx-6 px-8 py-4'
+                ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
+                : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl rounded-[1.5rem] mx-6 px-8 py-4'
                 } flex justify-between items-center`}>
                 {/* Mobile Menu Toggle */}
                 <button
@@ -109,7 +132,8 @@ export default function NavBar() {
                         </button>
                     </div>
 
-                    <button className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={() => navigate('/profile')}
+                        className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <UserIcon />
                     </button>
 
@@ -131,11 +155,17 @@ export default function NavBar() {
                         <BellIcon />
                     </button>
 
-                    <button onClick={() => navigate('/login')}
-                        className="hidden lg:block ml-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-red-900 transition-colors">
-
-                        Logout
-                    </button>
+                    {isLoggedIn ? (
+                        <button onClick={handleLogout}
+                            className="hidden lg:block ml-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors">
+                            Logout
+                        </button>
+                    ) : (
+                        <button onClick={() => navigate('/login')}
+                            className="hidden lg:block ml-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                            Login
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -173,9 +203,15 @@ export default function NavBar() {
                         <button className="flex items-center gap-4 text-gray-700 font-semibold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all">
                             <UserIcon /> Profile
                         </button>
-                        <button className="flex items-center gap-4 text-red-600 font-bold w-full text-left p-2 hover:bg-red-50 rounded-xl transition-all">
-                            Logout
-                        </button>
+                        {isLoggedIn ? (
+                            <button onClick={handleLogout} className="flex items-center gap-4 text-red-600 font-bold w-full text-left p-2 hover:bg-red-50 rounded-xl transition-all">
+                                Logout
+                            </button>
+                        ) : (
+                            <button onClick={() => navigate('/login')} className="flex items-center gap-4 text-gray-700 font-bold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all">
+                                Login
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

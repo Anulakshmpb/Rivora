@@ -10,27 +10,24 @@ class AuthService {
 	static async register(userData) {
 
 		try {
-
 			// Normalize email
 			userData.email = userData.email.toLowerCase().trim();
-
 			// Check existing user
 			const existingUser = await User.findOne({ email: userData.email });
-
 			if (existingUser) {
-				throw new ConflictError("User already exists");
+				throw new ConflictError("User already exists", {
+					userId: existingUser._id,
+					isVerified: existingUser.isVerified
+				});
 			}
-
 			// Create user
 			const user = await User.create(userData);
-
 			// Generate token
 			const token = generateUserToken({
 				id: user._id,
 				email: user.email,
 				role: user.role
 			});
-
 			logger.info(`User registered: ${user.email}`);
 
 			return {
@@ -74,6 +71,11 @@ class AuthService {
 
 			if (!user) {
 				throw new AuthenticationError("Invalid credentials");
+			}
+
+			// Enforce OTP Registration Check
+			if (!user.isVerified) {
+				throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
 			}
 
 			// Check account lock
@@ -144,6 +146,38 @@ class AuthService {
 
 		}
 
+	}
+
+	/* ================= VERIFY EMAIL ================= */
+	static async markUserVerified(userId) {
+		try {
+			const user = await User.findByIdAndUpdate(
+				userId,
+				{ isVerified: true },
+				{ new: true }
+			);
+
+			if (!user) {
+				throw new NotFoundError("User not found");
+			}
+
+			// Generate token for auto-login
+			const token = generateUserToken({
+				id: user._id,
+				email: user.email,
+				role: user.role
+			});
+
+			logger.info(`Email verified for user: ${user.email}`);
+
+			return {
+				user: user.getPublicProfile(),
+				token
+			};
+		} catch (error) {
+			logger.error("Mark user verified error", error);
+			throw error;
+		}
 	}
 
 	/* ================= UPDATE PROFILE ================= */

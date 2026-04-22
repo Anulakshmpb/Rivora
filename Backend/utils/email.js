@@ -33,8 +33,8 @@ class EmailService {
 				from: `Rivora Ecommerce <${process.env.EMAIL_USER}>`,
 				to: to,
 				subject: subject,
-				html: htmlContent, // Send HTML for professional appearance
-				text: htmlContent.replace(/<[^>]*>?/gm, '') // Fallback text version
+				html: htmlContent, 
+				text: htmlContent.replace(/<[^>]*>?/gm, '') // Fallback 
 			};
 
 			const info = await this.transporter.sendMail(mailOptions);
@@ -80,5 +80,4 @@ class EmailService {
 	}
 }
 
-// Export as a singleton instance
 module.exports = new EmailService();

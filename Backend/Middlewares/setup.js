@@ -3,7 +3,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const express = require('express');
 
-const config = require('../config/config');
+const config = require('../Config/config');
 
 const requestLogger = require('./requestLogger');
 
