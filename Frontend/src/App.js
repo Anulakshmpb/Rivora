@@ -18,8 +18,6 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPW />} />
           <Route path="/otp" element={<Otp />} />
-          <Route path="/navbar" element={<NavBar />} />
-          <Route path="/footer" element={<Footer />} />
         </Routes>
         <Footer />
       </BrowserRouter>
