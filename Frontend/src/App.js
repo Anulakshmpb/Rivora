@@ -60,7 +60,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-      </Routes>
+     
       {!hideLayout && <Footer />}
     </div>
   );
