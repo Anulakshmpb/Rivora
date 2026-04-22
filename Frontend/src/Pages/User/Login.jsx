@@ -29,13 +29,7 @@ const Login = () => {
         try {
             const data = await authService.login(formData);
             console.log('Login successful:', data);
-
-            // Redirect to home or dashboard based on role
-            if (data?.user?.role === 'admin') {
-                navigate('/admin/dashboard');
-            } else {
-                navigate('/');
-            }
+            navigate('/');
         } catch (err) {
             const message = err.error?.message || err.message || 'Failed to sign in. Please check your credentials.';
             setError(message);

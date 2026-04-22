@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import authService from '../../api/authService';
-
+import { useNavigate } from 'react-router-dom';
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isAddingAddress, setIsAddingAddress] = useState(false);
     const [newAddress, setNewAddress] = useState({ street: '', city: '', state: '', pinCode: '', country: '', isDefault: false });
-
+const navigate = useNavigate();
     const fetchProfile = async () => {
         try {
             const response = await authService.getProfile();
@@ -29,7 +29,6 @@ const Profile = () => {
     }, []);
 
     const handleSignOut = () => {
-        // Sign out logic
         console.log("Signing out...");
     };
 
@@ -44,15 +43,9 @@ const Profile = () => {
     const handleAddAddress = async (e) => {
         e.preventDefault();
         try {
-            // Append new address to existing array
             const updatedAddresses = [...(user.addresses || []), newAddress];
-            
-            // Assume we can put to /api/auth/profile to update
             await authService.updateProfile({ addresses: updatedAddresses });
-            
-            // Re-fetch profile to sync state
             await fetchProfile();
-            
             setIsAddingAddress(false);
             setNewAddress({ street: '', city: '', state: '', pinCode: '', country: '', isDefault: false });
         } catch (err) {
@@ -100,6 +93,7 @@ const Profile = () => {
         {
             title: "Personal Information",
             desc: "Update your name, email and bio",
+            onClick: () => navigate('/profile-management'),
             icon: <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         },
         {
@@ -153,7 +147,7 @@ const Profile = () => {
                             <h2 className="text-2xl font-bold text-gray-900 mb-8">Account Settings</h2>
                             <div className="space-y-2">
                                 {accountSettings.map((item, index) => (
-                                    <div key={index} className="group flex items-center p-4 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100">
+                                    <div key={index} onClick={item.onClick} className="group flex items-center p-4 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100">
                                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-white group-hover:shadow-sm transition-all border border-gray-100">
                                             {item.icon}
                                         </div>

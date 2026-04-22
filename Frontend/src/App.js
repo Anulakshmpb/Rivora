@@ -12,11 +12,13 @@ import AdminDashboard from './Pages/Admin/AdminDashboard';
 import Profile from './Pages/User/Profile';
 import ProtectedRoute from './Components/ProtectedRoute';
 import ChangePW from './Pages/User/ChangePW';
+import ProfileManagement from './Pages/User/PersonalManagement';
+import AddInfo from './Pages/User/AddInfo';
+import Address from './Pages/User/Address';
 
 function AppContent() {
   const location = useLocation();
 
-  // Define routes where NavBar and Footer should be hidden
   const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard'];
   const hideLayout = authRoutes.includes(location.pathname);
 
@@ -24,7 +26,6 @@ function AppContent() {
     <div className="App">
       {!hideLayout && <NavBar />}
       <Routes>
-        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -32,7 +33,7 @@ function AppContent() {
         <Route path="/verify-otp" element={<Otp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Admin Routes */}
+        {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"
@@ -43,7 +44,7 @@ function AppContent() {
           }
         />
 
-        {/* User Routes */}
+        {/* User */}
         <Route
           path="/profile"
           element={
@@ -60,7 +61,32 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-     
+        <Route
+          path="/profile-management"
+          element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <ProfileManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addinfo"
+          element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <AddInfo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/address"
+          element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <Address />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+
       {!hideLayout && <Footer />}
     </div>
   );
