@@ -44,12 +44,25 @@ const loginValidation = Joi.object({
 const adminLoginValidation = loginValidation;
 
 const profileUpdateValidation = Joi.object({
-  name: commonPatterns.name.messages(customMessages),
-  phone: Joi.string().pattern(/^\+?[\d\s\-\(\)]+$/).optional().messages({
+  name: commonPatterns.name.messages(customMessages).optional(),
+  phone: Joi.string().pattern(/^\+?[\d\s\-\(\)]+$/).allow('').optional().messages({
     'string.pattern.base': 'Please provide a valid phone number'
   }),
-  bio: Joi.string().max(500).optional(),
-  avatar: Joi.string().uri().optional()
+  bio: Joi.string().max(500).allow('').optional(),
+  avatar: Joi.string().uri().allow('').optional(),
+  age: Joi.string().allow('').optional(),
+  gender: Joi.string().valid('male', 'female', 'other', 'prefer-not-to-say', '').optional(),
+  dob: Joi.string().allow('').optional(),
+  isVerifiedBadge: Joi.boolean().optional(),
+  addresses: Joi.array().items(Joi.object({
+    street: Joi.string().allow('').optional(),
+    apartment: Joi.string().allow('').optional(),
+    city: Joi.string().allow('').optional(),
+    state: Joi.string().allow('').optional(),
+    pinCode: Joi.string().allow('').optional(),
+    country: Joi.string().allow('').optional(),
+    isDefault: Joi.boolean().optional()
+  })).optional()
 });
 
 const passwordChangeValidation = Joi.object({

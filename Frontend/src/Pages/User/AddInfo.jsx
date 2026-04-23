@@ -214,19 +214,6 @@ export default function AddInfo() {
                                             className="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-transparent focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-medium text-gray-900"
                                         />
                                     </div>
-
-                                    {/* <div className="flex items-center gap-3 p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100/50">
-                                        <div className="flex items-center">
-                                            <input 
-                                                type="checkbox" id="isVerifiedBadge" name="isVerifiedBadge"
-                                                checked={formData.isVerifiedBadge} onChange={handleChange}
-                                                className="w-5 h-5 text-indigo-600 border-gray-300 rounded-lg focus:ring-indigo-500 cursor-pointer"
-                                            />
-                                        </div>
-                                        <label htmlFor="isVerifiedBadge" className="text-sm font-semibold text-indigo-900 cursor-pointer">
-                                            Show Verified Badge on Profile
-                                        </label>
-                                    </div> */}
                                 </div>
 
                                 <div className="md:col-span-2">

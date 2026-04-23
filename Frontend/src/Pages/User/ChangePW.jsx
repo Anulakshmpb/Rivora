@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import authService from '../../api/authService';
 
 const ChangePW = () => {
     const navigate = useNavigate();
@@ -8,12 +9,16 @@ const ChangePW = () => {
         newPassword: '',
         confirmPassword: ''
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
+        if (error) setError('');
     };
 
     // A simple validation checker for the UI
@@ -22,10 +27,39 @@ const ChangePW = () => {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword);
     const hasUpperCase = /[A-Z]/.test(formData.newPassword);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Add submit logic here
-        console.log("Submitting password change...", formData);
+
+        if (formData.newPassword !== formData.confirmPassword) {
+            setError("Passwords do not match");
+            return;
+        }
+
+        if (!hasLength || !hasNumber || !hasUpperCase || !hasSpecialChar) {
+            setError("Password does not meet requirements");
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            await authService.changePassword(formData);
+            setSuccess('Password updated successfully!');
+            setFormData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+            // Optional: navigate away after success
+            setTimeout(() => navigate('/profile'), 2000);
+        } catch (err) {
+            console.error("Password update error:", err);
+            setError(err.error?.message || err.message || 'Failed to update password. Please check your current password.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const RequirementItem = ({ met, text }) => (
@@ -48,7 +82,7 @@ const ChangePW = () => {
                     {/* Decorative Background */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -mr-10 -mt-10"></div>
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full blur-xl -ml-5 -mb-5"></div>
-                    
+
                     <div className="relative z-10">
                         <div className="w-12 h-12 bg-gray-300 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/20">
                             <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,12 +97,24 @@ const ChangePW = () => {
                 </div>
 
                 <div className="p-8">
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
+                            <svg className="w-5 h-5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>
+                            <p className="text-sm font-semibold text-red-700">{error}</p>
+                        </div>
+                    )}
+                    {success && (
+                        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
+                            <svg className="w-5 h-5 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                            <p className="text-sm font-semibold text-green-700">{success}</p>
+                        </div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-5">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Current Password</label>
-                                <input 
-                                    type="password" 
+                                <input
+                                    type="password"
                                     name="currentPassword"
                                     value={formData.currentPassword}
                                     onChange={handleChange}
@@ -80,8 +126,8 @@ const ChangePW = () => {
 
                             <div className="border-t border-gray-100 pt-5">
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">New Password</label>
-                                <input 
-                                    type="password" 
+                                <input
+                                    type="password"
                                     name="newPassword"
                                     value={formData.newPassword}
                                     onChange={handleChange}
@@ -93,8 +139,8 @@ const ChangePW = () => {
 
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm New Password</label>
-                                <input 
-                                    type="password" 
+                                <input
+                                    type="password"
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
@@ -120,18 +166,24 @@ const ChangePW = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-100">
-                            <button 
+                            <button
                                 type="button"
                                 onClick={() => navigate(-1)}
                                 className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all text-sm"
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 type="submit"
-                                className="flex-1 px-6 py-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all text-sm"
+                                disabled={loading}
+                                className={`flex-1 px-6 py-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 shadow-lg shadow-slate-900/20 transition-all text-sm flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
-                                Update Password
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                        Updating...
+                                    </>
+                                ) : 'Update Password'}
                             </button>
                         </div>
                     </form>

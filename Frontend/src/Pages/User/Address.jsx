@@ -13,10 +13,8 @@ export default function Address() {
     const [success, setSuccess] = useState('');
 
     const [form, setForm] = useState({
-        fullName: '',
-        phoneNumber: '',
         street: '',
-        apartmentSuite: '',
+        apartment: '',
         city: '',
         state: '',
         pinCode: '',
@@ -55,10 +53,8 @@ export default function Address() {
     const openAddModal = () => {
         setEditingIndex(null);
         setForm({
-            fullName: '',
-            phoneNumber: '',
             street: '',
-            apartmentSuite: '',
+            apartment: '',
             city: '',
             state: '',
             pinCode: '',
@@ -72,10 +68,8 @@ export default function Address() {
         const addr = addresses[index];
         setEditingIndex(index);
         setForm({
-            fullName: addr.fullName || '',
-            phoneNumber: addr.phoneNumber || '',
             street: addr.street || '',
-            apartmentSuite: addr.apartmentSuite || '',
+            apartment: addr.apartment || addr.apartmentSuite || '',
             city: addr.city || '',
             state: addr.state || '',
             pinCode: addr.pinCode || '',
@@ -140,7 +134,7 @@ export default function Address() {
     return (
         <div className="min-h-screen bg-[#F9FAFB] pt-28 pb-20 font-inter">
             <div className="max-w-6xl mx-auto px-6 lg:px-12">
-                
+
                 {/* Header */}
                 <div className="mb-12">
                     <h1 className="text-[44px] font-extrabold text-[#111827] tracking-tight mb-3">Address Book</h1>
@@ -157,9 +151,9 @@ export default function Address() {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
+
                     {/* Add New Address Card */}
-                    <button 
+                    <button
                         onClick={openAddModal}
                         className="group h-[320px] bg-transparent border-2 border-dashed border-[#E5E7EB] rounded-[32px] flex flex-col items-center justify-center gap-4 hover:border-[#3B82F6] hover:bg-white transition-all cursor-pointer"
                     >
@@ -171,27 +165,26 @@ export default function Address() {
 
                     {/* Address List */}
                     {addresses.map((addr, index) => (
-                        <div key={index} className="h-[320px] bg-white rounded-[32px] p-10 shadow-sm border border-[#F3F4F6] flex flex-col justify-between hover:shadow-xl hover:shadow-blue-100/20 transition-all group overflow-hidden relative">
+                        <div key={index} className="h-auto bg-white rounded-[32px] p-10 shadow-sm border border-[#F3F4F6] flex flex-col justify-between hover:shadow-xl hover:shadow-blue-100/20 transition-all group overflow-hidden relative">
                             {addr.isDefault && (
-                                <div className="absolute top-8 right-8 bg-[#EFF6FF] text-[#1D4ED8] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">
+                                <div className="absolute top-8 right-8 flex items-center gap-1.5 bg-[#2563EB] text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-blue-100">
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                    </svg>
                                     Default
                                 </div>
                             )}
 
                             <div>
-                                <h3 className="text-2xl font-bold text-[#111827] mb-6">{addr.fullName}</h3>
                                 <div className="text-[#6B7280] font-medium space-y-1.5 leading-relaxed">
-                                    <p>{addr.street}{addr.apartmentSuite ? `, ${addr.apartmentSuite}` : ''}</p>
+                                    <p className="text-[#111827] font-bold">{addr.street}{addr.apartment ? `, ${addr.apartment}` : (addr.apartmentSuite ? `, ${addr.apartmentSuite}` : '')}</p>
                                     <p>{addr.city}, {addr.state} {addr.pinCode}</p>
                                     <p>{addr.country}</p>
                                 </div>
-                                <div className="mt-6 flex items-center gap-2 text-[#6B7280] font-bold text-sm">
-                                    <svg className="w-4 h-4 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                                    {addr.phoneNumber}
-                                </div>
+
                             </div>
 
-                            <div className="mt-8 pt-8 border-t border-[#F3F4F6] flex items-center gap-6">
+                            <div className="border-t border-[#F3F4F6] flex items-center gap-6">
                                 <button onClick={() => openEditModal(index)} className="text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors">Edit</button>
                                 <button onClick={() => handleDelete(index)} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Remove</button>
                             </div>
@@ -204,7 +197,7 @@ export default function Address() {
             {modalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-[#111827]/40 backdrop-blur-sm transition-opacity" onClick={() => setModalOpen(false)}></div>
-                    
+
                     <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl relative overflow-y-auto max-h-[90vh] animate-in zoom-in-95 duration-200">
                         <div className="p-12">
                             {/* Modal Header */}
@@ -218,20 +211,20 @@ export default function Address() {
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                <div>
+                                {/* <div>
                                     <label className="flex items-center text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 ml-1">
                                         Full Name <span className="text-blue-500 ml-1">●</span>
                                     </label>
-                                    <input 
+                                    <input
                                         type="text" name="fullName" value={form.fullName} onChange={handleChange} required
                                         placeholder="e.g. Julian Sterling"
                                         className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
                                     />
-                                </div>
+                                </div> */}
 
                                 <div>
                                     <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">Street Address</label>
-                                    <input 
+                                    <input
                                         type="text" name="street" value={form.street} onChange={handleChange} required
                                         placeholder="1248 Design District Blvd"
                                         className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
@@ -241,15 +234,15 @@ export default function Address() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
                                         <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">Apartment/Suite</label>
-                                        <input 
-                                            type="text" name="apartmentSuite" value={form.apartmentSuite} onChange={handleChange}
+                                        <input
+                                            type="text" name="apartment" value={form.apartment} onChange={handleChange}
                                             placeholder="Suite 402"
                                             className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">City</label>
-                                        <input 
+                                        <input
                                             type="text" name="city" value={form.city} onChange={handleChange} required
                                             placeholder="Metropolis"
                                             className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
@@ -261,7 +254,7 @@ export default function Address() {
                                     <div>
                                         <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">State / Province</label>
                                         <div className="relative">
-                                            <select 
+                                            <select
                                                 name="state" value={form.state} onChange={handleChange} required
                                                 className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] appearance-none"
                                             >
@@ -277,7 +270,7 @@ export default function Address() {
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">Zip / Postal Code</label>
-                                        <input 
+                                        <input
                                             type="text" name="pinCode" value={form.pinCode} onChange={handleChange} required
                                             placeholder="90210"
                                             className="w-full px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
@@ -285,32 +278,34 @@ export default function Address() {
                                     </div>
                                 </div>
 
-                                <div>
+                                {/* <div>
                                     <label className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 block ml-1">Phone Number</label>
                                     <div className="flex gap-4">
                                         <div className="w-24 px-6 py-4 bg-[#F9FAFB] rounded-2xl border border-[#F3F4F6] text-[#111827] font-bold text-center flex items-center justify-center">
                                             +1
                                         </div>
-                                        <input 
+                                        <input
                                             type="tel" name="phoneNumber" value={form.phoneNumber} onChange={handleChange} required
                                             placeholder="(555) 000-0000"
                                             className="flex-1 px-6 py-4 bg-white rounded-2xl border border-[#F3F4F6] shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium text-[#111827] placeholder:text-[#D1D5DB]"
                                         />
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* Set as Default Row */}
                                 <div className="bg-[#F9FAFB] rounded-[24px] p-6 flex items-center justify-between group transition-all hover:bg-white hover:shadow-md border border-transparent hover:border-[#F3F4F6]">
                                     <div className="flex items-center gap-5">
                                         <div className="w-12 h-12 bg-[#EFF6FF] text-[#2563EB] rounded-2xl flex items-center justify-center shadow-inner">
-                                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                            </svg>
                                         </div>
                                         <div>
                                             <p className="text-[#111827] font-bold text-base leading-none mb-1.5">Set as Default Address</p>
                                             <p className="text-[#6B7280] text-xs font-medium">Orders will automatically ship to this location.</p>
                                         </div>
                                     </div>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setForm(f => ({ ...f, isDefault: !f.isDefault }))}
                                         className={`w-14 h-8 rounded-full transition-all duration-300 relative ${form.isDefault ? 'bg-[#2563EB]' : 'bg-[#E5E7EB]'}`}
@@ -320,13 +315,13 @@ export default function Address() {
                                 </div>
 
                                 <div className="pt-6 flex gap-4">
-                                    <button 
+                                    <button
                                         type="button" onClick={() => setModalOpen(false)}
                                         className="flex-1 py-4 text-[#6B7280] font-bold text-base hover:bg-gray-50 rounded-2xl transition-all"
                                     >
                                         Discard
                                     </button>
-                                    <button 
+                                    <button
                                         type="submit"
                                         className="flex-[2] bg-[#1D4ED8] text-white font-bold py-4 rounded-2xl shadow-xl shadow-blue-100 hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                     >

@@ -17,9 +17,13 @@ const UserSchema = new mongoose.Schema({
         trim: true,
         match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
     },
-    phoneNumber: {
+    phone: {
         type: String,
         trim: true
+    },
+    isVerifiedBadge: {
+        type: Boolean,
+        default: false
     },
     password: {
         type: String,
@@ -40,9 +44,25 @@ const UserSchema = new mongoose.Schema({
             type: String
         }
     },
+    age: {
+        type: String,
+        trim: true
+    },
+    gender: {
+        type: String,
+        trim: true
+    },
+    dob: {
+        type: String,
+        trim: true
+    },
+    bio: {
+        type: String
+    },
     addresses: [
         {
             street: { type: String, trim: true },
+            apartment: { type: String, trim: true },
             city: { type: String, trim: true },
             state: { type: String, trim: true },
             pinCode: { type: String, trim: true },

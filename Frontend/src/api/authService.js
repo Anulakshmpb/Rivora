@@ -1,10 +1,6 @@
 import axiosInstance from './axiosInstance';
 
 const authService = {
-    /**
-     * Register a new user
-     * @param {Object} userData { name, email, password }
-     */
     register: async (userData) => {
         try {
             return await axiosInstance.post('/api/auth/register', userData);
@@ -12,11 +8,6 @@ const authService = {
             throw error;
         }
     },
-
-    /**
-     * Login user
-     * @param {Object} credentials { email, password }
-     */
     login: async (credentials) => {
         try {
             const response = await axiosInstance.post('/api/auth/login', credentials);
@@ -31,10 +22,6 @@ const authService = {
         }
     },
 
-    /**
-     * Login Admin
-     * @param {Object} credentials { email, password }
-     */
     adminLogin: async (credentials) => {
         try {
             const response = await axiosInstance.post('/api/admin/login', credentials);
@@ -49,10 +36,6 @@ const authService = {
         }
     },
 
-    /**
-     * Verify OTP
-     * @param {Object} data { userId, otp }
-     */
     verifyEmail: async (verificationData) => {
         try {
             const response = await axiosInstance.post('/api/auth/verify', verificationData);
@@ -67,10 +50,6 @@ const authService = {
         }
     },
 
-    /**
-     * Resend OTP
-     * @param {string} userId
-     */
     resendOTP: async (userId) => {
         try {
             return await axiosInstance.post('/api/auth/resend', { userId });
@@ -79,10 +58,6 @@ const authService = {
         }
     },
 
-    /**
-     * Request Forgot Password OTP
-     * @param {Object} data { email }
-     */
     forgotPassword: async (data) => {
         try {
             return await axiosInstance.post('/api/auth/forgot-password', data);
@@ -91,10 +66,6 @@ const authService = {
         }
     },
 
-    /**
-     * Verify Password Reset OTP
-     * @param {Object} data { userId, otp }
-     */
     verifyResetOTP: async (data) => {
         try {
             return await axiosInstance.post('/api/auth/verify-reset-otp', data);
@@ -103,10 +74,6 @@ const authService = {
         }
     },
 
-    /**
-     * Reset Password with token
-     * @param {Object} data { userId, resetToken, newPassword }
-     */
     resetPassword: async (data) => {
         try {
             return await axiosInstance.post('/api/auth/reset-password', data);
@@ -114,10 +81,6 @@ const authService = {
             throw error;
         }
     },
-
-    /**
-     * Logout user
-     */
     logout: async () => {
         try {
             const response = await axiosInstance.post('/api/auth/logout');
@@ -129,12 +92,23 @@ const authService = {
         }
     },
 
-    /**
-     * Get user profile
-     */
     getProfile: async () => {
         try {
             return await axiosInstance.get('/api/auth/get-profile');
+        } catch (error) {
+            throw error;
+        }
+    },
+    updateProfile: async (updateData) => {
+        try {
+            return await axiosInstance.put('/api/auth/profile', updateData);
+        } catch (error) {
+            throw error;
+        }
+    },
+    changePassword: async (data) => {
+        try {
+            return await axiosInstance.put('/api/auth/change-password', data);
         } catch (error) {
             throw error;
         }
