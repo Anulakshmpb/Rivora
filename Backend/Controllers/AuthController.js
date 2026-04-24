@@ -10,8 +10,6 @@ const {
 } = require('../utils/validation');
 
 class AuthController extends BaseController {
-
-  // REGISTER + SEND OTP
   static register = BaseController.asyncHandler(async (req, res) => {
 
     const validatedData =
@@ -24,8 +22,6 @@ class AuthController extends BaseController {
     await AuthService.register(
       validatedData
     );
-
-    // Send OTP after registration
     await OTPService.createOTP(
       result.user
     );

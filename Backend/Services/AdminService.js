@@ -11,11 +11,8 @@ class AdminAuthService {
 
 			const { email, password } = credentials;
 
-			// Normalize email
 			const normalizedEmail =
 				email.toLowerCase().trim();
-
-			// Find admin with password
 			const admin = await Admin
 				.findOne({ email: normalizedEmail })
 				.select("+password");
@@ -27,8 +24,6 @@ class AdminAuthService {
 				);
 
 			}
-
-			// Check role
 			if (admin.role !== "admin") {
 
 				throw new AuthenticationError(
@@ -37,12 +32,9 @@ class AdminAuthService {
 
 			}
 
-			// Check account verification (Admin schema currently doesn't have isVerified but we check status)
 			if (admin.status === "banned") {
                 throw new AuthenticationError("Admin account banned");
             }
-
-			// Check password
 			const isValid =
 				await admin.comparePassword(password);
 
@@ -53,14 +45,9 @@ class AdminAuthService {
 				);
 
 			}
-
-
-			// Update last login
 			admin.lastLogin = new Date();
 
 			await admin.save();
-
-			// Generate token
 			const token = generateAdminToken({
 
 				id: admin._id,

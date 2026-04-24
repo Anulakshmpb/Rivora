@@ -3,36 +3,49 @@ import LoginImg from '../../Images/screen.png';
 import Logo from '../../Images/logo.png';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../api/authService';
+import { useForm } from 'react-hook-form';
+import { joiResolver } from '@hookform/resolvers/joi';
+import Joi from 'joi';
+
+const schema = Joi.object({
+    email: Joi.string().email({ tlds: { allow: false } }).required().messages({
+        'string.empty': 'Email is required',
+        'string.email': 'Please enter a valid email address',
+        'any.required': 'Email is required'
+    }),
+    password: Joi.string().min(6).required().messages({
+        'string.empty': 'Password is required',
+        'string.min': 'Password must be at least 6 characters',
+        'any.required': 'Password is required'
+    })
+});
 
 const Login = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [apiError, setApiError] = useState('');
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-        if (error) setError('');
-    };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: joiResolver(schema),
+        mode: 'onTouched'
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
         setLoading(true);
-        setError('');
+        setApiError('');
 
         try {
-            const data = await authService.login(formData);
-            console.log('Login successful:', data);
+            const response = await authService.login(data);
+            console.log('Login successful:', response);
             navigate('/');
         } catch (err) {
+            console.error('Login error:', err);
             const message = err.error?.message || err.message || 'Failed to sign in. Please check your credentials.';
-            setError(message);
+            setApiError(message);
         } finally {
             setLoading(false);
         }
@@ -70,27 +83,25 @@ const Login = () => {
                         <p className="text-gray-500 text-xs">Access your private collections and orders</p>
                     </div>
 
-                    {error && (
+                    {apiError && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                            <p className="text-sm text-red-700">{error}</p>
+                            <p className="text-sm text-red-700">{apiError}</p>
                         </div>
                     )}
 
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
                                     autoComplete="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('email')}
+                                    className={`block w-full rounded-2xl border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-3 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="name@example.com"
                                 />
+                                {errors.email && <p className="mt-1 text-xs text-red-500 ml-2">{errors.email.message}</p>}
                             </div>
                             <div className="relative">
                                 <div className="flex items-center justify-between mb-1">
@@ -99,15 +110,13 @@ const Login = () => {
                                 </div>
                                 <input
                                     id="password"
-                                    name="password"
                                     type="password"
                                     autoComplete="current-password"
-                                    required
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('password')}
+                                    className={`block w-full rounded-2xl border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-3 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="••••••••"
                                 />
+                                {errors.password && <p className="mt-1 text-xs text-red-500 ml-2">{errors.password.message}</p>}
                             </div>
                         </div>
 

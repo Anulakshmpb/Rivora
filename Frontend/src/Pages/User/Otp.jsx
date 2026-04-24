@@ -12,6 +12,7 @@ const Otp = () => {
     const [resending, setResending] = useState(false);
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
     useEffect(() => {
         console.log('Otp Page Loaded. userId from state:', userId);
@@ -21,6 +22,23 @@ const Otp = () => {
             navigate('/register');
         }
     }, [userId, navigate]);
+
+    // Timer logic
+    useEffect(() => {
+        if (timeLeft <= 0) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [timeLeft]);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,6 +70,8 @@ const Otp = () => {
     };
 
     const handleResend = async () => {
+        if (timeLeft > 0) return; // Prevent resend if timer is active
+
         setResending(true);
         setError('');
         setMessage('');
@@ -59,6 +79,7 @@ const Otp = () => {
         try {
             await authService.resendOTP(userId);
             setMessage('A new OTP has been sent to your email.');
+            setTimeLeft(300); // Reset timer to 5 minutes
         } catch (err) {
             const message = err.error?.message || err.message || 'Failed to resend OTP. Please try again later.';
             setError(message);
@@ -96,9 +117,16 @@ const Otp = () => {
 
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="space-y-2">
-                            <label htmlFor="otp" className="block text-xs font-bold text-gray-700 uppercase tracking-wider ml-1">
-                                Verification Code
-                            </label>
+                            <div className="flex justify-between items-center ml-1">
+                                <label htmlFor="otp" className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                                    Verification Code
+                                </label>
+                                {timeLeft > 0 && (
+                                    <span className="text-xs font-bold text-gray-400">
+                                        Expires in <span className="text-black font-mono">{formatTime(timeLeft)}</span>
+                                    </span>
+                                )}
+                            </div>
                             <input
                                 id="otp"
                                 name="otp"
@@ -115,7 +143,7 @@ const Otp = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full rounded-2xl bg-black py-4 text-sm font-bold text-white shadow-xl hover:translate-y-1 hover:shadow-2xl transition-all active:scale-[0.98] tracking-widest uppercase ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full rounded-2xl bg-black py-4 text-sm font-bold text-white shadow-xl hover:translate-y-[-2px] hover:shadow-2xl transition-all active:scale-[0.98] tracking-widest uppercase ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
                             {loading ? 'Verifying...' : 'Verify Code'}
                         </button>
@@ -124,14 +152,14 @@ const Otp = () => {
                     <div className="flex items-center justify-between mt-6">
                         <button
                             onClick={handleResend}
-                            disabled={resending}
-                            className={`text-xs font-bold text-gray-500 hover:text-gray-700 transition-all uppercase tracking-widest py-2 ${resending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={resending || timeLeft > 0}
+                            className={`text-xs font-bold transition-all uppercase tracking-widest py-2 ${resending || timeLeft > 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:text-black'}`}
                         >
-                            {resending ? 'Resending...' : 'Resend Code'}
+                            {resending ? 'Resending...' : timeLeft > 0 ? `Resend Code in ${formatTime(timeLeft)}` : 'Resend Code'}
                         </button>
                         <button
                             onClick={() => navigate('/login')}
-                            className="text-xs font-bold text-gray-500 hover:text-gray-700 transition-all uppercase tracking-widest py-2"
+                            className="text-xs font-bold text-gray-500 hover:text-black transition-all uppercase tracking-widest py-2"
                         >
                             ← Back to Login
                         </button>

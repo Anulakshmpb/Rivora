@@ -45,8 +45,6 @@ class OTPService {
 
 		if (!record)
 			throw new Error("OTP expired or not found");
-
-		// check expiry manually also
 		if (record.expiresAt < new Date()) {
 			await OTP.deleteOne({ _id: record._id });
 			throw new Error("OTP expired");
@@ -63,8 +61,6 @@ class OTPService {
 			await record.save();
 			throw new Error("Invalid OTP");
 		}
-
-		// success → delete OTP
 		await OTP.deleteOne({ _id: record._id });
 
 		return true;
@@ -75,8 +71,6 @@ class OTPService {
 			userId: user._id,
 			type: type
 		});
-
-		// Prevent spam resend
 		if (existing) {
 			const timeLeft = existing.createdAt.getTime() + 60000;
 			if (Date.now() < timeLeft) {
