@@ -2,48 +2,64 @@ import React, { useState } from 'react';
 import Account from '../../Images/account.png';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../api/authService';
+import { useForm } from 'react-hook-form';
+import { joiResolver } from '@hookform/resolvers/joi';
+import Joi from 'joi';
+
+const schema = Joi.object({
+    name: Joi.string().min(3).max(50).required().messages({
+        'string.empty': 'Full name is required',
+        'string.min': 'Name must be at least 3 characters',
+        'any.required': 'Full name is required'
+    }),
+    email: Joi.string().email({ tlds: { allow: false } }).required().messages({
+        'string.empty': 'Email is required',
+        'string.email': 'Please enter a valid email address',
+        'any.required': 'Email is required'
+    }),
+    password: Joi.string().min(6).required().messages({
+        'string.empty': 'Password is required',
+        'string.min': 'Password must be at least 6 characters',
+        'any.required': 'Password is required'
+    }),
+    confirmPassword: Joi.any().equal(Joi.ref('password')).required().messages({
+        'any.only': 'Passwords do not match',
+        'any.required': 'Please confirm your password'
+    }),
+    terms: Joi.boolean().invalid(false).required().messages({
+        'any.invalid': 'You must agree to the terms and conditions'
+    })
+});
 
 const Register = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    });
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [apiError, setApiError] = useState('');
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-        if (error) setError('');
-    };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: joiResolver(schema),
+        mode: 'onTouched'
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            return setError("Passwords do not match");
-        }
-
+    const onSubmit = async (data) => {
         setLoading(true);
-        setError('');
+        setApiError('');
 
         try {
-            const { name, email, password } = formData;
+            const { name, email, password } = data;
             const response = await authService.register({ name, email, password });
             console.log('Registration Response:', response);
             
-            // Redirect using the new data structure from the standardized response
             const userId = response.data?.userId || response.data?.user?._id || response.userId || response.user?._id;
             console.log('Calculated userId for navigation:', userId);
 
             if (!userId) {
                 console.error('Failed to extract userId from response');
-                setError('Registration successful, but system failed to process verification. Please try logging in.');
+                setApiError('Registration successful, but system failed to process verification. Please try logging in.');
                 return;
             }
 
@@ -51,11 +67,9 @@ const Register = () => {
         } catch (err) {
             console.error('Registration error:', err);
             
-            // Handle standardized error structure: { error: { message, details, statusCode } }
             const errorInfo = err.error || err;
             const { message, details, statusCode } = errorInfo;
 
-            // SPECIAL CASE: User exists but is unverified (409 Conflict)
             if (statusCode === 409 && details?.userId && !details?.isVerified) {
                 console.log('User exists but unverified. Redirecting to OTP...');
                 return navigate('/verify-otp', { state: { userId: details.userId } });
@@ -63,9 +77,9 @@ const Register = () => {
 
             if (details && Array.isArray(details)) {
                 const detailMessages = details.map(d => d.message).join('. ');
-                setError(`Validation failed: ${detailMessages}`);
+                setApiError(`Validation failed: ${detailMessages}`);
             } else {
-                setError(message || 'Registration failed. Please try again.');
+                setApiError(message || 'Registration failed. Please try again.');
             }
         } finally {
             setLoading(false);
@@ -95,69 +109,69 @@ const Register = () => {
                         <p className="text-gray-500 text-xs">Create your account to access exclusive collections and manage your orders.</p>
                     </div>
 
-                    {error && (
+                    {apiError && (
                         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                            <p className="text-sm text-red-700">{error}</p>
+                            <p className="text-sm text-red-700">{apiError}</p>
                         </div>
                     )}
 
-                    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                                 <input
                                     id="name"
-                                    name="name"
                                     type="text"
-                                    required
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('name')}
+                                    className={`block w-full rounded-2xl border ${errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-2 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="Enter your full name"
                                 />
+                                {errors.name && <p className="mt-1 text-xs text-red-500 ml-2">{errors.name.message}</p>}
                             </div>
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('email')}
+                                    className={`block w-full rounded-2xl border ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-2 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="name@example.com"
                                 />
+                                {errors.email && <p className="mt-1 text-xs text-red-500 ml-2">{errors.email.message}</p>}
                             </div>
-                            <div className="relative">
+                            <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                                 <input
                                     id="password"
-                                    name="password"
                                     type="password"
-                                    required
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('password')}
+                                    className={`block w-full rounded-2xl border ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-2 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="••••••••"
                                 />
+                                {errors.password && <p className="mt-1 text-xs text-red-500 ml-2">{errors.password.message}</p>}
                             </div>
-                            <div className="relative">
+                            <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
                                 <input
                                     id="confirmPassword"
-                                    name="confirmPassword"
                                     type="password"
-                                    required
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-2xl border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none"
+                                    {...register('confirmPassword')}
+                                    className={`block w-full rounded-2xl border ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-400 focus:ring-gray-400'} px-4 py-2 text-gray-900 placeholder-gray-400 transition-all outline-none focus:ring-1`}
                                     placeholder="••••••••"
                                 />
+                                {errors.confirmPassword && <p className="mt-1 text-xs text-red-500 ml-2">{errors.confirmPassword.message}</p>}
                             </div>
-                            <div className="flex items-center gap-2 relative">
-                                <input type="checkbox" id="terms" name="terms" required className="rounded-2xl border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all outline-none" />
-                                <label htmlFor="terms" className="block text-sm font-medium text-gray-700 mb-1">I agree to the terms and conditions</label>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex items-center gap-2">
+                                    <input 
+                                        type="checkbox" 
+                                        id="terms" 
+                                        {...register('terms')}
+                                        className={`rounded border ${errors.terms ? 'border-red-500' : 'border-gray-300'} text-black focus:ring-black`} 
+                                    />
+                                    <label htmlFor="terms" className="block text-sm font-medium text-gray-700">I agree to the terms and conditions</label>
+                                </div>
+                                {errors.terms && <p className="text-xs text-red-500 ml-6">{errors.terms.message}</p>}
                             </div>
                         </div>
 
@@ -166,7 +180,7 @@ const Register = () => {
                             disabled={loading}
                             className={`w-full rounded-lg bg-black py-3.5 text-sm font-semibold text-white shadow-lg hover:bg-gray-800 transition-all active:scale-[0.98] ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            {loading ? 'Loading...' : 'Verify OTP'}
+                            {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
                     </form>
 
