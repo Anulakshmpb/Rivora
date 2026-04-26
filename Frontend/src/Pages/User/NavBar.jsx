@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
-import authService from '../../api/authService';
+import { useAuth } from '../../context/AuthContext';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-
-    const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+    const { isAuthenticated, logout } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -20,21 +18,12 @@ export default function NavBar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    useEffect(() => {
-        setIsLoggedIn(!!localStorage.getItem('token'));
-    }, [location]);
-
     const handleLogout = async () => {
         try {
-            await authService.logout();
-            setIsLoggedIn(false);
+            await logout();
             navigate('/login');
         } catch (error) {
             console.error('Logout failed:', error);
-            // Even if the server logout fails, we should clear local state
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            setIsLoggedIn(false);
             navigate('/login');
         }
     };
@@ -155,7 +144,7 @@ export default function NavBar() {
                         <BellIcon />
                     </button>
 
-                    {isLoggedIn ? (
+                    {isAuthenticated ? (
                         <button onClick={handleLogout}
                             className="hidden lg:block ml-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors">
                             Logout
@@ -203,7 +192,7 @@ export default function NavBar() {
                         <button className="flex items-center gap-4 text-gray-700 font-semibold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all">
                             <UserIcon /> Profile
                         </button>
-                        {isLoggedIn ? (
+                        {isAuthenticated ? (
                             <button onClick={handleLogout} className="flex items-center gap-4 text-red-600 font-bold w-full text-left p-2 hover:bg-red-50 rounded-xl transition-all">
                                 Logout
                             </button>

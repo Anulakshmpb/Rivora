@@ -3,9 +3,11 @@ import LoginImg from '../../Images/screen.png';
 import Logo from '../../Images/logo.png';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../api/authService';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -29,6 +31,9 @@ const AdminLogin = () => {
         try {
             const data = await authService.adminLogin(formData);
             console.log('Admin login successful:', data);
+
+            // Update Auth Context
+            await login(data.data.admin);
 
             // Redirect to admin dashboard
             navigate('/admin/dashboard');

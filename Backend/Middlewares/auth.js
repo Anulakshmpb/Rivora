@@ -6,13 +6,16 @@ const logger = require('../utils/logger');
 const extractToken = (req) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader)
-        return null;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        return authHeader.split(" ")[1];
+    }
 
-    if (!authHeader.startsWith("Bearer "))
-        return null;
+    // Try to extract from cookie if header is missing
+    if (req.cookies && req.cookies.token) {
+        return req.cookies.token;
+    }
 
-    return authHeader.split(" ")[1];
+    return null;
 };
 
 const findUser = async (id) => {
@@ -25,17 +28,17 @@ const authenticateUser = async (req, res, next) => {
         const token = extractToken(req);
 
         if (!token)
-            return sendError(res,"Access token required",401);
+            return sendError(res, "Access token required", 401);
 
         const decoded = verifyUserToken(token);
 
         const user = await findUser(decoded.id);
 
         if (!user)
-            return sendError(res,"User not found",401);
+            return sendError(res, "User not found", 401);
 
         if (user.status === "banned")
-            return sendError(res,"Account banned",403);
+            return sendError(res, "Account banned", 403);
 
         req.user = user;
 
@@ -43,13 +46,13 @@ const authenticateUser = async (req, res, next) => {
 
     } catch (error) {
 
-        logger.error("Auth error",{
+        logger.error("Auth error", {
             error: error.message,
-            url:req.originalUrl,
-            ip:req.ip
+            url: req.originalUrl,
+            ip: req.ip
         });
 
-        return sendError(res,"Invalid or expired token",401);
+        return sendError(res, "Invalid or expired token", 401);
     }
 };
 
@@ -59,55 +62,89 @@ const findAdmin = async (id) => {
     return await Admin.findById(id).select("-password");
 };
 
-const authenticateAdmin = async (req,res,next)=>{
-    try{
+const authenticateAdmin = async (req, res, next) => {
+    try {
 
         const token = extractToken(req);
 
-        if(!token)
-            return sendError(res,"Admin token required",401);
+        if (!token)
+            return sendError(res, "Admin token required", 401);
 
         const decoded = verifyAdminToken(token);
 
         const admin = await findAdmin(decoded.id);
 
-        if(!admin)
-            return sendError(res,"Admin not found",403);
+        if (!admin)
+            return sendError(res, "Admin not found", 403);
 
-        if(admin.role !== "admin")
-            return sendError(res,"Not authorized",403);
+        if (admin.role !== "admin")
+            return sendError(res, "Not authorized", 403);
 
-        if(admin.status === "banned")
-            return sendError(res,"Admin banned",403);
+        if (admin.status === "banned")
+            return sendError(res, "Admin banned", 403);
 
         req.admin = admin;
 
         next();
 
     }
-    catch(error){
+    catch (error) {
 
-        logger.error("Admin auth failed",{
-            error:error.message
+        logger.error("Admin auth failed", {
+            error: error.message
         });
 
-        return sendError(res,"Invalid admin token",401);
+        return sendError(res, "Invalid admin token", 401);
     }
 };
 
-const requireAdmin = (req,res,next)=>{
+const requireAdmin = (req, res, next) => {
 
-    if(!req.user)
-        return sendError(res,"Authentication required",401);
+    if (!req.user)
+        return sendError(res, "Authentication required", 401);
 
-    if(req.user.role !== "admin")
-        return sendError(res,"Admin only route",403);
+    if (req.user.role !== "admin")
+        return sendError(res, "Admin only route", 403);
 
     next();
 };
 
-module.exports={
+const authenticateUserOrAdmin = async (req, res, next) => {
+    try {
+        const token = extractToken(req);
+        if (!token) return sendError(res, "Authentication token required", 401);
+
+        try {
+            const decodedAdmin = verifyAdminToken(token);
+            const admin = await findAdmin(decodedAdmin.id);
+            if (admin && admin.status !== "banned") {
+                req.admin = admin;
+                return next();
+            }
+        } catch (adminErr) {
+        }
+
+        try {
+            const decodedUser = verifyUserToken(token);
+            const user = await findUser(decodedUser.id);
+            if (user && user.status !== "banned") {
+                req.user = user;
+                return next();
+            }
+        } catch (userErr) {
+            console.log(userErr);
+        }
+
+        return sendError(res, "Invalid or expired token", 401);
+    } catch (error) {
+        logger.error("Combined auth error", { error: error.message });
+        return sendError(res, "Authentication failed", 401);
+    }
+};
+
+module.exports = {
     authenticateUser,
     authenticateAdmin,
-    requireAdmin
+    requireAdmin,
+    authenticateUserOrAdmin
 };

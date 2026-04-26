@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import LoginImg from '../../Images/screen.png';
 import Logo from '../../Images/logo.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../../api/authService';
+import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
@@ -22,8 +23,12 @@ const schema = Joi.object({
 
 const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useAuth();
     const [loading, setLoading] = useState(false);
     const [apiError, setApiError] = useState('');
+
+    const from = location.state?.from?.pathname || "/";
 
     const {
         register,
@@ -41,7 +46,12 @@ const Login = () => {
         try {
             const response = await authService.login(data);
             console.log('Login successful:', response);
-            navigate('/');
+            
+            // Update context
+            await login(response.data.user);
+            
+            // Navigate and replace
+            navigate(from, { replace: true });
         } catch (err) {
             console.error('Login error:', err);
             const message = err.error?.message || err.message || 'Failed to sign in. Please check your credentials.';

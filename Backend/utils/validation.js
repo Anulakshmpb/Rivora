@@ -122,16 +122,32 @@ const ValidationHelpers = {
   }
 };
 
-const createTodoValidation = Joi.object({
-  title: Joi.string().min(1).max(200).trim().required().messages({
-    ...customMessages,
-    'string.min': 'Todo title cannot be empty'
-  })
+const createProductValidation = Joi.object({
+  name: commonPatterns.name,
+  code: Joi.string().required(),
+  description: Joi.string().allow(''),
+  return: Joi.boolean().default(false),
+  category: Joi.array().items(Joi.string()).min(1).required(),
+  price: Joi.number().min(0).required(),
+  quantity: Joi.number().integer().min(0).required(),
+  stock_visibility: Joi.boolean().default(false),
+  size: Joi.array().items(Joi.string()).min(1).required(),
+  color: Joi.array().items(Joi.string()).min(1).required(),
+  image: Joi.array().items(Joi.string()).min(1).required()
 });
 
-const updateTodoValidation = Joi.object({
-  title: Joi.string().min(1).max(200).trim().optional().messages(customMessages),
-  completed: Joi.boolean().optional()
+const updateProductValidation = Joi.object({
+  name: Joi.string().min(2).max(100).optional(),
+  code: Joi.string().optional(),
+  description: Joi.string().allow('').optional(),
+  return: Joi.boolean().optional(),
+  category: Joi.array().items(Joi.string()).min(1).optional(),
+  price: Joi.number().min(0).optional(),
+  quantity: Joi.number().integer().min(0).optional(),
+  stock_visibility: Joi.boolean().optional(),
+  size: Joi.array().items(Joi.string()).min(1).optional(),
+  color: Joi.array().items(Joi.string()).min(1).optional(),
+  image: Joi.array().items(Joi.string()).min(1).optional()
 });
 
 module.exports = {
@@ -143,8 +159,8 @@ module.exports = {
   statusUpdateValidation,
   banUserValidation,
   paginationValidation,
-  createTodoValidation,
-  updateTodoValidation,
+  createProductValidation,
+  updateProductValidation,
   ValidationHelpers,
   commonPatterns,
   customMessages,

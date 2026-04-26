@@ -63,7 +63,7 @@ const Register = () => {
                 return;
             }
 
-            navigate('/verify-otp', { state: { userId } });
+            navigate('/verify-otp', { state: { userId }, replace: true });
         } catch (err) {
             console.error('Registration error:', err);
             
@@ -72,7 +72,7 @@ const Register = () => {
 
             if (statusCode === 409 && details?.userId && !details?.isVerified) {
                 console.log('User exists but unverified. Redirecting to OTP...');
-                return navigate('/verify-otp', { state: { userId: details.userId } });
+                return navigate('/verify-otp', { state: { userId: details.userId }, replace: true });
             }
 
             if (details && Array.isArray(details)) {

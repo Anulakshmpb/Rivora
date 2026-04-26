@@ -11,11 +11,6 @@ const authService = {
     login: async (credentials) => {
         try {
             const response = await axiosInstance.post('/api/auth/login', credentials);
-            // Save token and role to localStorage
-            if (response.data?.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('role', response.data.user?.role || 'user');
-            }
             return response;
         } catch (error) {
             throw error;
@@ -25,11 +20,6 @@ const authService = {
     adminLogin: async (credentials) => {
         try {
             const response = await axiosInstance.post('/api/admin/login', credentials);
-            // Save token and role to localStorage
-            if (response.data?.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('role', response.data.admin?.role || 'admin');
-            }
             return response;
         } catch (error) {
             throw error;
@@ -39,11 +29,6 @@ const authService = {
     verifyEmail: async (verificationData) => {
         try {
             const response = await axiosInstance.post('/api/auth/verify', verificationData);
-            // Save token and role if returned for auto-login
-            if (response.data?.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('role', response.data.user?.role || 'user');
-            }
             return response;
         } catch (error) {
             throw error;
@@ -84,8 +69,6 @@ const authService = {
     logout: async () => {
         try {
             const response = await axiosInstance.post('/api/auth/logout');
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
             return response;
         } catch (error) {
             throw error;
