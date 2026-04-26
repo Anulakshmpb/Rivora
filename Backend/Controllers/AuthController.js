@@ -89,6 +89,9 @@ class AuthController extends BaseController {
       {userId}
     );
 
+    // Set HTTP-only cookie
+    this.setAuthCookie(res, result.token);
+
     BaseController.sendSuccess(
       res,
       "Email verified successfully",
@@ -232,6 +235,16 @@ class AuthController extends BaseController {
 
 
 
+  static setAuthCookie = (res, token) => {
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    };
+    res.cookie('token', token, cookieOptions);
+  };
+
   static login = BaseController.asyncHandler(async (req, res) => {
 
     const validatedData =
@@ -244,6 +257,9 @@ class AuthController extends BaseController {
     await AuthService.login(
       validatedData
     );
+
+    // Set HTTP-only cookie
+    this.setAuthCookie(res, result.token);
 
     BaseController.logAction(
 
@@ -369,6 +385,8 @@ class AuthController extends BaseController {
 
   static logout = BaseController.asyncHandler(async (req, res) => {
 
+    res.clearCookie('token');
+
     BaseController.logAction(
 
       'USER_LOGOUT',
@@ -391,6 +409,9 @@ class AuthController extends BaseController {
     const { email, password } = req.body;
 
     const result = await AdminService.login({ email, password });
+
+    // Set HTTP-only cookie
+    this.setAuthCookie(res, result.token);
 
     BaseController.logAction('ADMIN_LOGIN', req, { adminId: result.admin._id });
 

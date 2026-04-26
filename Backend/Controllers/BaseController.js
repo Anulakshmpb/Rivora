@@ -184,7 +184,7 @@ class BaseController {
             endpoint:req?.originalUrl,
             ip:req?.ip,
             userAgent:req?.headers['user-agent'],
-            user:req?.user?.id || null,
+            user: req?.user?._id || req?.admin?._id || null,
             timestamp:new Date().toISOString(),
             ...details
         };

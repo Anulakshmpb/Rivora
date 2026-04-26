@@ -2,6 +2,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 
 const config = require('../Config/config');
 
@@ -31,9 +32,11 @@ const setupMiddleware = (app)=>{
 
     }));
 
+    app.use(cookieParser());
+
     app.use(express.json({
 
-        limit:"10mb"
+        limit:"50mb"
 
     }));
 

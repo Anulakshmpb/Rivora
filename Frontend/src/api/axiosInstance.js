@@ -8,13 +8,9 @@ const axiosInstance = axios.create({
     },
 });
 
-// Request Interceptor: Add Auth Token if available
+// Request Interceptor: Optional (can be used for other headers if needed)
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
     },
     (error) => {
@@ -27,12 +23,6 @@ axiosInstance.interceptors.response.use(
     (response) => response.data,
     (error) => {
         const errorData = error.response?.data || { message: 'Something went wrong' };
-        
-        // Handle unauthorized (401)
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-        }
         
         return Promise.reject(errorData);
     }

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import Login from './Pages/User/Login';
 import Register from './Pages/User/Register';
 import ForgotPW from './Pages/User/ForgotPW';
@@ -15,11 +16,13 @@ import ChangePW from './Pages/User/ChangePW';
 import ProfileManagement from './Pages/User/PersonalManagement';
 import AddInfo from './Pages/User/AddInfo';
 import Address from './Pages/User/Address';
+import ProductManagement from './Pages/Admin/Products/ProductManagement';
+import AddProduct from './Pages/Admin/Products/AddProduct';
 
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/products', '/add-product'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -27,8 +30,25 @@ function AppContent() {
       {!hideLayout && <NavBar />}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+
+        {/* Guest Only Routes */}
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute guestOnly={true}>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <ProtectedRoute guestOnly={true}>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/forgot-password" element={<ForgotPW />} />
         <Route path="/verify-otp" element={<Otp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -38,13 +58,29 @@ function AppContent() {
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <AdminDashboard />
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <ProductManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-product"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <AddProduct />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* User */}
+        {/* User Protected Routes */}
         <Route
           path="/profile"
           element={
@@ -95,7 +131,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

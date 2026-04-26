@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../../api/authService';
+import { useAuth } from '../../context/AuthContext';
 
 const Otp = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { login } = useAuth();
     const userId = location.state?.userId;
 
     const [otp, setOtp] = useState('');
@@ -55,11 +57,17 @@ const Otp = () => {
                 const response = await authService.verifyResetOTP({ userId, otp });
                 const resetToken = response.data?.resetToken || response.data?.data?.resetToken || response.resetToken;
                 setMessage('OTP verified successfully! Redirecting to reset password...');
-                setTimeout(() => navigate('/reset-password', { state: { userId, resetToken } }), 2000);
+                setTimeout(() => navigate('/reset-password', { state: { userId, resetToken }, replace: true }), 2000);
             } else {
-                await authService.verifyEmail({ userId, otp });
+                const response = await authService.verifyEmail({ userId, otp });
+                
+                // Update auth context for auto-login
+                if (response.data?.user) {
+                    await login(response.data.user);
+                }
+                
                 setMessage('Email verified successfully! Redirecting to home...');
-                setTimeout(() => navigate('/'), 2000);
+                setTimeout(() => navigate('/', { replace: true }), 2000);
             }
         } catch (err) {
             const message = err.error?.message || err.message || 'Invalid OTP. Please try again.';
