@@ -1,18 +1,21 @@
 const User = require('../Modals/User');
+const Admin = require('../Modals/Admin');
 const { verifyUserToken , verifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 
-const extractToken = (req)=>{
-
+const extractToken = (req) => {
     const authHeader = req.headers.authorization;
 
-    if(!authHeader)
-        return null;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        return authHeader.split(" ")[1];
+    }
 
-    if(!authHeader.startsWith("Bearer "))
-        return null;
+    // Try to extract from cookie if header is missing
+    if (req.cookies && req.cookies.token) {
+        return req.cookies.token;
+    }
 
-    return authHeader.split(" ")[1];
+    return null;
 };
 
 const decodeToken = (token)=>{
@@ -47,17 +50,21 @@ const checkUserStatus = async(req,res,next)=>{
         if(!decoded)
             return next();
 
-        const user = await User.findById(decoded.id);
+        let account = await User.findById(decoded.id);
 
-        if(!user)
-            return sendError(res,"User not found",404);
+        if (!account) {
+            account = await Admin.findById(decoded.id);
+        }
 
-        if(user.status === "banned")
+        if (!account)
+            return sendError(res, "Account not found", 404);
+
+        if (account.status === "banned")
             return sendError(
                 res,
                 "Account banned contact support",
                 403,
-                {banned:true}
+                { banned: true }
             );
 
         next();

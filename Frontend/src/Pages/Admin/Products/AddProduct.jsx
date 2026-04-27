@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,24 @@ export default function AddProduct() {
 	const [isReturnable, setIsReturnable] = useState(true);
 	const [selectedSizes, setSelectedSizes] = useState(['M', 'L']);
 	const [selectedColor, setSelectedColor] = useState('black');
-	const [selectedCategories, setSelectedCategories] = useState(['Ready-to-Wear']);
+	const [selectedCategories, setSelectedCategories] = useState([]);
+	const [categories, setCategories] = useState([]);
+
+	useEffect(() => {
+		const fetchCategories = async () => {
+			try {
+				const response = await axios.get('http://localhost:5000/api/categories', {
+					withCredentials: true
+				});
+				if (response.data.success) {
+					setCategories(response.data.data.categories);
+				}
+			} catch (error) {
+				console.error('Failed to fetch categories:', error);
+			}
+		};
+		fetchCategories();
+	}, []);
 	const [images, setImages] = useState([]);
 
 	const [availableColors, setAvailableColors] = useState([]);
@@ -30,7 +47,7 @@ export default function AddProduct() {
 	const handleImageUpload = (e) => {
 		const files = Array.from(e.target.files);
 		if (files.length === 0) return;
-		
+
 		setIsProcessingImages(true);
 		let processedCount = 0;
 
@@ -64,6 +81,14 @@ export default function AddProduct() {
 			color: [selectedColor],
 			image: images
 		};
+
+		console.log('Attempting to publish product with data:', productData);
+
+		if (productData.image.length === 0) {
+			alert('Please wait for images to finish processing or upload at least one image.');
+			setIsLoading(false);
+			return;
+		}
 
 		try {
 			const response = await axios.post('http://localhost:5000/api/products', productData, {
@@ -244,15 +269,17 @@ export default function AddProduct() {
 												if (e.target.value && !selectedCategories.includes(e.target.value)) {
 													setSelectedCategories([...selectedCategories, e.target.value]);
 												}
-												e.target.value = ""; // Reset
+												e.target.value = "";
 											}}
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+										// disabled={fetchingCategories}
 										>
-											<option value="">+ Add Category</option>
-											<option>Ready-to-Wear</option>
-											<option>Evening Collection</option>
-											<option>Bridal</option>
-											<option>Accessories</option>
+											{/* <option value="">{fetchingCategories ? 'Loading categories...' : '+ Add Category'}</option> */}
+											{categories.map(category => (
+												<option key={category._id} value={category.name}>
+													{category.name}
+												</option>
+											))}
 										</select>
 										<div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-indigo-500 transition-colors">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>

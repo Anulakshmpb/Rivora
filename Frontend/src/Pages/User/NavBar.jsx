@@ -64,7 +64,7 @@ export default function NavBar() {
     ];
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter ${isScrolled ? 'py-0' : 'py-4'
+        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter mb-[50px] ${isScrolled ? 'py-0' : 'py-4'
             }`}>
             <div className={`mx-auto transition-all duration-500 ${isScrolled
                 ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
