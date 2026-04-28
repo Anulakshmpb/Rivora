@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Cart from './Pages/User/Cart';
 import Login from './Pages/User/Login';
 import Register from './Pages/User/Register';
 import ForgotPW from './Pages/User/ForgotPW';
@@ -56,6 +58,7 @@ function AppContent() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/product-list" element={<ProductListing />} />
 <Route path="/product-list/:id" element = {<ProductDetails/>} />
+        <Route path="/cart" element={<Cart />} />
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -136,7 +139,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

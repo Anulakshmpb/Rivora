@@ -8,7 +8,7 @@ class CategoryController extends BaseController {
     });
 
     static create = BaseController.asyncHandler(async (req, res) => {
-        const { name, description } = req.body;
+        const { name, description, main, images } = req.body;
         
         if (!name) {
             return BaseController.sendError(res, 'Category name is required', 400);
@@ -22,6 +22,8 @@ class CategoryController extends BaseController {
         const category = await Category.create({
             name: name.trim(),
             description,
+            main: main || false,
+            images: images || [],
             createdBy: req.admin?._id || req.user?._id
         });
 
@@ -30,10 +32,10 @@ class CategoryController extends BaseController {
     });
 
     static update = BaseController.asyncHandler(async (req, res) => {
-        const { name, description } = req.body;
+        const { name, description, main, images } = req.body;
         const category = await Category.findByIdAndUpdate(
             req.params.id,
-            { name: name.trim(), description },
+            { name: name.trim(), description, main, images },
             { new: true, runValidators: true }
         );
 

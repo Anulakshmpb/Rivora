@@ -7,7 +7,13 @@ export default function ProductListing() {
 	const [categories, setCategories] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [sortBy, setSortBy] = useState('newest');
-
+	const [selectedCategories, setSelectedCategories] = useState([]);
+	const [priceRange, setPriceRange] = useState([0, 2500]);
+	const [selectedSizes, setSelectedSizes] = useState([]);
+	const [inStockOnly, setInStockOnly] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+	const navigate = useNavigate();
+	
 	useEffect(() => {
 		const fetchCategories = async () => {
 			try {
@@ -23,13 +29,7 @@ export default function ProductListing() {
 		};
 		fetchCategories();
 	}, []);
-	// Filter States
-	const [selectedCategories, setSelectedCategories] = useState([]);
-	const [priceRange, setPriceRange] = useState([0, 2500]);
-	const [selectedSizes, setSelectedSizes] = useState([]);
-	const [inStockOnly, setInStockOnly] = useState(false);
-	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-	const navigate = useNavigate();
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -50,7 +50,7 @@ export default function ProductListing() {
 
 	const filteredProducts = useMemo(() => {
 		let result = products.filter(p => {
-			const matchesCat = selectedCategories.length === 0 || selectedCategories.includes(p.category);
+			const matchesCat = selectedCategories.length === 0 || (Array.isArray(p.category) ? p.category.some(c => selectedCategories.includes(c)) : selectedCategories.includes(p.category));
 			const matchesPrice = p.price <= priceRange[1];
 			const matchesStock = !inStockOnly || p.quantity > 0;
 			return matchesCat && matchesPrice && matchesStock;
@@ -64,7 +64,7 @@ export default function ProductListing() {
 	return (
 		<div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
 
-			{/* Top Banner - Island Style */}
+			{/* Banner */}
 			<div className="max-w-[1600px] mx-auto px-8 pt-10 mt-[50px]">
 				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
 					<div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
@@ -107,11 +107,9 @@ export default function ProductListing() {
 
 			<div className="max-w-[1600px] mx-auto px-8 py-16 flex gap-16 items-start">
 
-				{/* Sticky Sidebar */}
+				{/* Sidebar */}
 				<aside className={`sticky top-10 transition-all duration-700 overflow-hidden ${isSidebarOpen ? 'w-80 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-10'}`}>
 					<div className="space-y-12">
-
-						{/* Filter Group: Categories */}
 						<div className="space-y-6">
 							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
 								Category
@@ -136,7 +134,7 @@ export default function ProductListing() {
 							</div>
 						</div>
 
-						{/* Filter Group: Price Island */}
+						{/* Price */}
 						<div className="space-y-6">
 							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
 								Price Cap
@@ -156,7 +154,7 @@ export default function ProductListing() {
 							</div>
 						</div>
 
-						{/* Filter Group: Size Matrix */}
+						{/*Size */}
 						<div className="space-y-6">
 							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
 								Size
@@ -181,7 +179,7 @@ export default function ProductListing() {
 							</div>
 						</div>
 
-						{/* In Stock Toggle */}
+						{/* Stock */}
 						<label className="flex items-center justify-between p-6 bg-slate-50 rounded-[2rem] border border-slate-100 cursor-pointer group">
 							<span className="text-[11px] font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-900 transition-colors">Available Only</span>
 							<div className="relative">

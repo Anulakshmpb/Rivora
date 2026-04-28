@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -9,6 +10,7 @@ export default function NavBar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
+    const { cartTotalItems } = useCart();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -58,7 +60,7 @@ export default function NavBar() {
 
     const navLinks = [
         { name: 'Home', href: '/' },
-        { name: 'Collections', href: '#', hasBadge: 'New' },
+        { name: 'Collections', href: '/product-list', hasBadge: 'New' },
         { name: 'About', href: '#' },
         { name: 'Contact', href: '#' },
     ];
@@ -133,11 +135,13 @@ export default function NavBar() {
                         </span>
                     </button>
 
-                    <button className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={() => navigate('/cart')} className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <CartIcon />
-                        <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
-                            2
-                        </span>
+                        {cartTotalItems > 0 && (
+                            <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
+                                {cartTotalItems}
+                            </span>
+                        )}
                     </button>
 
                     <button className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">

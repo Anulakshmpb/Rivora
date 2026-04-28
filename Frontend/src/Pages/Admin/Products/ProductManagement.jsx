@@ -302,9 +302,9 @@ export default function ProductManagement() {
         </div>
       </main>
 
-      <AddCategoryModal 
-        isOpen={isCategoryModalOpen} 
-        onClose={() => setIsCategoryModalOpen(false)} 
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
         existingCategories={categories}
         refreshCategories={fetchCategories}
       />
@@ -386,17 +386,21 @@ function PageButton({ children, active, disabled, onClick }) {
 
 function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategories }) {
   const [newCategory, setNewCategory] = useState('');
+  const [main, setMain] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
-  
+  const [images, setImages] = useState([]);
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
   if (!isOpen) return null;
 
   const handleAdd = async () => {
     if (!newCategory.trim()) return;
     try {
-      const response = await axiosInstance.post('/api/categories', { name: newCategory });
+      const response = await axiosInstance.post('/api/categories', { name: newCategory, main, images });
       if (response.success) {
         setNewCategory('');
+        setMain(false);
+        setImages([]);
         refreshCategories();
       }
     } catch (error) {
@@ -428,7 +432,25 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
       alert(error.message || 'Failed to delete category');
     }
   };
+  const handleImageUpload = (e) => {
+		const files = Array.from(e.target.files);
+		if (files.length === 0) return;
 
+		setIsProcessingImages(true);
+		let processedCount = 0;
+
+		files.forEach(file => {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImages(prev => [...prev, reader.result]);
+				processedCount++;
+				if (processedCount === files.length) {
+					setIsProcessingImages(false);
+				}
+			};
+			reader.readAsDataURL(file);
+		});
+	};
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
@@ -444,16 +466,16 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
 
         <div className="p-6 space-y-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">New Category Name</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">New Category Name</label>
             <div className="flex gap-2">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="e.g. Electronics, Fashion..." 
+                placeholder="e.g. Electronics, Fashion..."
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium"
               />
-              <button 
+              <button
                 onClick={handleAdd}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1"
               >
@@ -462,14 +484,37 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
               </button>
             </div>
           </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Main Category</label>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setMain(!main)}
+                className={`w-10 h-5 rounded-full transition-all duration-300 relative ${main ? 'bg-indigo-600' : 'bg-slate-200'}`}
+              >
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${main ? 'left-6' : 'left-1'}`} />
+              </button>
+              {main && (
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                    Upload Image
+                    <input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
+                  </label>
+                  {images && images.length > 0 && (
+                    <span className="text-xs text-slate-500 font-medium">{images.length} selected</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="space-y-3">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Existing Categories</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Existing Categories</h3>
             <div className="max-h-48 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-slate-200">
               {existingCategories && existingCategories.length > 0 ? existingCategories.map((cat) => (
                 <div key={cat._id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100 group hover:border-blue-200 hover:bg-blue-50/30 transition-all">
                   {editingId === cat._id ? (
-                    <input 
+                    <input
                       type="text"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
@@ -482,7 +527,7 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
                     <span className="text-sm font-bold text-slate-700">{cat.name}</span>
                   )}
                   <div className="flex gap-1">
-                    <button 
+                    <button
                       onClick={() => {
                         setEditingId(cat._id);
                         setEditValue(cat.name);
@@ -491,7 +536,7 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
                     >
                       <EditIcon className="w-4 h-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(cat._id)}
                       className="p-1.5 text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
                     >
@@ -501,7 +546,7 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
                 </div>
               )) : (
                 <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-2xl">
-                  <p className="text-xs font-bold text-slate-400 italic text-center">No categories yet</p>
+                  <p className="text-xs font-bold text-slate-500 italic text-center">No categories yet</p>
                 </div>
               )}
             </div>

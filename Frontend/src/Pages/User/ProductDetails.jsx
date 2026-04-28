@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
+import { useCart } from '../../context/CartContext';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -11,7 +12,10 @@ export default function ProductDetails() {
   const [isLoading, setIsLoading] = useState(!product);
   const [selectedSize, setSelectedSize] = useState('M');
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState('');
   const [activeImage, setActiveImage] = useState(0);
+
+  const { addToCart } = useCart();
 
   const productImages = Array.isArray(product.image) ? product.image : [product.image].filter(Boolean);
 
@@ -45,8 +49,13 @@ export default function ProductDetails() {
         try {
           const response = await axiosInstance.get(`/api/products/${id}`);
           if (response.success) {
-            setProduct(response.data.product);
+            const fetchedProduct = response.data.product;
+            setProduct(fetchedProduct);
             setActiveImage(0); // Reset image on product change
+            
+            // Set default selected color
+            const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
+            if (colors.length > 0) setSelectedColor(colors[0]);
           }
         } catch (error) {
           console.error('Error fetching product details:', error);
@@ -167,8 +176,8 @@ export default function ProductDetails() {
             <div className="space-y-10">
               {/* Description */}
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Philosophy</h3>
-                <p className="text-slate-500 text-lg font-light leading-relaxed max-w-lg">
+                {/* <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Philosophy</h3> */}
+                <p className="text-slate-500 text-lg font-semibold leading-relaxed max-w-lg">
                   {product.description}
                 </p>
               </div>
@@ -177,10 +186,11 @@ export default function ProductDetails() {
               <div className="space-y-4">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hue</h3>
                 <div className="flex gap-4">
-                  {(Array.isArray(product.colors) ? product.colors : (product.color ? [product.color] : [])).map((color, idx) => (
+                  {(Array.isArray(product.colors) ? product.colors : (product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : [])).map((color, idx) => (
                     <button
                       key={idx}
-                      className="w-8 h-8 rounded-full ring-2 ring-offset-4 ring-slate-900 transition-transform scale-110"
+                      onClick={() => setSelectedColor(color)}
+                      className={`w-8 h-8 rounded-full ring-2 ring-offset-4 transition-transform ${selectedColor === color ? 'ring-slate-900 scale-110' : 'ring-transparent hover:scale-105'}`}
                       style={{ backgroundColor: (typeof color === 'string' && color.startsWith('custom-')) ? `#${color.split('-')[1]}` : color }}
                     />
                   ))}
@@ -227,7 +237,13 @@ export default function ProductDetails() {
                     +
                   </button>
                 </div>
-                <button className="flex-1 bg-slate-900 text-white h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-slate-900/30 hover:bg-black hover:-translate-y-1 transition-all active:scale-95">
+                <button 
+                  onClick={() => {
+                    addToCart(product, quantity, selectedSize, selectedColor);
+                    navigate('/cart');
+                  }}
+                  className="flex-1 bg-slate-900 text-white h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-slate-900/30 hover:bg-black hover:-translate-y-1 transition-all active:scale-95"
+                >
                   Add to Bag
                 </button>
                 <button className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group">

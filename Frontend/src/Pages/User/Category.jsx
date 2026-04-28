@@ -1,65 +1,28 @@
-import React from 'react';
-import women from '../../Images/womencat.png';
-import men from '../../Images/mencat.png';
-import kids from '../../Images/kidcat.png';
-import summer from '../../Images/summercat.png';
-import trend from '../../Images/trendingcat.png';
-import old from '../../Images/oldcat.png';
-import traditional from '../../Images/traditionalcat.png';
-import western from '../../Images/westerncat.png';
+import React, { useEffect, useState } from 'react';
+import axiosInstance from '../../api/axiosInstance';
 export default function Category() {
+	const [categories, setCategories] = useState([])
+	useEffect(() => {
+		const fetchCategory = async () => {
+			try {
+				const res = await axiosInstance.get("/api/categories")
+				const data = res.data?.categories || res.categories || res.data?.data?.categories || []
+				const mainCategories = data
+					.filter(cat => cat.main === true)
+					.map(cat => ({
+						...cat,
+						title: cat.name,
+						img: cat.images?.[0] || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800',
+					}))
 
-	const categories = [
-		{
-			img: women,
-			title: "Women's Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: men,
-			title: "Men's Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: kids,
-			title: "Kids Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: summer,
-			title: "Summer Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: trend,
-			title: "Trending Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: old,
-			title: "Old Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: traditional,
-			title: "Traditional Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
-		},
-		{
-			img: western,
-			title: "Western Collection",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
+				console.log("Filtered Categories:", mainCategories)
+				setCategories(mainCategories)
+			} catch (error) {
+				console.error("Error fetching categories:", error)
+			}
 		}
-
-	]
+		fetchCategory()
+	}, [])
 	return (
 		<div className="max-w-screen-3xl mx-auto px-2 py-10">
 			<div className="flex flex-wrap items-center justify-center gap-2">

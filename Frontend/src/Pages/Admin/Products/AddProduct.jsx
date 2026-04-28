@@ -17,7 +17,7 @@ export default function AddProduct() {
 	const [stockVisibility, setStockVisibility] = useState(false);
 	const [isReturnable, setIsReturnable] = useState(true);
 	const [selectedSizes, setSelectedSizes] = useState(['M', 'L']);
-	const [selectedColor, setSelectedColor] = useState('black');
+	const [selectedColors, setSelectedColors] = useState(['black']);
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [categories, setCategories] = useState([]);
 
@@ -78,7 +78,7 @@ export default function AddProduct() {
 			stock_visibility: stockVisibility,
 			category: selectedCategories,
 			size: selectedSizes,
-			color: [selectedColor],
+			color: selectedColors,
 			image: images
 		};
 
@@ -348,7 +348,7 @@ export default function AddProduct() {
 										))}
 									</div>
 								</div>
-								Catalog Insight
+
 								<div className="space-y-4">
 									<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Color Palette</label>
 									<div className="flex flex-wrap gap-3 items-center">
@@ -356,8 +356,14 @@ export default function AddProduct() {
 											<button
 												key={color.id}
 												type="button"
-												onClick={() => setSelectedColor(color.id)}
-												className={`w-8 h-8 rounded-full transition-all relative ${selectedColor === color.id ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
+												onClick={() => {
+													if (selectedColors.includes(color.id)) {
+														setSelectedColors(selectedColors.filter(c => c !== color.id));
+													} else {
+														setSelectedColors([...selectedColors, color.id]);
+													}
+												}}
+												className={`w-8 h-8 rounded-full transition-all relative ${selectedColors.includes(color.id) ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
 												style={color.value ? { backgroundColor: color.value } : {}}
 											/>
 										))}
@@ -384,7 +390,7 @@ export default function AddProduct() {
 														const id = `custom-${newColor.replace('#', '')}`;
 														if (!availableColors.find(c => c.id === id)) {
 															setAvailableColors([...availableColors, { id, value: newColor }]);
-															setSelectedColor(id);
+															setSelectedColors([...selectedColors, id]);
 														}
 														setIsPickingColor(false);
 													}}
@@ -404,24 +410,6 @@ export default function AddProduct() {
 									</div>
 								</div>
 							</div>
-
-							{/* Catalog Insight Card */}
-							{/* <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100/50 space-y-4 relative overflow-hidden group">
-								<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-									<svg className="w-20 h-20 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-								</div>
-								<div className="flex items-center gap-3">
-									<div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />
-									<h4 className="text-[12px] font-black text-indigo-900 uppercase tracking-[0.2em]">Catalog Insight</h4>
-								</div>
-								<p className="text-[11px] font-medium text-indigo-900/70 leading-relaxed">
-									This product will be live in <span className="font-bold text-indigo-900">Evening Collection</span>. Global shipping estimated at <span className="font-bold text-indigo-900">3-5 business days</span>.
-								</p>
-								<div className="flex items-center gap-2 pt-2">
-									<div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-									<span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Ready for Staging</span>
-								</div>
-							</div> */}
 						</div>
 					</div>
 				</form>

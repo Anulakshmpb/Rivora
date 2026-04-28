@@ -8,9 +8,13 @@ const CategorySchema = new mongoose.Schema({
         trim: true,
         maxLength: [50, "Category name cannot exceed 50 characters"]
     },
-    description: {
-        type: String,
-        trim: true
+    main: {
+        type: Boolean,
+        default: false
+    },
+    images: {
+        type: [String],
+        default: []
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
