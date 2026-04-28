@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
 import { useNavigate } from 'react-router-dom';
@@ -17,8 +17,25 @@ export default function AddProduct() {
 	const [stockVisibility, setStockVisibility] = useState(false);
 	const [isReturnable, setIsReturnable] = useState(true);
 	const [selectedSizes, setSelectedSizes] = useState(['M', 'L']);
-	const [selectedColor, setSelectedColor] = useState('black');
-	const [selectedCategories, setSelectedCategories] = useState(['Ready-to-Wear']);
+	const [selectedColors, setSelectedColors] = useState(['black']);
+	const [selectedCategories, setSelectedCategories] = useState([]);
+	const [categories, setCategories] = useState([]);
+
+	useEffect(() => {
+		const fetchCategories = async () => {
+			try {
+				const response = await axios.get('http://localhost:5000/api/categories', {
+					withCredentials: true
+				});
+				if (response.data.success) {
+					setCategories(response.data.data.categories);
+				}
+			} catch (error) {
+				console.error('Failed to fetch categories:', error);
+			}
+		};
+		fetchCategories();
+	}, []);
 	const [images, setImages] = useState([]);
 
 	const [availableColors, setAvailableColors] = useState([]);
@@ -30,7 +47,7 @@ export default function AddProduct() {
 	const handleImageUpload = (e) => {
 		const files = Array.from(e.target.files);
 		if (files.length === 0) return;
-		
+
 		setIsProcessingImages(true);
 		let processedCount = 0;
 
@@ -61,9 +78,17 @@ export default function AddProduct() {
 			stock_visibility: stockVisibility,
 			category: selectedCategories,
 			size: selectedSizes,
-			color: [selectedColor],
+			color: selectedColors,
 			image: images
 		};
+
+		console.log('Attempting to publish product with data:', productData);
+
+		if (productData.image.length === 0) {
+			alert('Please wait for images to finish processing or upload at least one image.');
+			setIsLoading(false);
+			return;
+		}
 
 		try {
 			const response = await axios.post('http://localhost:5000/api/products', productData, {
@@ -244,15 +269,17 @@ export default function AddProduct() {
 												if (e.target.value && !selectedCategories.includes(e.target.value)) {
 													setSelectedCategories([...selectedCategories, e.target.value]);
 												}
-												e.target.value = ""; // Reset
+												e.target.value = "";
 											}}
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer"
+											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+										// disabled={fetchingCategories}
 										>
-											<option value="">+ Add Category</option>
-											<option>Ready-to-Wear</option>
-											<option>Evening Collection</option>
-											<option>Bridal</option>
-											<option>Accessories</option>
+											{/* <option value="">{fetchingCategories ? 'Loading categories...' : '+ Add Category'}</option> */}
+											{categories.map(category => (
+												<option key={category._id} value={category.name}>
+													{category.name}
+												</option>
+											))}
 										</select>
 										<div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-indigo-500 transition-colors">
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
@@ -321,7 +348,7 @@ export default function AddProduct() {
 										))}
 									</div>
 								</div>
-								Catalog Insight
+
 								<div className="space-y-4">
 									<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Color Palette</label>
 									<div className="flex flex-wrap gap-3 items-center">
@@ -329,8 +356,14 @@ export default function AddProduct() {
 											<button
 												key={color.id}
 												type="button"
-												onClick={() => setSelectedColor(color.id)}
-												className={`w-8 h-8 rounded-full transition-all relative ${selectedColor === color.id ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
+												onClick={() => {
+													if (selectedColors.includes(color.id)) {
+														setSelectedColors(selectedColors.filter(c => c !== color.id));
+													} else {
+														setSelectedColors([...selectedColors, color.id]);
+													}
+												}}
+												className={`w-8 h-8 rounded-full transition-all relative ${selectedColors.includes(color.id) ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
 												style={color.value ? { backgroundColor: color.value } : {}}
 											/>
 										))}
@@ -357,7 +390,7 @@ export default function AddProduct() {
 														const id = `custom-${newColor.replace('#', '')}`;
 														if (!availableColors.find(c => c.id === id)) {
 															setAvailableColors([...availableColors, { id, value: newColor }]);
-															setSelectedColor(id);
+															setSelectedColors([...selectedColors, id]);
 														}
 														setIsPickingColor(false);
 													}}
@@ -377,24 +410,6 @@ export default function AddProduct() {
 									</div>
 								</div>
 							</div>
-
-							{/* Catalog Insight Card */}
-							{/* <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100/50 space-y-4 relative overflow-hidden group">
-								<div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-									<svg className="w-20 h-20 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
-								</div>
-								<div className="flex items-center gap-3">
-									<div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />
-									<h4 className="text-[12px] font-black text-indigo-900 uppercase tracking-[0.2em]">Catalog Insight</h4>
-								</div>
-								<p className="text-[11px] font-medium text-indigo-900/70 leading-relaxed">
-									This product will be live in <span className="font-bold text-indigo-900">Evening Collection</span>. Global shipping estimated at <span className="font-bold text-indigo-900">3-5 business days</span>.
-								</p>
-								<div className="flex items-center gap-2 pt-2">
-									<div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-									<span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Ready for Staging</span>
-								</div>
-							</div> */}
 						</div>
 					</div>
 				</form>

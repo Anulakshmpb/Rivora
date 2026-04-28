@@ -285,22 +285,14 @@ class AuthController extends BaseController {
 
 
   static getProfile = BaseController.asyncHandler(async (req, res) => {
-
-    const user =
-    BaseController.sanitizeUser(
-      req.user
-    );
+    const profile = req.user || req.admin;
+    const user = BaseController.sanitizeUser(profile);
 
     BaseController.sendSuccess(
-
       res,
-
       'Profile retrieved successfully',
-
       { user }
-
     );
-
   });
 
 

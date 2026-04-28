@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
+import Cart from './Pages/User/Cart';
 import Login from './Pages/User/Login';
 import Register from './Pages/User/Register';
 import ForgotPW from './Pages/User/ForgotPW';
@@ -18,6 +20,8 @@ import AddInfo from './Pages/User/AddInfo';
 import Address from './Pages/User/Address';
 import ProductManagement from './Pages/Admin/Products/ProductManagement';
 import AddProduct from './Pages/Admin/Products/AddProduct';
+import ProductListing from './Pages/User/ProductListing';
+import ProductDetails from './Pages/User/ProductDetails';
 
 function AppContent() {
   const location = useLocation();
@@ -52,9 +56,12 @@ function AppContent() {
         <Route path="/forgot-password" element={<ForgotPW />} />
         <Route path="/verify-otp" element={<Otp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
+        <Route path="/product-list" element={<ProductListing />} />
+<Route path="/product-list/:id" element = {<ProductDetails/>} />
+        <Route path="/cart" element={<Cart />} />
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
+
         <Route
           path="/admin/dashboard"
           element={
@@ -132,7 +139,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppContent />
+        <CartProvider>
+          <AppContent />
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

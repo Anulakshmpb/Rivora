@@ -1,6 +1,6 @@
 const express = require('express');
 const AuthController = require('../Controllers/AuthController');
-const { authenticateUser } = require('../Middlewares/auth');
+const { authenticateUser, authenticateUserOrAdmin } = require('../Middlewares/auth');
 const checkUserStatus = require('../Middlewares/checkUserStatus');
 const { otpLimiter } = require('../Middlewares/otpLimiter');
 
@@ -14,7 +14,7 @@ router.post('/forgot-password', otpLimiter, AuthController.forgotPassword);
 router.post('/verify-reset-otp', otpLimiter, AuthController.verifyResetOTP);
 router.post('/reset-password', otpLimiter, AuthController.resetPassword);
 
-router.get('/get-profile', checkUserStatus, authenticateUser, AuthController.getProfile);
+router.get('/get-profile', checkUserStatus, authenticateUserOrAdmin, AuthController.getProfile);
 router.put('/profile', checkUserStatus, authenticateUser, AuthController.updateProfile);
 router.put('/change-password', checkUserStatus, authenticateUser, AuthController.changePassword);
 router.post('/logout', checkUserStatus, authenticateUser, AuthController.logout);

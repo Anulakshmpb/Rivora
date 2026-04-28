@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -9,6 +10,7 @@ export default function NavBar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
+    const { cartTotalItems } = useCart();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -58,13 +60,13 @@ export default function NavBar() {
 
     const navLinks = [
         { name: 'Home', href: '/' },
-        { name: 'Collections', href: '#', hasBadge: 'New' },
+        { name: 'Collections', href: '/product-list', hasBadge: 'New' },
         { name: 'About', href: '#' },
         { name: 'Contact', href: '#' },
     ];
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter ${isScrolled ? 'py-0' : 'py-4'
+        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter mb-[50px] ${isScrolled ? 'py-0' : 'py-4'
             }`}>
             <div className={`mx-auto transition-all duration-500 ${isScrolled
                 ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
@@ -133,11 +135,13 @@ export default function NavBar() {
                         </span>
                     </button>
 
-                    <button className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={() => navigate('/cart')} className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <CartIcon />
-                        <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
-                            2
-                        </span>
+                        {cartTotalItems > 0 && (
+                            <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
+                                {cartTotalItems}
+                            </span>
+                        )}
                     </button>
 
                     <button className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">

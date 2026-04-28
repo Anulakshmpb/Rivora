@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import authService from '../../api/authService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -8,6 +10,7 @@ const Profile = () => {
     const [isAddingAddress, setIsAddingAddress] = useState(false);
     const [newAddress, setNewAddress] = useState({ street: '', apartment: '', city: '', state: '', pinCode: '', country: '', isDefault: false });
     const navigate = useNavigate();
+    const { isAuthenticated, logout } = useAuth();
     const fetchProfile = async () => {
         try {
             const response = await authService.getProfile();
@@ -28,8 +31,14 @@ const Profile = () => {
         fetchProfile();
     }, []);
 
-    const handleSignOut = () => {
-        console.log("Signing out...");
+    const handleSignOut = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            navigate('/login');
+        }
     };
 
     const handleAddressChange = (e) => {

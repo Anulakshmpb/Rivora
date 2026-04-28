@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
-import axios from 'axios';
+import axiosInstance from '../../../api/axiosInstance';
 
 export default function ProductManagement() {
   const navigate = useNavigate();
@@ -11,23 +11,35 @@ export default function ProductManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [stockSort, setStockSort] = useState('');
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const itemsPerPage = 5;
+
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get('/api/categories');
+      if (response.success) {
+        setCategories(response.data.categories);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products', {
-          withCredentials: true
-        });
-        if (response.data.success) {
-          const productsArray = response.data.products || [];
+        const response = await axiosInstance.get('/api/products');
+        if (response.success) {
+          const productsArray = response.data?.products || [];
           const mappedProducts = productsArray.map(p => ({
             ...p,
-            id: p._id,
-            stock: p.quantity,
+            id: p._id || p.id,
+            stock: p.quantity || 0,
             status: p.quantity === 0 ? 'Out of Stock' : (p.quantity < 20 ? 'Low Stock' : 'In Stock'),
-            category: Array.isArray(p.category) ? p.category[0] : p.category,
-            image: Array.isArray(p.image) ? p.image[0] : p.image
+            category: Array.isArray(p.category) ? p.category[0] : (p.category || 'Uncategorized'),
+            image: Array.isArray(p.image) ? p.image[0] : (p.image || '')
           }));
           setProducts(mappedProducts);
         }
@@ -39,6 +51,7 @@ export default function ProductManagement() {
     };
 
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const processedProducts = useMemo(() => {
@@ -67,7 +80,7 @@ export default function ProductManagement() {
     }
 
     return result;
-  }, [searchTerm, stockSort]);
+  }, [products, searchTerm, stockSort]);
 
   // Pagination Logic
   const totalPages = Math.ceil(processedProducts.length / itemsPerPage);
@@ -138,10 +151,10 @@ export default function ProductManagement() {
             />
           </section>
 
-          {/* Action Bar */}
+          {/* Action */}
           <section className="flex flex-col lg:flex-row justify-between items-center mb-6">
             <div className="relative w-full lg:max-w-xl">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
               <input
                 type="text"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white shadow-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
@@ -164,10 +177,10 @@ export default function ProductManagement() {
                   <option value="low-stock">Low Stock</option>
                   <option value="in-stock">In Stock</option>
                 </select>
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-blue-500 transition-colors">
+                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-blue-500 transition-colors">
                   <FilterIcon className="w-4 h-4" />
                 </div>
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 group-hover:text-blue-500 transition-colors">
+                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-blue-500 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                 </div>
               </div>
@@ -178,10 +191,17 @@ export default function ProductManagement() {
                 <PlusIcon className="w-5 h-5" />
                 Add Product
               </button>
+              <button
+                onClick={() => setIsCategoryModalOpen(true)}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+              >
+                <PlusIcon className="w-5 h-5" />
+                Add Category
+              </button>
             </div>
           </section>
 
-          {/* Table Section */}
+          {/* Table */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -281,6 +301,13 @@ export default function ProductManagement() {
           </div>
         </div>
       </main>
+
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        existingCategories={categories}
+        refreshCategories={fetchCategories}
+      />
     </div>
   );
 }
@@ -297,7 +324,7 @@ function StatCard({ label, value, trend, icon, color, isWarning }) {
   return (
     <div className={`relative bg-white p-6 rounded-2xl border-l-4 shadow-sm hover:shadow-md transition-all hover:-translate-y-1 ${colors[color]}`}>
       <div className="flex justify-between items-center mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{label}</span>
         <div className={`p-2 rounded-lg ${colors[color].split(' ')[1]}`}>
           {React.cloneElement(icon, { className: "w-5 h-5" })}
         </div>
@@ -337,7 +364,7 @@ function ActionButton({ children, icon }) {
 function IconButton({ icon, className }) {
   return (
     <button className={`p-2 rounded-lg transition-all active:scale-90 ${className}`}>
-      {React.cloneElement(icon, { className: `w-5 h-5 ${className?.includes('text-') ? '' : 'text-slate-400'}` })}
+      {React.cloneElement(icon, { className: `w-5 h-5 ${className?.includes('text-') ? '' : 'text-slate-500'}` })}
     </button>
   );
 }
@@ -357,6 +384,184 @@ function PageButton({ children, active, disabled, onClick }) {
   );
 }
 
+function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategories }) {
+  const [newCategory, setNewCategory] = useState('');
+  const [main, setMain] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [images, setImages] = useState([]);
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
+  if (!isOpen) return null;
+
+  const handleAdd = async () => {
+    if (!newCategory.trim()) return;
+    try {
+      const response = await axiosInstance.post('/api/categories', { name: newCategory, main, images });
+      if (response.success) {
+        setNewCategory('');
+        setMain(false);
+        setImages([]);
+        refreshCategories();
+      }
+    } catch (error) {
+      alert(error.message || 'Failed to add category');
+    }
+  };
+
+  const handleEdit = async (id) => {
+    if (!editValue.trim()) return;
+    try {
+      const response = await axiosInstance.put(`/api/categories/${id}`, { name: editValue });
+      if (response.success) {
+        setEditingId(null);
+        refreshCategories();
+      }
+    } catch (error) {
+      alert(error.message || 'Failed to update category');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    try {
+      const response = await axiosInstance.delete(`/api/categories/${id}`);
+      if (response.success) {
+        refreshCategories();
+      }
+    } catch (error) {
+      alert(error.message || 'Failed to delete category');
+    }
+  };
+  const handleImageUpload = (e) => {
+		const files = Array.from(e.target.files);
+		if (files.length === 0) return;
+
+		setIsProcessingImages(true);
+		let processedCount = 0;
+
+		files.forEach(file => {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImages(prev => [...prev, reader.result]);
+				processedCount++;
+				if (processedCount === files.length) {
+					setIsProcessingImages(false);
+				}
+			};
+			reader.readAsDataURL(file);
+		});
+	};
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+          <div>
+            <h2 className="text-xl font-black text-slate-900">Manage Categories</h2>
+            <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Organize your catalog</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
+            <XIcon className="w-5 h-5 text-slate-500" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">New Category Name</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="e.g. Electronics, Fashion..."
+                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium"
+              />
+              <button
+                onClick={handleAdd}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1"
+              >
+                <PlusIcon className="w-4 h-4" />
+                Add
+              </button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Main Category</label>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setMain(!main)}
+                className={`w-10 h-5 rounded-full transition-all duration-300 relative ${main ? 'bg-indigo-600' : 'bg-slate-200'}`}
+              >
+                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${main ? 'left-6' : 'left-1'}`} />
+              </button>
+              {main && (
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">
+                    Upload Image
+                    <input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
+                  </label>
+                  {images && images.length > 0 && (
+                    <span className="text-xs text-slate-500 font-medium">{images.length} selected</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Existing Categories</h3>
+            <div className="max-h-48 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-slate-200">
+              {existingCategories && existingCategories.length > 0 ? existingCategories.map((cat) => (
+                <div key={cat._id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100 group hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+                  {editingId === cat._id ? (
+                    <input
+                      type="text"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onBlur={() => handleEdit(cat._id)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleEdit(cat._id)}
+                      autoFocus
+                      className="flex-1 px-2 py-1 rounded bg-white border border-blue-300 outline-none text-sm font-bold"
+                    />
+                  ) : (
+                    <span className="text-sm font-bold text-slate-700">{cat.name}</span>
+                  )}
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        setEditingId(cat._id);
+                        setEditValue(cat.name);
+                      }}
+                      className="p-1.5 text-yellow-500 hover:text-yellow-600 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-all"
+                    >
+                      <EditIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(cat._id)}
+                      className="p-1.5 text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )) : (
+                <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-2xl">
+                  <p className="text-xs font-bold text-slate-500 italic text-center">No categories yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-3">
+          <button onClick={onClose} className="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-200 transition-all">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 // Icons
 const CalendarIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const PackageIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
@@ -372,4 +577,5 @@ const MoreVerticalIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 
 const ChevronLeftIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>;
 const ChevronRightIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>;
 const EyeIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
+const XIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>;
 const TrashIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>;

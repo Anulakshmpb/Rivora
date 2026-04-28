@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await axiosInstance.get('/auth/get-profile');
+                const res = await axiosInstance.get('/api/auth/get-profile');
                 setUser(res.data.data.user);
             } catch (err) {
                 // If token is invalid or expired, clear it
