@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import axiosInstance from '../../../api/axiosInstance';
 
 export default function AddProduct() {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const { product, mode } = location.state || {};
+	const isViewMode = mode === 'view';
+	const isEditMode = mode === 'edit';
 	const [isLoading, setIsLoading] = useState(false);
-	const [isProcessingImages, setIsProcessingImages] = useState(false);
 
+	const [isProcessingImages, setIsProcessingImages] = useState(false);
 	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
 	const [description, setDescription] = useState('');
@@ -36,6 +41,45 @@ export default function AddProduct() {
 		};
 		fetchCategories();
 	}, []);
+
+	useEffect(() => {
+		if (product) {
+			setName(product.name || '');
+			setCode(product.code || '');
+			setDescription(product.description || '');
+			setPrice(product.price || '');
+			setQuantity(product.stock !== undefined ? product.stock : (product.quantity || ''));
+			setStockVisibility(product.stock_visibility || false);
+			setIsReturnable(product.return !== undefined ? product.return : true);
+			setSelectedSizes(product.size || []);
+			setSelectedColors(product.color || []);
+			
+			if (product.color && Array.isArray(product.color)) {
+				const colorsToAdd = product.color.map(colorId => {
+					let value = colorId;
+					if (colorId.startsWith('custom-')) {
+						value = '#' + colorId.replace('custom-', '');
+					}
+					return { id: colorId, value: value };
+				});
+				setAvailableColors(colorsToAdd);
+			}
+			
+			const productCategory = product.category;
+			if (Array.isArray(productCategory)) {
+				setSelectedCategories(productCategory);
+			} else if (productCategory && productCategory !== 'Uncategorized') {
+				setSelectedCategories([productCategory]);
+			}
+			
+			const productImages = product.image;
+			if (Array.isArray(productImages)) {
+				setImages(productImages.filter(img => img !== ''));
+			} else if (productImages) {
+				setImages([productImages]);
+			}
+		}
+	}, [product]);
 	const [images, setImages] = useState([]);
 
 	const [availableColors, setAvailableColors] = useState([]);
@@ -91,16 +135,19 @@ export default function AddProduct() {
 		}
 
 		try {
-			const response = await axios.post('http://localhost:5000/api/products', productData, {
-				withCredentials: true
-			});
+			let response;
+			if (isEditMode && product) {
+				response = await axiosInstance.put(`/api/products/${product.id || product._id}`, productData);
+			} else {
+				response = await axiosInstance.post('/api/products', productData);
+			}
 
-			if (response.data.success) {
-				alert('Product published successfully!');
+			if (response.success || (response.data && response.data.success)) {
+				alert(isEditMode ? 'Product updated successfully!' : 'Product published successfully!');
 				navigate('/products');
 			}
 		} catch (error) {
-			const errorMessage = error.response?.data?.error?.message || error.response?.data?.message || 'Failed to publish product';
+			const errorMessage = error.message || error.response?.data?.error?.message || error.response?.data?.message || 'Failed to publish product';
 			alert(errorMessage);
 		} finally {
 			setIsLoading(false);
@@ -112,14 +159,14 @@ export default function AddProduct() {
 			<SideBar />
 
 			<main className="flex-1 lg:ml-72 bg-slate-100 min-h-screen">
-				<Header title="Add Product" subtitle="Create a new luxury item for your catalog" />
+				<Header title={isViewMode ? 'View Product' : isEditMode ? 'Edit Product' : 'Add Product'} subtitle={isViewMode ? 'Product details' : isEditMode ? 'Update your product details' : 'Create a new luxury item for your catalog'} />
 
 				<form onSubmit={handleSubmit} className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
 					{/* Page Header Actions */}
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
 						<div>
-							<span className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">New Arrival</span>
-							<h1 className="text-4xl font-black text-slate-900 tracking-tight">Add Product</h1>
+							<span className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">{isViewMode ? 'View' : isEditMode ? 'Edit' : 'New Arrival'}</span>
+							<h1 className="text-4xl font-black text-slate-900 tracking-tight">{isViewMode ? 'View Product' : isEditMode ? 'Edit Product' : 'Add Product'}</h1>
 						</div>
 
 						<div className="flex items-center gap-4 w-full md:w-auto">
@@ -127,28 +174,31 @@ export default function AddProduct() {
 								<span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Return & Delivery</span>
 								<button
 									type="button"
+									disabled={isViewMode}
 									onClick={() => setIsReturnable(!isReturnable)}
-									className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isReturnable ? 'bg-indigo-600' : 'bg-slate-200'}`}
+									className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isReturnable ? 'bg-indigo-600' : 'bg-slate-200'} ${isViewMode ? 'opacity-50 cursor-not-allowed' : ''}`}
 								>
 									<div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${isReturnable ? 'left-6' : 'left-1'}`} />
 								</button>
 							</div>
-							<button
-								type="submit"
-								disabled={isLoading || isProcessingImages}
-								className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-							>
-								{isLoading || isProcessingImages ? (
-									<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-								) : (
-									<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
-								)}
-								{isLoading ? 'Publishing...' : (isProcessingImages ? 'Processing Images...' : 'Publish Product')}
-							</button>
+							{!isViewMode && (
+								<button
+									type="submit"
+									disabled={isLoading || isProcessingImages}
+									className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+								>
+									{isLoading || isProcessingImages ? (
+										<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+									) : (
+										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
+									)}
+									{isLoading ? (isEditMode ? 'Updating...' : 'Publishing...') : (isProcessingImages ? 'Processing Images...' : (isEditMode ? 'Update Product' : 'Publish Product'))}
+								</button>
+							)}
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+					<fieldset disabled={isViewMode} className="grid grid-cols-1 lg:grid-cols-3 gap-8 border-none p-0 m-0 min-w-0">
 						{/* Main Info Column */}
 						<div className="lg:col-span-2 space-y-8">
 							{/* Basic Details Card */}
@@ -200,11 +250,13 @@ export default function AddProduct() {
 							<div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
 								<div className="flex justify-between items-center">
 									<h3 className="text-lg font-black text-slate-900 tracking-tight">Product Media</h3>
-									<label className="cursor-pointer text-[12px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-2 hover:translate-x-1 transition-transform">
-										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
-										Add Image
-										<input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
-									</label>
+									{!isViewMode && (
+										<label className="cursor-pointer text-[12px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-2 hover:translate-x-1 transition-transform">
+											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
+											Add Image
+											<input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
+										</label>
+									)}
 								</div>
 
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -212,22 +264,26 @@ export default function AddProduct() {
 										<div key={idx} className="aspect-[3/4] rounded-2xl bg-slate-100 relative overflow-hidden group border border-slate-100 shadow-sm">
 											<img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Preview" />
 											{idx === 0 && <div className="absolute top-3 left-3 bg-indigo-600 text-[8px] font-black text-white px-2 py-1 rounded-md uppercase tracking-widest">Main</div>}
-											<button
-												type="button"
-												onClick={() => setImages(images.filter((_, i) => i !== idx))}
-												className="absolute top-3 right-3 w-6 h-6 bg-white/90 backdrop-blur shadow-sm rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-rose-500 hover:bg-rose-50"
-											>
-												<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-											</button>
+											{!isViewMode && (
+												<button
+													type="button"
+													onClick={() => setImages(images.filter((_, i) => i !== idx))}
+													className="absolute top-3 right-3 w-6 h-6 bg-white/90 backdrop-blur shadow-sm rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-rose-500 hover:bg-rose-50"
+												>
+													<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+												</button>
+											)}
 										</div>
 									))}
-									<label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3 hover:bg-slate-100 transition-colors cursor-pointer group">
-										<input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
-										<div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-											<svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-										</div>
-										<span className="text-[12px] font-black uppercase tracking-widest text-slate-500">Upload</span>
-									</label>
+									{!isViewMode && (
+										<label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3 hover:bg-slate-100 transition-colors cursor-pointer group">
+											<input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
+											<div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+												<svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+											</div>
+											<span className="text-[12px] font-black uppercase tracking-widest text-slate-500">Upload</span>
+										</label>
+									)}
 								</div>
 
 								<div className="p-4 bg-slate-100 rounded-2xl border border-slate-100 text-center">
@@ -251,40 +307,44 @@ export default function AddProduct() {
 										{selectedCategories.map(cat => (
 											<div key={cat} className="flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl text-[12px] font-black uppercase tracking-wider border border-indigo-100 animate-in zoom-in-95 duration-200 group/badge">
 												{cat}
-												<button
-													type="button"
-													onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== cat))}
-													className="text-indigo-300 hover:text-indigo-600 transition-colors"
-												>
-													<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
-												</button>
+												{!isViewMode && (
+													<button
+														type="button"
+														onClick={() => setSelectedCategories(selectedCategories.filter(c => c !== cat))}
+														className="text-indigo-300 hover:text-indigo-600 transition-colors"
+													>
+														<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+													</button>
+												)}
 											</div>
 										))}
 									</div>
 
 									{/* Dropdown */}
-									<div className="relative group">
-										<select
-											onChange={(e) => {
-												if (e.target.value && !selectedCategories.includes(e.target.value)) {
-													setSelectedCategories([...selectedCategories, e.target.value]);
-												}
-												e.target.value = "";
-											}}
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
-										// disabled={fetchingCategories}
-										>
-											{/* <option value="">{fetchingCategories ? 'Loading categories...' : '+ Add Category'}</option> */}
-											{categories.map(category => (
-												<option key={category._id} value={category.name}>
-													{category.name}
-												</option>
-											))}
-										</select>
-										<div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-indigo-500 transition-colors">
-											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+									{!isViewMode && (
+										<div className="relative group">
+											<select
+												onChange={(e) => {
+													if (e.target.value && !selectedCategories.includes(e.target.value)) {
+														setSelectedCategories([...selectedCategories, e.target.value]);
+													}
+													e.target.value = "";
+												}}
+												className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+											// disabled={fetchingCategories}
+											>
+												{/* <option value="">{fetchingCategories ? 'Loading categories...' : '+ Add Category'}</option> */}
+												{categories.map(category => (
+													<option key={category._id} value={category.name}>
+														{category.name}
+													</option>
+												))}
+											</select>
+											<div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-hover:text-indigo-500 transition-colors">
+												<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+											</div>
 										</div>
-									</div>
+									)}
 								</div>
 
 								<div className="grid grid-cols-2 gap-4">
@@ -353,22 +413,35 @@ export default function AddProduct() {
 									<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Color Palette</label>
 									<div className="flex flex-wrap gap-3 items-center">
 										{availableColors.map(color => (
-											<button
-												key={color.id}
-												type="button"
-												onClick={() => {
-													if (selectedColors.includes(color.id)) {
-														setSelectedColors(selectedColors.filter(c => c !== color.id));
-													} else {
-														setSelectedColors([...selectedColors, color.id]);
-													}
-												}}
-												className={`w-8 h-8 rounded-full transition-all relative ${selectedColors.includes(color.id) ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
-												style={color.value ? { backgroundColor: color.value } : {}}
-											/>
+											<div key={color.id} className="relative group">
+												<button
+													type="button"
+													onClick={() => {
+														if (selectedColors.includes(color.id)) {
+															setSelectedColors(selectedColors.filter(c => c !== color.id));
+														} else {
+															setSelectedColors([...selectedColors, color.id]);
+														}
+													}}
+													className={`w-8 h-8 rounded-full transition-all relative ${selectedColors.includes(color.id) ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}
+													style={color.value ? { backgroundColor: color.value } : {}}
+												/>
+												{!isViewMode && (
+													<button
+														type="button"
+														onClick={() => {
+															setAvailableColors(availableColors.filter(c => c.id !== color.id));
+															setSelectedColors(selectedColors.filter(c => c !== color.id));
+														}}
+														className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-white border border-slate-200 text-slate-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-500 hover:text-white hover:border-rose-500 shadow-sm z-10"
+													>
+														<svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+													</button>
+												)}
+											</div>
 										))}
 
-										{!isPickingColor ? (
+										{!isViewMode && (!isPickingColor ? (
 											<button
 												type="button"
 												onClick={() => setIsPickingColor(true)}
@@ -406,12 +479,12 @@ export default function AddProduct() {
 													Cancel
 												</button>
 											</div>
-										)}
+										))}
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					</fieldset>
 				</form>
 			</main>
 		</div>
