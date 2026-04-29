@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -15,7 +16,8 @@ export default function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState('');
   const [activeImage, setActiveImage] = useState(0);
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
+  const { addToWishlist } = useWishlist();
 
   const productImages = Array.isArray(product.image) ? product.image : [product.image].filter(Boolean);
 
@@ -41,27 +43,33 @@ export default function ProductDetails() {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
     setActiveImage(0); // Ensure image resets on any navigation to new product
     const fetchProductDetails = async () => {
-      if (!product || product._id !== id) {
-        setIsLoading(true);
-        try {
-          const response = await axiosInstance.get(`/api/products/${id}`);
-          if (response.success) {
-            const fetchedProduct = response.data.product;
-            setProduct(fetchedProduct);
-            setActiveImage(0); // Reset image on product change
-            
-            // Set default selected color
-            const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
-            if (colors.length > 0) setSelectedColor(colors[0]);
-          }
-        } catch (error) {
-          console.error('Error fetching product details:', error);
-        } finally {
-          setIsLoading(false);
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get(`/api/products/${id}`);
+        if (response.data && response.data.success) {
+          const fetchedProduct = response.data.product;
+          setProduct(fetchedProduct);
+          setActiveImage(0); // Reset image on product change
+
+          // Set default selected color
+          const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
+          if (colors.length > 0) setSelectedColor(colors[0]);
+        } else if (response.success) {
+          const fetchedProduct = response.data.product;
+          setProduct(fetchedProduct);
+          setActiveImage(0); // Reset image on product change
+
+          // Set default selected color
+          const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
+          if (colors.length > 0) setSelectedColor(colors[0]);
         }
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -128,7 +136,7 @@ export default function ProductDetails() {
 
               {/* Floating Action Buttons */}
               <div className="absolute top-8 right-8 flex flex-col gap-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
+                <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
                   <HeartIcon className="w-5 h-5 text-slate-400 group-hover/btn:text-rose-500 transition-colors" />
                 </button>
                 <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
@@ -176,17 +184,16 @@ export default function ProductDetails() {
             <div className="space-y-10">
               {/* Description */}
               <div className="space-y-4">
-                {/* <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Philosophy</h3> */}
                 <p className="text-slate-500 text-lg font-semibold leading-relaxed max-w-lg">
                   {product.description}
                 </p>
               </div>
 
-              {/* Color Selector */}
+              {/* Color */}
               <div className="space-y-4">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hue</h3>
                 <div className="flex gap-4">
-                  {(Array.isArray(product.colors) ? product.colors : (product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : [])).map((color, idx) => (
+                  {(Array.isArray(product.color) ? product.color : (product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : [])).map((color, idx) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedColor(color)}
@@ -194,11 +201,10 @@ export default function ProductDetails() {
                       style={{ backgroundColor: (typeof color === 'string' && color.startsWith('custom-')) ? `#${color.split('-')[1]}` : color }}
                     />
                   ))}
-                  <div className="w-8 h-8 rounded-full bg-slate-200 cursor-not-allowed opacity-40 border-2 border-dashed border-slate-300" />
                 </div>
               </div>
 
-              {/* Size Selector */}
+              {/* Size */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center max-w-md">
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Metric</h3>
@@ -237,8 +243,18 @@ export default function ProductDetails() {
                     +
                   </button>
                 </div>
-                <button 
+                <button
                   onClick={() => {
+                    const exists = cartItems.some(item =>
+                      item.product._id === product._id
+                    );
+                    
+                    if (exists) {
+                      alert('This item is already in your bag.');
+                      navigate('/cart');
+                      return;
+                    }
+                    
                     addToCart(product, quantity, selectedSize, selectedColor);
                     navigate('/cart');
                   }}
@@ -246,7 +262,7 @@ export default function ProductDetails() {
                 >
                   Add to Bag
                 </button>
-                <button className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group">
+                <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group">
                   <HeartIcon className="w-5 h-5 text-slate-300 group-hover:text-red-500 group-hover:scale-110 transition-all" />
                 </button>
               </div>
@@ -301,9 +317,10 @@ function Feature({ icon, title, desc }) {
 
 function ProductCard({ product }) {
   const navigate = useNavigate();
+  const { addToWishlist } = useWishlist();
 
   return (
-    <div 
+    <div
       className="group cursor-pointer"
       onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
     >
@@ -314,9 +331,9 @@ function ProductCard({ product }) {
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors duration-500" />
-        
+
         {/* Quick Wishlist */}
-        <button className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/40 shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-white hover:scale-110">
+        <button onClick={(e) => { e.stopPropagation(); addToWishlist(product); navigate('/wishlist'); }} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/40 shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-white hover:scale-110">
           <HeartIcon className="w-4 h-4 text-slate-400 hover:text-rose-500 transition-colors" />
         </button>
       </div>

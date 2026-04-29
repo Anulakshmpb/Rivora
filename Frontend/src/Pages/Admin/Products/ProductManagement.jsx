@@ -26,30 +26,29 @@ export default function ProductManagement() {
       console.error('Error fetching categories:', error);
     }
   };
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get('/api/products');
+      if (response.success) {
+        const productsArray = response.data?.products || [];
+        const mappedProducts = productsArray.map(p => ({
+          ...p,
+          id: p._id || p.id,
+          stock: p.quantity || 0,
+          status: p.quantity === 0 ? 'Out of Stock' : (p.quantity < 20 ? 'Low Stock' : 'In Stock'),
+          displayCategory: Array.isArray(p.category) ? p.category[0] : (p.category || 'Uncategorized'),
+          displayImage: Array.isArray(p.image) ? p.image[0] : (p.image || '')
+        }));
+        setProducts(mappedProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axiosInstance.get('/api/products');
-        if (response.success) {
-          const productsArray = response.data?.products || [];
-          const mappedProducts = productsArray.map(p => ({
-            ...p,
-            id: p._id || p.id,
-            stock: p.quantity || 0,
-            status: p.quantity === 0 ? 'Out of Stock' : (p.quantity < 20 ? 'Low Stock' : 'In Stock'),
-            category: Array.isArray(p.category) ? p.category[0] : (p.category || 'Uncategorized'),
-            image: Array.isArray(p.image) ? p.image[0] : (p.image || '')
-          }));
-          setProducts(mappedProducts);
-        }
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProducts();
     fetchCategories();
   }, []);
@@ -82,7 +81,6 @@ export default function ProductManagement() {
     return result;
   }, [products, searchTerm, stockSort]);
 
-  // Pagination Logic
   const totalPages = Math.ceil(processedProducts.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -99,7 +97,19 @@ export default function ProductManagement() {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date().toLocaleDateString(undefined, options);
   };
-
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    try {
+      const response = await axiosInstance.delete(`/api/products/${id}`);
+      if (response.success || (response.data && response.data.success)) {
+        fetchProducts();
+      } else {
+        alert('Failed to delete product');
+      }
+    } catch (error) {
+      alert(error.message || 'Failed to delete product');
+    }
+  };
   return (
     <div className="min-h-screen bg-slate-50 flex font-inter">
       <SideBar />
@@ -230,9 +240,9 @@ export default function ProductManagement() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden ring-1 ring-slate-200 shadow-sm">
-                            {product.image ? (
+                            {product.displayImage ? (
                               <img
-                                src={product.image}
+                                src={product.displayImage}
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
@@ -250,7 +260,7 @@ export default function ProductManagement() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-slate-600">{product.category}</td>
+                      <td className="px-6 py-4 text-sm font-medium text-slate-600">{product.displayCategory}</td>
                       <td className="px-6 py-4 text-xs font-mono text-slate-500 uppercase tracking-tighter">{product.code}</td>
                       <td className="px-6 py-4 font-extrabold text-slate-900">${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                       <td className="px-6 py-4">
@@ -258,9 +268,9 @@ export default function ProductManagement() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          <IconButton icon={<EyeIcon />} className="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100" title='View' />
-                          <IconButton icon={<EditIcon />} className=" text-yellow-600 hover:text-yellow-800 bg-yellow-50 hover:bg-yellow-100" title='Edit' />
-                          <IconButton icon={<TrashIcon />} className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100" title='Delete' />
+                          <IconButton icon={<EyeIcon />} className="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100" title='View' onClick={() => navigate('/add-product', { state: { product, mode: 'view' } })} />
+                          <IconButton icon={<EditIcon />} className=" text-yellow-600 hover:text-yellow-800 bg-yellow-50 hover:bg-yellow-100" title='Edit' onClick={() => navigate('/add-product', { state: { product, mode: 'edit' } })} />
+                          <IconButton icon={<TrashIcon />} className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100" onClick={() => handleDelete(product.id)} title='Delete' />
                         </div>
                       </td>
                     </tr>
@@ -361,9 +371,9 @@ function ActionButton({ children, icon }) {
   );
 }
 
-function IconButton({ icon, className }) {
+function IconButton({ icon, className, ...props }) {
   return (
-    <button className={`p-2 rounded-lg transition-all active:scale-90 ${className}`}>
+    <button className={`p-2 rounded-lg transition-all active:scale-90 ${className}`} {...props}>
       {React.cloneElement(icon, { className: `w-5 h-5 ${className?.includes('text-') ? '' : 'text-slate-500'}` })}
     </button>
   );
@@ -433,24 +443,24 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
     }
   };
   const handleImageUpload = (e) => {
-		const files = Array.from(e.target.files);
-		if (files.length === 0) return;
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-		setIsProcessingImages(true);
-		let processedCount = 0;
+    setIsProcessingImages(true);
+    let processedCount = 0;
 
-		files.forEach(file => {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setImages(prev => [...prev, reader.result]);
-				processedCount++;
-				if (processedCount === files.length) {
-					setIsProcessingImages(false);
-				}
-			};
-			reader.readAsDataURL(file);
-		});
-	};
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImages(prev => [...prev, reader.result]);
+        processedCount++;
+        if (processedCount === files.length) {
+          setIsProcessingImages(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-300">

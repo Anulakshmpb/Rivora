@@ -9,7 +9,7 @@ class CategoryController extends BaseController {
 
     static create = BaseController.asyncHandler(async (req, res) => {
         const { name, description, main, images } = req.body;
-        
+
         if (!name) {
             return BaseController.sendError(res, 'Category name is required', 400);
         }

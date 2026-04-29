@@ -19,18 +19,15 @@ export function CartProvider({ children }) {
 
     const addToCart = (product, quantity, size, color) => {
         setCartItems(prevItems => {
-            // Check if exact variant already exists in cart
             const existingItemIndex = prevItems.findIndex(
                 item => item.product._id === product._id && item.size === size && item.color === color
             );
 
             if (existingItemIndex >= 0) {
-                // If it exists, increment the quantity
                 const updatedItems = [...prevItems];
                 updatedItems[existingItemIndex].quantity += quantity;
                 return updatedItems;
             } else {
-                // Otherwise, add new item
                 return [...prevItems, { 
                     id: `${product._id}-${size}-${color || 'default'}`, 
                     product, 

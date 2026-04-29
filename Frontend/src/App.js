@@ -22,6 +22,8 @@ import ProductManagement from './Pages/Admin/Products/ProductManagement';
 import AddProduct from './Pages/Admin/Products/AddProduct';
 import ProductListing from './Pages/User/ProductListing';
 import ProductDetails from './Pages/User/ProductDetails';
+import WishList from './Pages/User/WishList';
+import { WishlistProvider } from './context/WishlistContext';
 
 function AppContent() {
   const location = useLocation();
@@ -57,8 +59,9 @@ function AppContent() {
         <Route path="/verify-otp" element={<Otp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/product-list" element={<ProductListing />} />
-<Route path="/product-list/:id" element = {<ProductDetails/>} />
+        <Route path="/product-list/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/wishlist" element={<WishList />} />
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -140,7 +143,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <AppContent />
+          <WishlistProvider>
+            <AppContent />
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
