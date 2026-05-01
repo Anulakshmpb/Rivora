@@ -2,16 +2,20 @@ const express = require('express');
 const ProductController = require('../Controllers/ProductController');
 const { authenticateUserOrAdmin } = require('../Middlewares/auth');
 const checkUserStatus = require('../Middlewares/checkUserStatus');
+const upload = require('../Middlewares/multer');
 
 const router = express.Router();
 
-router.use(checkUserStatus, authenticateUserOrAdmin);
-
+// Public
 router.get('/', ProductController.getAll);
 router.get('/:id', ProductController.getOne);
-router.post('/', ProductController.create);
-router.put('/:id', ProductController.update);
+
+// Protected 
+router.use(checkUserStatus, authenticateUserOrAdmin);
+
+router.post('/', upload.array('image'), ProductController.create);
+router.put('/:id', upload.array('image'), ProductController.update);
 router.delete('/:id', ProductController.delete);
 
-module.exports = router;
 
+module.exports = router;

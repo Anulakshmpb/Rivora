@@ -1,6 +1,5 @@
 import React from 'react';
 import best from '../../Images/best.png';
-import women from '../../Images/women.png';
 import Banner from './Banner';
 import Category from './Category';
 function Home() {

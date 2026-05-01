@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import axiosInstance from '../../api/axiosInstance';
 
 export default function ProductListing() {
@@ -13,23 +14,10 @@ export default function ProductListing() {
 	const [inStockOnly, setInStockOnly] = useState(false);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 	const navigate = useNavigate();
-	
-	useEffect(() => {
-		const fetchCategories = async () => {
-			try {
-				const response = await axiosInstance.get('http://localhost:5000/api/categories', {
-					withCredentials: true
-				});
-				if (response.data.success) {
-					setCategories(response.data.data.categories);
-				}
-			} catch (error) {
-				console.error('Failed to fetch categories:', error);
-			}
-		};
-		fetchCategories();
-	}, []);
+	const [searchParams] = useSearchParams();
+	const searchQuery = searchParams.get('search') || '';
 
+	
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -37,8 +25,13 @@ export default function ProductListing() {
 					axiosInstance.get('/api/products'),
 					axiosInstance.get('/api/categories')
 				]);
-				if (prodRes.success) setProducts(prodRes.data.products);
-				if (catRes.success) setCategories(catRes.data.categories);
+				
+				if (prodRes.success) {
+					setProducts(prodRes.data.products);
+				}
+				if (catRes.success) {
+					setCategories(catRes.data.categories);
+				}
 			} catch (error) {
 				console.error('Data fetch error:', error);
 			} finally {
@@ -53,8 +46,10 @@ export default function ProductListing() {
 			const matchesCat = selectedCategories.length === 0 || (Array.isArray(p.category) ? p.category.some(c => selectedCategories.includes(c)) : selectedCategories.includes(p.category));
 			const matchesPrice = p.price <= priceRange[1];
 			const matchesStock = !inStockOnly || p.quantity > 0;
-			return matchesCat && matchesPrice && matchesStock;
+			const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
+			return matchesCat && matchesPrice && matchesStock && matchesSearch;
 		});
+
 
 		if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
 		if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
@@ -244,7 +239,11 @@ function ProductCard({ product, onClick }) {
 		>
 			<div className="relative aspect-[4/5] overflow-hidden bg-[#F3F3F1] rounded-[2rem] transition-all duration-700 group-hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.12)]">
 				<img
-					src={Array.isArray(product.image) ? product.image[0] : product.image || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800'}
+					src={(() => {
+						const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
+						if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
+						return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+					})()}
 					alt={product.name}
 					className={`w-full h-full object-cover transition-all duration-[1.5s] ease-out ${isHovered ? 'scale-110 blur-[2px]' : 'scale-100'}`}
 				/>
@@ -254,7 +253,7 @@ function ProductCard({ product, onClick }) {
 					<HeartIcon className="w-4 h-4 text-slate-900" />
 				</button>
 
-				{/* Quick Add Overlay */}
+				{/* Quick Add  */}
 				<div className={`absolute inset-x-6 bottom-6 transition-all duration-700 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
 					<button className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-black active:scale-95 transition-all">
 						Quick Add — ${product.price}

@@ -24,6 +24,8 @@ import ProductListing from './Pages/User/ProductListing';
 import ProductDetails from './Pages/User/ProductDetails';
 import WishList from './Pages/User/WishList';
 import { WishlistProvider } from './context/WishlistContext';
+import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
+
 
 function AppContent() {
   const location = useLocation();
@@ -131,7 +133,13 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+
+        {/* Error Pages */}
+        <Route path="/400" element={<BadRequest400 />} />
+        <Route path="/500" element={<InternalServer500 />} />
+        <Route path="*" element={<NotFound404 />} />
       </Routes>
+
 
       {!hideLayout && <Footer />}
     </div>

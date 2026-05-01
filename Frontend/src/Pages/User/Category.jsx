@@ -6,13 +6,17 @@ export default function Category() {
 		const fetchCategory = async () => {
 			try {
 				const res = await axiosInstance.get("/api/categories")
-				const data = res.data?.categories || res.categories || res.data?.data?.categories || []
+				const data = res.data?.categories || res.categories || []
 				const mainCategories = data
 					.filter(cat => cat.main === true)
 					.map(cat => ({
 						...cat,
 						title: cat.name,
-						img: cat.images?.[0] || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800',
+						img: (() => {
+							const imgPath = cat.images?.[0] || '';
+							if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
+							return imgPath.startsWith('http') || imgPath.startsWith('/uploads') || imgPath.startsWith('data:') ? (imgPath.startsWith('http') || imgPath.startsWith('data:') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+						})(),
 					}))
 
 				console.log("Filtered Categories:", mainCategories)

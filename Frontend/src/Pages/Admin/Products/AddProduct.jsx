@@ -4,7 +4,50 @@ import Header from '../Layouts/Header';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import axiosInstance from '../../../api/axiosInstance';
+import Joi from 'joi';
 
+const schema = Joi.object({
+	name: Joi.string().min(3).max(50).required().messages({
+		'string.empty': 'Product name is required',
+		'string.min': 'At least 3 characters',
+		'any.required': 'Product name is required'
+	}),
+	code: Joi.string().required().messages({
+		'string.empty': 'Product Code is required',
+		'any.required': 'Product Code is required'
+	}),
+	description: Joi.string().required().messages({
+		'string.empty': 'Description is required',
+		'any.required': 'Description is required'
+	}),
+	return: Joi.boolean().required(),
+	category: Joi.array().min(1).required().messages({
+		'array.min': 'Please select at least one category',
+		'any.required': 'Category is required'
+	}),
+	price: Joi.number().positive().required().messages({
+		'number.base': 'Price must be a number',
+		'number.positive': 'Price must be positive',
+		'any.required': 'Price is required'
+	}),
+	quantity: Joi.number().integer().min(0).required().messages({
+		'number.base': 'Quantity must be a number',
+		'number.min': 'Quantity cannot be negative',
+		'any.required': 'Quantity is required'
+	}),
+	stock_visibility: Joi.boolean().required(),
+	size: Joi.array().min(1).required().messages({
+		'array.min': 'Please select at least one size',
+		'any.required': 'Size is required'
+	}),
+	color: Joi.array().min(1).required().messages({
+		'array.min': 'Please select at least one color',
+		'any.required': 'Color is required'
+	}),
+	image: Joi.boolean().invalid(false).required().messages({
+		'any.invalid': 'Please upload at least one image'
+	})
+});
 export default function AddProduct() {
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -12,6 +55,7 @@ export default function AddProduct() {
 	const isViewMode = mode === 'view';
 	const isEditMode = mode === 'edit';
 	const [isLoading, setIsLoading] = useState(false);
+	const [errors, setErrors] = useState({});
 
 	const [isProcessingImages, setIsProcessingImages] = useState(false);
 	const [name, setName] = useState('');
@@ -53,7 +97,7 @@ export default function AddProduct() {
 			setIsReturnable(product.return !== undefined ? product.return : true);
 			setSelectedSizes(product.size || []);
 			setSelectedColors(product.color || []);
-			
+
 			if (product.color && Array.isArray(product.color)) {
 				const colorsToAdd = product.color.map(colorId => {
 					let value = colorId;
@@ -64,55 +108,48 @@ export default function AddProduct() {
 				});
 				setAvailableColors(colorsToAdd);
 			}
-			
+
 			const productCategory = product.category;
 			if (Array.isArray(productCategory)) {
 				setSelectedCategories(productCategory);
 			} else if (productCategory && productCategory !== 'Uncategorized') {
 				setSelectedCategories([productCategory]);
 			}
-			
+
 			const productImages = product.image;
 			if (Array.isArray(productImages)) {
-				setImages(productImages.filter(img => img !== ''));
+				setImages(productImages.filter(img => img !== '').map((img, idx) => ({ url: img, file: null, id: `existing-${idx}` })));
 			} else if (productImages) {
-				setImages([productImages]);
+				setImages([{ url: productImages, file: null, id: 'existing-0' }]);
 			}
+
 		}
 	}, [product]);
 	const [images, setImages] = useState([]);
-
 	const [availableColors, setAvailableColors] = useState([]);
 	const [isPickingColor, setIsPickingColor] = useState(false);
 	const [newColor, setNewColor] = useState('#6366f1');
 
 	const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
+
 	const handleImageUpload = (e) => {
 		const files = Array.from(e.target.files);
 		if (files.length === 0) return;
 
-		setIsProcessingImages(true);
-		let processedCount = 0;
-
-		files.forEach(file => {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setImages(prev => [...prev, reader.result]);
-				processedCount++;
-				if (processedCount === files.length) {
-					setIsProcessingImages(false);
-				}
-			};
-			reader.readAsDataURL(file);
-		});
+		const newImages = files.map(file => ({
+			file,
+			url: URL.createObjectURL(file),
+			id: Math.random().toString(36).substr(2, 9)
+		}));
+		setImages(prev => [...prev, ...newImages]);
 	};
+
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setIsLoading(true);
 
-		const productData = {
+		const validationData = {
 			name,
 			code,
 			description,
@@ -123,23 +160,64 @@ export default function AddProduct() {
 			category: selectedCategories,
 			size: selectedSizes,
 			color: selectedColors,
-			image: images
+			image: images.length > 0
 		};
 
-		console.log('Attempting to publish product with data:', productData);
-
-		if (productData.image.length === 0) {
-			alert('Please wait for images to finish processing or upload at least one image.');
-			setIsLoading(false);
+		const { error } = schema.validate(validationData, { abortEarly: false });
+		if (error) {
+			const newErrors = {};
+			error.details.forEach(detail => {
+				newErrors[detail.path[0]] = detail.message;
+			});
+			setErrors(newErrors);
+			// Scroll to first error
+			const firstError = Object.keys(newErrors)[0];
+			const element = document.getElementsByName(firstError)[0] || document.getElementById(firstError);
+			if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 			return;
 		}
+
+		setErrors({});
+		setIsLoading(true);
+
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('code', code);
+		formData.append('description', description);
+		formData.append('price', price);
+		formData.append('quantity', quantity);
+		formData.append('return', isReturnable);
+		formData.append('stock_visibility', stockVisibility);
+
+		// Send arrays as JSON strings
+		formData.append('category', JSON.stringify(selectedCategories));
+		formData.append('size', JSON.stringify(selectedSizes));
+		formData.append('color', JSON.stringify(selectedColors));
+
+		// Handle images
+		const existingImages = images.filter(img => !img.file).map(img => img.url);
+		formData.append('image', JSON.stringify(existingImages));
+
+		images.forEach(img => {
+			if (img.file) {
+				formData.append('image', img.file);
+			}
+		});
+
+		console.log('Attempting to publish product via FormData');
+
+
 
 		try {
 			let response;
 			if (isEditMode && product) {
-				response = await axiosInstance.put(`/api/products/${product.id || product._id}`, productData);
+				response = await axiosInstance.put(`/api/products/${product.id || product._id}`, formData, {
+					headers: { 'Content-Type': 'multipart/form-data' }
+				});
 			} else {
-				response = await axiosInstance.post('/api/products', productData);
+				response = await axiosInstance.post('/api/products', formData, {
+					headers: { 'Content-Type': 'multipart/form-data' }
+				});
 			}
 
 			if (response.success || (response.data && response.data.success)) {
@@ -154,6 +232,7 @@ export default function AddProduct() {
 		}
 	};
 
+
 	return (
 		<div className="min-h-screen bg-slate-100 flex font-inter">
 			<SideBar />
@@ -162,7 +241,7 @@ export default function AddProduct() {
 				<Header title={isViewMode ? 'View Product' : isEditMode ? 'Edit Product' : 'Add Product'} subtitle={isViewMode ? 'Product details' : isEditMode ? 'Update your product details' : 'Create a new luxury item for your catalog'} />
 
 				<form onSubmit={handleSubmit} className="p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-					{/* Page Header Actions */}
+					{/* Page Header */}
 					<div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
 						<div>
 							<span className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 mb-2 block">{isViewMode ? 'View' : isEditMode ? 'Edit' : 'New Arrival'}</span>
@@ -199,32 +278,32 @@ export default function AddProduct() {
 					</div>
 
 					<fieldset disabled={isViewMode} className="grid grid-cols-1 lg:grid-cols-3 gap-8 border-none p-0 m-0 min-w-0">
-						{/* Main Info Column */}
 						<div className="lg:col-span-2 space-y-8">
-							{/* Basic Details Card */}
 							<div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div className="space-y-2">
 										<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Product Name</label>
 										<input
 											type="text"
-											required
+											name="name"
 											value={name}
 											onChange={(e) => setName(e.target.value)}
 											placeholder="e.g. Silk Drape Evening Gown"
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-semibold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-semibold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
+										{errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.name}</p>}
 									</div>
 									<div className="space-y-2">
 										<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Product Code</label>
 										<input
 											type="text"
-											required
+											name="code"
 											value={code}
 											onChange={(e) => setCode(e.target.value)}
 											placeholder="LAT-2026-BLK-01"
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-mono font-bold text-indigo-600 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-mono font-bold text-indigo-600 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.code ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
+										{errors.code && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.code}</p>}
 									</div>
 								</div>
 
@@ -237,16 +316,17 @@ export default function AddProduct() {
 										</div>
 										<textarea
 											rows="8"
+											name="description"
 											value={description}
 											onChange={(e) => setDescription(e.target.value)}
 											placeholder="Craft a compelling story for this luxury piece..."
-											className="w-full p-6 bg-transparent border-none text-sm font-medium leading-relaxed placeholder:text-slate-300 outline-none resize-none"
+											className={`w-full p-6 bg-transparent border-none text-sm font-medium leading-relaxed placeholder:text-slate-300 outline-none resize-none ${errors.description ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
 									</div>
+									{errors.description && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.description}</p>}
 								</div>
 							</div>
 
-							{/* Media Card */}
 							<div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
 								<div className="flex justify-between items-center">
 									<h3 className="text-lg font-black text-slate-900 tracking-tight">Product Media</h3>
@@ -261,8 +341,12 @@ export default function AddProduct() {
 
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 									{images.map((img, idx) => (
-										<div key={idx} className="aspect-[3/4] rounded-2xl bg-slate-100 relative overflow-hidden group border border-slate-100 shadow-sm">
-											<img src={img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Preview" />
+										<div key={img.id || idx} className="aspect-[3/4] rounded-2xl bg-slate-100 relative overflow-hidden group border border-slate-100 shadow-sm">
+											<img
+												src={img.url.startsWith('http') || img.url.startsWith('/uploads') ? (img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`) : img.url}
+												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+												alt="Preview"
+											/>
 											{idx === 0 && <div className="absolute top-3 left-3 bg-indigo-600 text-[8px] font-black text-white px-2 py-1 rounded-md uppercase tracking-widest">Main</div>}
 											{!isViewMode && (
 												<button
@@ -275,6 +359,7 @@ export default function AddProduct() {
 											)}
 										</div>
 									))}
+
 									{!isViewMode && (
 										<label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3 hover:bg-slate-100 transition-colors cursor-pointer group">
 											<input type="file" onChange={handleImageUpload} className="hidden" multiple accept="image/*" />
@@ -290,19 +375,20 @@ export default function AddProduct() {
 									<p className="text-[12px]font-bold text-slate-500 uppercase tracking-[0.1em]">Recommended: 2400 × 3200px</p>
 									<p className="text-[12px]font-medium text-slate-300 mt-1 uppercase tracking-widest">Max 15MB per file • JPEG, PNG, WEBP</p>
 								</div>
+								{errors.image && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider text-center mt-2">{errors.image}</p>}
 							</div>
 						</div>
 
+
 						{/* Sidebar Column */}
 						<div className="space-y-8">
-							{/* Specifications Card */}
 							<div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-8">
 								<h3 className="text-lg font-black text-slate-900 tracking-tight">Specifications</h3>
 
 								<div className="space-y-4">
 									<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Categories</label>
 
-									{/* Category Badges */}
+									{/* Category  */}
 									<div className="flex flex-wrap gap-2 min-h-[1.5rem]">
 										{selectedCategories.map(cat => (
 											<div key={cat} className="flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl text-[12px] font-black uppercase tracking-wider border border-indigo-100 animate-in zoom-in-95 duration-200 group/badge">
@@ -324,16 +410,17 @@ export default function AddProduct() {
 									{!isViewMode && (
 										<div className="relative group">
 											<select
+												id="category"
 												onChange={(e) => {
 													if (e.target.value && !selectedCategories.includes(e.target.value)) {
 														setSelectedCategories([...selectedCategories, e.target.value]);
 													}
 													e.target.value = "";
 												}}
-												className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+												className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50 ${errors.category ? 'ring-2 ring-rose-500/50' : ''}`}
 											// disabled={fetchingCategories}
 											>
-												{/* <option value="">{fetchingCategories ? 'Loading categories...' : '+ Add Category'}</option> */}
+												<option value="" disabled selected>+ Add Category</option>
 												{categories.map(category => (
 													<option key={category._id} value={category.name}>
 														{category.name}
@@ -345,6 +432,7 @@ export default function AddProduct() {
 											</div>
 										</div>
 									)}
+									{errors.category && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.category}</p>}
 								</div>
 
 								<div className="grid grid-cols-2 gap-4">
@@ -352,23 +440,25 @@ export default function AddProduct() {
 										<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Price ($)</label>
 										<input
 											type="number"
-											required
+											name="price"
 											value={price}
 											onChange={(e) => setPrice(e.target.value)}
 											placeholder="0.00"
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.price ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
+										{errors.price && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.price}</p>}
 									</div>
 									<div className="space-y-3">
 										<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Stock Quantity</label>
 										<input
 											type="number"
-											required
+											name="quantity"
 											value={quantity}
 											onChange={(e) => setQuantity(e.target.value)}
 											placeholder="0"
-											className="w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none"
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.quantity ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
+										{errors.quantity && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.quantity}</p>}
 									</div>
 								</div>
 
@@ -397,16 +487,18 @@ export default function AddProduct() {
 											<button
 												key={size}
 												type="button"
+												id="size"
 												onClick={() => {
 													if (selectedSizes.includes(size)) setSelectedSizes(selectedSizes.filter(s => s !== size));
 													else setSelectedSizes([...selectedSizes, size]);
 												}}
-												className={`w-11 h-11 flex items-center justify-center rounded-xl text-xs font-black transition-all ${selectedSizes.includes(size) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-100'}`}
+												className={`w-11 h-11 flex items-center justify-center rounded-xl text-xs font-black transition-all ${selectedSizes.includes(size) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-100'} ${errors.size ? 'ring-2 ring-rose-500/50' : ''}`}
 											>
 												{size}
 											</button>
 										))}
 									</div>
+									{errors.size && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.size}</p>}
 								</div>
 
 								<div className="space-y-4">
@@ -481,6 +573,7 @@ export default function AddProduct() {
 											</div>
 										))}
 									</div>
+									{errors.color && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.color}</p>}
 								</div>
 							</div>
 						</div>

@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const config = require('../Config/config');
 
@@ -10,7 +11,10 @@ const requestLogger = require('./requestLogger');
 
 const setupMiddleware = (app)=>{
 
-    app.use(helmet());
+    app.use(helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+        crossOriginEmbedderPolicy: false
+    }));
 
     app.use(rateLimit({
 
@@ -48,7 +52,10 @@ const setupMiddleware = (app)=>{
 
     app.use(requestLogger);
 
+    app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
     app.get("/health",(req,res)=>{
+
 
         res.json({
 
