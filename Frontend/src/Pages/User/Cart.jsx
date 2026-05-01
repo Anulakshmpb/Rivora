@@ -57,7 +57,11 @@ export default function Cart() {
 
                                     <div className="w-32 h-40 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer" onClick={() => navigate(`/product-list/${item.product._id}`)}>
                                         <img 
-                                            src={Array.isArray(item.product.image) ? item.product.image[0] : item.product.image} 
+                                            src={(() => {
+                                                const imgPath = Array.isArray(item.product.image) ? item.product.image[0] : (item.product.image || '');
+                                                if (!imgPath) return 'https://via.placeholder.com/600x800';
+                                                return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+                                            })()} 
                                             alt={item.product.name}
                                             className="w-full h-full object-cover"
                                         />

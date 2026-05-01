@@ -73,7 +73,11 @@ function ProductCard({ product, onRemove }) {
         >
             <div className="relative aspect-[4/5] overflow-hidden bg-[#F3F3F1] rounded-[2rem] transition-all duration-700 group-hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.12)]">
                 <img
-                    src={Array.isArray(product.image) ? product.image[0] : product.image || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800'}
+                    src={(() => {
+                        const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
+                        if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
+                        return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+                    })()}
                     alt={product.name}
                     className={`w-full h-full object-cover transition-all duration-[1.5s] ease-out ${isHovered ? 'scale-110 blur-[2px]' : 'scale-100'}`}
                 />

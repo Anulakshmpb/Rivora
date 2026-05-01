@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +12,9 @@ export default function NavBar() {
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
     const { cartTotalItems } = useCart();
+    const { wishlisttotal } = useWishlist();
+    const [searchQuery, setSearchQuery] = useState('');
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -106,33 +110,52 @@ export default function NavBar() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-4 lg:gap-7">
-                    {/* Search Bar - Desktop */}
+                    {/* Search Bar */}
                     <div className="hidden md:flex relative items-center">
                         <div className={`overflow-hidden transition-all duration-300 flex items-center ${isSearchOpen ? 'w-48 lg:w-64 opacity-100 mr-2' : 'w-0 opacity-0'}`}>
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder="Search products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && searchQuery.trim()) {
+                                        navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
+                                        setIsSearchOpen(true);
+                                    }
+                                }}
                                 className="bg-gray-100 border-none rounded-full px-4 py-1.5 text-sm w-full focus:ring-1 focus:ring-black/10 outline-none"
                             />
                         </div>
                         <button
-                            onClick={() => setIsSearchOpen(!isSearchOpen)}
+                            onClick={() => {
+                                if (isSearchOpen && searchQuery.trim()) {
+                                    navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
+                                    setIsSearchOpen(false);
+                                } else {
+                                    setIsSearchOpen(!isSearchOpen);
+                                }
+                            }}
                             className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all"
                         >
                             <SearchIcon />
                         </button>
                     </div>
 
+
                     <button onClick={() => navigate('/profile')}
                         className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <UserIcon />
                     </button>
 
-                    <button className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={() => navigate('/wishlist')} className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <HeartIcon />
-                        <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">
-                            0
-                        </span>
+                        {wishlisttotal > 0 && (
+                            <span className="absolute top-1 right-1 bg-black text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">
+                                {wishlisttotal}
+                            </span>
+                        )}
+
                     </button>
 
                     <button onClick={() => navigate('/cart')} className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">

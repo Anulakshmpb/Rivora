@@ -29,19 +29,6 @@ export default function ProductDetails() {
 
   const stockStatus = getStockStatus(product.quantity);
 
-  const mockProduct = {
-    name: "Casual Check Shirt",
-    description: "Experience the perfect blend of comfort and style with our signature casual check shirt. Tailored for a modern fit, this piece features a soft, breathable fabric that transitions effortlessly from work to weekend. The classic pattern is elevated by meticulous stitching and a refined collar design.",
-    price: 350,
-    category: ["Ready-to-Wear"],
-    sizes: ["S", "M", "L"],
-    colors: ["#f00000"],
-    quantity: 100,
-    stock_visibility: true,
-    return_policy: true,
-    image: ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=1200&h=1600"]
-  };
-
   useEffect(() => {
     window.scrollTo(0, 0);
     setActiveImage(0); // Ensure image resets on any navigation to new product
@@ -120,7 +107,11 @@ export default function ProductDetails() {
                       : 'border-transparent opacity-40 hover:opacity-100 hover:scale-105'
                       }`}
                   >
-                    <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${i + 1}`} />
+                    <img 
+                      src={img.startsWith('http') || img.startsWith('/uploads') ? (img.startsWith('http') ? img : `http://localhost:5000${img}`) : img} 
+                      className="w-full h-full object-cover" 
+                      alt={`Thumbnail ${i + 1}`} 
+                    />
                   </button>
                 ))}
               </div>
@@ -129,7 +120,11 @@ export default function ProductDetails() {
             {/* Main Image Viewport */}
             <div className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative">
               <img
-                src={productImages[activeImage] || 'https://via.placeholder.com/600x800'}
+                src={(() => {
+                  const imgPath = productImages[activeImage];
+                  if (!imgPath) return 'https://via.placeholder.com/600x800';
+                  return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+                })()}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110"
               />
@@ -326,7 +321,11 @@ function ProductCard({ product }) {
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-slate-50 rounded-[2.5rem] mb-6 group-hover:shadow-2xl transition-all duration-700">
         <img
-          src={Array.isArray(product.image) ? product.image[0] : product.image || 'https://via.placeholder.com/600x800'}
+          src={(() => {
+            const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
+            if (!imgPath) return 'https://via.placeholder.com/600x800';
+            return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+          })()}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
         />

@@ -34,13 +34,15 @@ export function WishlistProvider({ children }) {
     const clearWishlist = () => {
         setWishlistItems([]);
     };
+    const wishlisttotal = wishlistItems.length;
 
     return (
         <WishlistContext.Provider value={{
             wishlistItems,
             addToWishlist,
             removeFromWishlist,
-            clearWishlist
+            clearWishlist,
+            wishlisttotal
         }}>
             {children}
         </WishlistContext.Provider>
