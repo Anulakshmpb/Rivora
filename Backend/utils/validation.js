@@ -130,7 +130,7 @@ const createProductValidation = Joi.object({
   category: Joi.array().items(Joi.string()).min(1).required(),
   price: Joi.number().min(0).required(),
   quantity: Joi.number().integer().min(0).required(),
-  stock_visibility: Joi.boolean().default(false),
+  isVisible: Joi.boolean().default(false),
   size: Joi.array().items(Joi.string()).min(1).required(),
   color: Joi.array().items(Joi.string()).min(1).required(),
   image: Joi.array().items(Joi.string()).min(1).required()
@@ -144,7 +144,7 @@ const updateProductValidation = Joi.object({
   category: Joi.array().items(Joi.string()).min(1).optional(),
   price: Joi.number().min(0).optional(),
   quantity: Joi.number().integer().min(0).optional(),
-  stock_visibility: Joi.boolean().optional(),
+  isVisible: Joi.boolean().optional(),
   size: Joi.array().items(Joi.string()).min(1).optional(),
   color: Joi.array().items(Joi.string()).min(1).optional(),
   image: Joi.array().items(Joi.string()).min(1).optional()

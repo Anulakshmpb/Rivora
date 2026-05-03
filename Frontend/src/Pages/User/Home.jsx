@@ -2,7 +2,15 @@ import React from 'react';
 import best from '../../Images/best.png';
 import Banner from './Banner';
 import Category from './Category';
+import axiosInstance from '../../api/axiosInstance';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 function Home() {
+	const [products, setProducts] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const navigate = useNavigate();
+	const scrollRef = useRef(null);
 	const reviews = [
 		{
 			name: "Alen Kelvin",
@@ -25,18 +33,172 @@ function Home() {
 			stars: 4,
 		},
 	]
+	
+		useEffect(() => {
+			const fetchData = async () => {
+				try {
+					const [prodRes, catRes] = await Promise.all([
+						axiosInstance.get('/api/products'),
+						axiosInstance.get('/api/categories')
+					]);
+					
+					if (prodRes.success) {
+						setProducts(prodRes.data.products);
+					}
+					if (catRes.success) {
+						setCategories(catRes.data.categories);
+					}
+				} catch (error) {
+					console.error('Data fetch error:', error);
+				} finally {
+					setIsLoading(false);
+				}
+			};
+			fetchData();
+		}, []);
+		
+
 	return (
 		<div className='mt-[90px]'>
 			<Banner />
 			<Category />
 
+			{/* Trending Collections Section */}
+			<section className="bg-white overflow-hidden ms-16 me-16">
+				<div className="max-w-9xl mx-auto">
+					<div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
+						<div className="space-y-4">
+							<span className="text-blue-600 text-[12px] font-black uppercase tracking-[0.6em] block">
+								Curated Selection
+							</span>
+							<h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-[0.8] tracking-tighter">
+								Trending <span className="text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-600 to-gray-400">Collections</span>
+							</h2>
+						</div>
+						
+						<div className="flex gap-4">
+							<button 
+								onClick={() => {
+									if (scrollRef.current) scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+								}}
+								className="w-16 h-16 rounded-full border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-black hover:text-white hover:border-black transition-all duration-500 group/btn"
+							>
+								<svg className="w-6 h-6 transform transition-transform group-hover/btn:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
+								</svg>
+							</button>
+							<button 
+								onClick={() => {
+									if (scrollRef.current) scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+								}}
+								className="w-16 h-16 rounded-full border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-black hover:text-white hover:border-black transition-all duration-500 group/btn"
+							>
+								<svg className="w-6 h-6 transform transition-transform group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5l7 7-7 7" />
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div 
+						ref={scrollRef}
+						className="flex gap-10 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar"
+						style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+					>
+						{products
+							.filter(p => {
+								const categoryName = Array.isArray(p.category) ? p.category[0] : p.category;
+								return categoryName === 'Trending Collection' || categoryName?.name === 'Trending Collection';
+							})
+							.map((product) => (
+								<div 
+									key={product._id}
+									onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
+									className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
+								>
+									<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
+										<img 
+											src={(() => {
+												const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
+												if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
+												return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
+													? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) 
+													: imgPath;
+											})()}
+											alt={product.name}
+											className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
+										/>
+										<div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700"></div>
+										<div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
+											<button className="w-full py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
+												View Details — ${product.price}
+											</button>
+										</div>
+									</div>
+									<div className="space-y-2 px-4">
+										<div className="flex justify-between items-start">
+											<h3 className="text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
+												{product.name}
+											</h3>
+											<span className="text-xl font-medium text-gray-400">${product.price}</span>
+										</div>
+										<p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.3em]">
+											{Array.isArray(product.category) ? product.category[0] : (product.category?.name || product.category)}
+										</p>
+									</div>
+								</div>
+						))}
+						
+						{/* Fallback */}
+						{products.filter(p => {
+							const categoryName = Array.isArray(p.category) ? p.category[0] : p.category;
+							return categoryName === 'Trending Collection' || categoryName?.name === 'Trending Collection';
+						}).length === 0 && products.slice(0, 5).map((product) => (
+							<div 
+								key={product._id}
+								onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
+								className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
+							>
+								<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
+									<img 
+										src={(() => {
+											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
+											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
+											return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
+												? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) 
+												: imgPath;
+										})()}
+										alt={product.name}
+										className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
+									/>
+									<div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700"></div>
+									<div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
+										<button className="w-full py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
+											View Details — ${product.price}
+										</button>
+									</div>
+								</div>
+								<div className="space-y-2 px-4">
+									<div className="flex justify-between items-start">
+										<h3 className="text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
+											{product.name}
+										</h3>
+										<span className="text-xl font-medium text-gray-400">${product.price}</span>
+									</div>
+									<p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.3em]">
+										{Array.isArray(product.category) ? product.category[0] : (product.category?.name || product.category)}
+									</p>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
 			{/* Sub-Banner Section */}
-			{/* Sub-Banner / Philosophy Section - Ultra Modern */}
 			<div className="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row items-center gap-16 relative overflow-hidden">
-				{/* Background Glow Effect */}
 				<div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-50/40 rounded-full blur-[120px] pointer-events-none"></div>
 
-				{/* Left Visuals */}
+				{/* Left  */}
 				<div className="relative w-full lg:w-1/2 flex justify-center group/visual">
 					<div className="relative">
 						<div className="overflow-hidden rounded-[4.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] group-hover/visual:shadow-[0_80px_150px_-20px_rgba(0,0,0,0.25)] transition-all duration-1000 border border-gray-100/50">
@@ -47,20 +209,18 @@ function Home() {
 							/>
 						</div>
 
-						{/* Premium Overlapping Badge */}
+						{/* Badge */}
 						<div className="absolute -bottom-10 -right-10 glass p-10 rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-white/60 max-w-[300px] transform transition-all duration-[1500ms]">
-							<h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter italic leading-none">Est. 2012</h3>
-							<p className="text-[12px] text-gray-400 font-black uppercase tracking-[0.25em] leading-relaxed">
-								A decade of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-400 font-black">redefining</span> the silhouette of modern luxury.
+							<h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter italic leading-none">Est. 2026</h3>
+							<p className="text-[12px] text-gray-500 font-black uppercase tracking-[0.25em] leading-relaxed">
+								A decade of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-700 font-black">redefining</span> the silhouette of modern luxury.
 							</p>
 						</div>
-
-						{/* Decorative Floating Element */}
 						<div className="absolute -top-6 -left-6 w-24 h-24 border-t-2 border-l-2 border-blue-600/20 rounded-tl-[3rem] group-hover/visual:translate-x-4 group-hover/visual:translate-y-4 transition-transform duration-1000"></div>
 					</div>
 				</div>
 
-				{/* Right Content */}
+				{/* Right  */}
 				<div className="w-full lg:w-1/2 space-y-10 relative z-10 ms-5">
 					<div className="space-y-6">
 						<span className="logo-font text-blue-600 text-[12px] font-black tracking-[0.7em] block mb-2 px-3 py-1 bg-blue-50/50 w-fit rounded-full">
@@ -71,11 +231,10 @@ function Home() {
 						</h2>
 					</div>
 
-					<p className="text-gray-400 text-xl font-medium leading-relaxed max-w-xl group-hover:text-gray-600 transition-colors duration-700">
+					<p className="text-gray-500 text-xl font-medium leading-relaxed max-w-xl group-hover:text-gray-600 transition-colors duration-700">
 						Rivora is more than a boutique—it is a sanctuary of style. We believe garments should tell a story of intentionality, utilizing sustainable fibers and timeless draping that reject the cycle of fast fashion.
 					</p>
 
-					{/* Elevated Feature List */}
 					<div className="space-y-6 pt-2">
 						<div className="flex items-center gap-10 group/feature cursor-default">
 							<div className="w-20 h-20 rounded-[2rem] glass flex items-center justify-center text-blue-600 transition-all duration-700 shadow-2xl shadow-blue-50/30 group-hover/feature:bg-blue-600 group-hover/feature:text-white group-hover/feature:rotate-12">
@@ -102,7 +261,6 @@ function Home() {
 						</div>
 					</div>
 
-					{/* Iconic CTA Button */}
 					<div className="pt-8">
 						<button className="group relative flex items-center gap-8 text-gray-900 font-black text-xl uppercase tracking-[0.4em] transition-all duration-[800ms] overflow-hidden py-4">
 							<span className="relative z-10 group-hover:text-blue-600 transition-colors">Discover Our Process</span>
@@ -115,7 +273,6 @@ function Home() {
 				</div>
 			</div>
 
-			{/*   We've Got You      */}
 			<section className="relative py-16 overflow-hidden bg-[#fafafa]">
 				<div
 					className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -205,7 +362,6 @@ function Home() {
 								key={index}
 								className="group relative flex flex-col p-8 rounded-[2rem] bg-white border border-gray-100 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] transition-all duration-500 hover:-translate-y-2"
 							>
-								{/* Star Rating */}
 								<div className="flex gap-1 mb-8">
 									{[...Array(item.stars)].map((_, i) => (
 										<svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -214,12 +370,10 @@ function Home() {
 									))}
 								</div>
 
-								{/* Review Text */}
 								<p className="text-gray-600 text-lg leading-relaxed mb-6 italic font-medium relative z-10">
 									"{item.review}"
 								</p>
 
-								{/* User */}
 								<div className="mt-auto flex items-center gap-5">
 									<div className="w-14 h-14 rounded-full bg-black flex items-center justify-center text-white font-black text-xl uppercase shadow-lg group-hover:scale-110 transition-transform duration-300">
 										{item.name.charAt(0)}

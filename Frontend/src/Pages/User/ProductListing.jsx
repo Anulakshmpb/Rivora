@@ -12,6 +12,8 @@ export default function ProductListing() {
 	const [priceRange, setPriceRange] = useState([0, 2500]);
 	const [selectedSizes, setSelectedSizes] = useState([]);
 	const [inStockOnly, setInStockOnly] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 12;
 	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
@@ -54,13 +56,20 @@ export default function ProductListing() {
 		if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
 		if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
 		return result;
-	}, [products, selectedCategories, priceRange, inStockOnly, sortBy]);
+	}, [products, selectedCategories, priceRange, inStockOnly, sortBy, searchQuery]);
+
+	const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+	const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [selectedCategories, priceRange, inStockOnly, sortBy, searchQuery]);
 
 	return (
 		<div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
 
 			{/* Banner */}
-			<div className="max-w-[1600px] mx-auto px-8 pt-10 mt-[50px]">
+			<div className="max-w-[1800px] mx-auto px-8 pt-10 mt-[50px]">
 				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
 					<div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
 					<div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
@@ -100,7 +109,7 @@ export default function ProductListing() {
 				</div>
 			</div>
 
-			<div className="max-w-[1600px] mx-auto px-8 py-16 flex gap-16 items-start">
+			<div className="max-w-[1800px] mx-auto px-8 py-16 flex gap-16 items-start">
 
 				{/* Sidebar */}
 				<aside className={`sticky top-10 transition-all duration-700 overflow-hidden ${isSidebarOpen ? 'w-80 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-10'}`}>
@@ -192,21 +201,72 @@ export default function ProductListing() {
 				</aside>
 
 				{/* Product Grid */}
-				<main className="flex-1">
+				<main className="flex-1 flex flex-col">
 					{isLoading ? (
 						<div className={`grid grid-cols-1 md:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-10`}>
 							{[1, 2, 3, 4, 5, 6, 7, 8].map(i => <SkeletonCard key={i} />)}
 						</div>
-					) : filteredProducts.length > 0 ? (
-						<div className={`grid grid-cols-1 md:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-x-10 gap-y-20 transition-all duration-700 ease-in-out`}>
-							{filteredProducts.map(product => (
-								<ProductCard
-									key={product._id}
-									product={product}
-									onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
-								/>
-							))}
-						</div>
+					) : paginatedProducts.length > 0 ? (
+						<>
+							<div className={`grid grid-cols-1 md:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-x-10 gap-y-20 transition-all duration-700 ease-in-out flex-1`}>
+								{paginatedProducts.map(product => (
+									<ProductCard
+										key={product._id}
+										product={product}
+										onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
+									/>
+								))}
+							</div>
+							
+							{/* Pagination */}
+							{totalPages > 1 && (
+								<div className="mt-24 flex items-center justify-center gap-4">
+									<button
+										onClick={() => {
+											setCurrentPage(prev => Math.max(prev - 1, 1));
+											window.scrollTo({ top: 0, behavior: 'smooth' });
+										}}
+										disabled={currentPage === 1}
+										className="p-4 rounded-full border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+									>
+										<svg className="w-5 h-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+										</svg>
+									</button>
+									
+									<div className="flex gap-2">
+										{[...Array(totalPages)].map((_, i) => (
+											<button
+												key={i + 1}
+												onClick={() => {
+													setCurrentPage(i + 1);
+													window.scrollTo({ top: 0, behavior: 'smooth' });
+												}}
+												className={`w-12 h-12 rounded-full text-xs font-black transition-all ${currentPage === i + 1 
+													? 'bg-slate-900 text-white shadow-xl' 
+													: 'bg-white border border-slate-100 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+												}`}
+											>
+												{i + 1}
+											</button>
+										))}
+									</div>
+
+									<button
+										onClick={() => {
+											setCurrentPage(prev => Math.min(prev + 1, totalPages));
+											window.scrollTo({ top: 0, behavior: 'smooth' });
+										}}
+										disabled={currentPage === totalPages}
+										className="p-4 rounded-full border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+									>
+										<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+										</svg>
+									</button>
+								</div>
+							)}
+						</>
 					) : (
 						<div className="flex flex-col items-center justify-center py-40 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
 							<SearchIcon className="w-16 h-16 text-slate-200 mb-6" />
@@ -223,8 +283,7 @@ export default function ProductListing() {
 				</main>
 			</div>
 		</div>
-	);
-}
+	);}
 
 // Sub-components
 function ProductCard({ product, onClick }) {

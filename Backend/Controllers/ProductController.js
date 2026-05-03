@@ -5,13 +5,13 @@ const { createProductValidation, updateProductValidation } = require('../utils/v
 class ProductController extends BaseController {
 	static getAll = BaseController.asyncHandler(async (req, res) => {
 		const ownerId = req.admin ? null : (req.user?._id || null);
-		const products = await ProductService.getAll(ownerId);
+		const products = await ProductService.getAll(ownerId, !!req.admin);
 		BaseController.sendSuccess(res, 'Products received successfully', { products });
 	});
 
 	static getOne = BaseController.asyncHandler(async (req, res) => {
 		const ownerId = req.admin ? null : (req.user?._id || null);
-		const product = await ProductService.getOne(req.params.id, ownerId);
+		const product = await ProductService.getOne(req.params.id, ownerId, !!req.admin);
 		BaseController.sendSuccess(res, 'Product received successfully', { product });
 	});
 

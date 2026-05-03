@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
 		type: Number,
 		required: [true, 'Stock is required'],
 	},
-	stock_visibility: {
+	isVisible: {
 		type: Boolean,
 		default: false,
 	},

@@ -35,7 +35,7 @@ const schema = Joi.object({
 		'number.min': 'Quantity cannot be negative',
 		'any.required': 'Quantity is required'
 	}),
-	stock_visibility: Joi.boolean().required(),
+	isVisible: Joi.boolean().required(),
 	size: Joi.array().min(1).required().messages({
 		'array.min': 'Please select at least one size',
 		'any.required': 'Size is required'
@@ -63,7 +63,7 @@ export default function AddProduct() {
 	const [description, setDescription] = useState('');
 	const [price, setPrice] = useState('');
 	const [quantity, setQuantity] = useState('');
-	const [stockVisibility, setStockVisibility] = useState(false);
+	const [isVisible, setIsVisible] = useState(false);
 	const [isReturnable, setIsReturnable] = useState(true);
 	const [selectedSizes, setSelectedSizes] = useState(['M', 'L']);
 	const [selectedColors, setSelectedColors] = useState(['black']);
@@ -93,7 +93,7 @@ export default function AddProduct() {
 			setDescription(product.description || '');
 			setPrice(product.price || '');
 			setQuantity(product.stock !== undefined ? product.stock : (product.quantity || ''));
-			setStockVisibility(product.stock_visibility || false);
+			setIsVisible(product.isVisible !== undefined ? product.isVisible : (product.stock_visibility || false));
 			setIsReturnable(product.return !== undefined ? product.return : true);
 			setSelectedSizes(product.size || []);
 			setSelectedColors(product.color || []);
@@ -148,7 +148,6 @@ export default function AddProduct() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-
 		const validationData = {
 			name,
 			code,
@@ -156,7 +155,7 @@ export default function AddProduct() {
 			price: parseFloat(price),
 			quantity: parseInt(quantity),
 			return: isReturnable,
-			stock_visibility: stockVisibility,
+			isVisible: isVisible,
 			category: selectedCategories,
 			size: selectedSizes,
 			color: selectedColors,
@@ -187,7 +186,7 @@ export default function AddProduct() {
 		formData.append('price', price);
 		formData.append('quantity', quantity);
 		formData.append('return', isReturnable);
-		formData.append('stock_visibility', stockVisibility);
+		formData.append('isVisible', isVisible);
 
 		// Send arrays as JSON strings
 		formData.append('category', JSON.stringify(selectedCategories));
@@ -464,16 +463,17 @@ export default function AddProduct() {
 
 								<div className="flex items-center justify-between p-4 bg-slate-100 rounded-2xl">
 									<div>
-										<p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Stock Visibility</p>
-										<p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Show actual stock on storefront</p>
+										<p className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Product Visibility</p>
+										<p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Show product on user side</p>
 									</div>
 									<button
 										type="button"
-										onClick={() => setStockVisibility(!stockVisibility)}
-										className={`w-10 h-5 rounded-full transition-all duration-300 relative ${stockVisibility ? 'bg-indigo-600' : 'bg-slate-200'}`}
+										onClick={() => setIsVisible(!isVisible)}
+										className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isVisible ? 'bg-indigo-600' : 'bg-slate-200'}`}
 									>
-										<div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${stockVisibility ? 'left-6' : 'left-1'}`} />
-									</button>                                </div>
+										<div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${isVisible ? 'left-6' : 'left-1'}`} />
+									</button>                      
+						          </div>
 							</div>
 
 							{/* Attributes Card */}
