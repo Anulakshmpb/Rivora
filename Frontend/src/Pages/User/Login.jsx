@@ -47,10 +47,8 @@ const Login = () => {
             const response = await authService.login(data);
             console.log('Login successful:', response);
             
-            // Update context
-            await login(response.data.user);
+            await login(response.data.user, response.data.token);
             
-            // Navigate and replace
             navigate(from, { replace: true });
         } catch (err) {
             console.error('Login error:', err);

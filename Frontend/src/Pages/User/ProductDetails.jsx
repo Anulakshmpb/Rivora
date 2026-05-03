@@ -31,7 +31,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setActiveImage(0); // Ensure image resets on any navigation to new product
+    setActiveImage(0); 
     const fetchProductDetails = async () => {
       setIsLoading(true);
       try {
@@ -39,17 +39,15 @@ export default function ProductDetails() {
         if (response.data && response.data.success) {
           const fetchedProduct = response.data.product;
           setProduct(fetchedProduct);
-          setActiveImage(0); // Reset image on product change
+          setActiveImage(0);
 
-          // Set default selected color
           const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
           if (colors.length > 0) setSelectedColor(colors[0]);
         } else if (response.success) {
           const fetchedProduct = response.data.product;
           setProduct(fetchedProduct);
-          setActiveImage(0); // Reset image on product change
+          setActiveImage(0);
 
-          // Set default selected color
           const colors = Array.isArray(fetchedProduct.colors) ? fetchedProduct.colors : (fetchedProduct.color ? (Array.isArray(fetchedProduct.color) ? fetchedProduct.color : [fetchedProduct.color]) : []);
           if (colors.length > 0) setSelectedColor(colors[0]);
         }
@@ -79,10 +77,9 @@ export default function ProductDetails() {
   if (!product) return null;
 
   return (
-    <div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pb-20">
+    <div className="py-24 bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pb-20">
 
       <div className="max-w-[1440px] mx-auto px-8 pt-12">
-        {/* Breadcrumbs */}
         <nav className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-12">
           <a onClick={() => navigate('/')} className="hover:text-black cursor-pointer transition-colors">Atelier</a>
           <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
@@ -93,9 +90,8 @@ export default function ProductDetails() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-          {/* Left: Image Gallery */}
+          {/* Left */}
           <div className="flex gap-6 h-fit">
-            {/* Thumbnails Sidebar */}
             {productImages.length > 1 && (
               <div className="hidden md:flex flex-col gap-4 w-20">
                 {productImages.map((img, i) => (
@@ -117,7 +113,6 @@ export default function ProductDetails() {
               </div>
             )}
 
-            {/* Main Image Viewport */}
             <div className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative">
               <img
                 src={(() => {
@@ -129,7 +124,6 @@ export default function ProductDetails() {
                 className="w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110"
               />
 
-              {/* Floating Action Buttons */}
               <div className="absolute top-8 right-8 flex flex-col gap-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
                 <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
                   <HeartIcon className="w-5 h-5 text-slate-400 group-hover/btn:text-rose-500 transition-colors" />
@@ -139,7 +133,6 @@ export default function ProductDetails() {
                 </button>
               </div>
 
-              {/* Status Tags */}
               <div className="absolute top-8 left-8 flex flex-col gap-3">
                 <div className="bg-slate-900/90 backdrop-blur-md px-5 py-2 rounded-2xl shadow-xl">
                   <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">New Edition</span>
@@ -154,7 +147,7 @@ export default function ProductDetails() {
             </div>
           </div>
 
-          {/* Right: Product Details */}
+          {/* Right */}
           <div className="flex flex-col justify-center">
             <header className="space-y-4 mb-10">
               <div className="flex items-center gap-4">
@@ -177,14 +170,12 @@ export default function ProductDetails() {
             </header>
 
             <div className="space-y-10">
-              {/* Description */}
               <div className="space-y-4">
                 <p className="text-slate-500 text-lg font-semibold leading-relaxed max-w-lg">
                   {product.description}
                 </p>
               </div>
 
-              {/* Color */}
               <div className="space-y-4">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hue</h3>
                 <div className="flex gap-4">

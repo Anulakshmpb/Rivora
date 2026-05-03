@@ -3,13 +3,19 @@ const logger = require('../utils/logger');
 const { NotFoundError, AuthorizationError } = require('../utils/errors');
 
 class ProductService {
-  static async getAll(userId = null) {
+  static async getAll(userId = null, isAdmin = false) {
     const filter = userId ? { user: userId } : {};
+    if (!isAdmin) {
+      filter.isVisible = true;
+    }
     return await Product.find(filter).sort({ createdAt: -1 });
   }
 
-  static async getOne(productId, userId = null) {
+  static async getOne(productId, userId = null, isAdmin = false) {
     const filter = userId ? { _id: productId, user: userId } : { _id: productId };
+    if (!isAdmin) {
+      filter.isVisible = true;
+    }
     const product = await Product.findOne(filter);
     if (!product) {
       throw new NotFoundError('Product not found');

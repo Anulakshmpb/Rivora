@@ -11,9 +11,15 @@ export const AuthProvider = ({ children }) => {
         const checkAuth = async () => {
             try {
                 const res = await axiosInstance.get('/api/auth/get-profile');
-                setUser(res.data.data.user);
+                // The axios interceptor returns res.data, so res is the backend response object
+                // Backend returns { success: true, data: { user: { ... } } }
+                if (res.success && res.data && res.data.user) {
+                    setUser(res.data.user);
+                } else {
+                    setUser(null);
+                }
             } catch (err) {
-                // If token is invalid or expired, clear it
+                console.error('Check auth failed:', err);
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -23,20 +29,20 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
 
-    const login = async (userData) => {
-        // Assume the backend now sets the cookie
-        // We still get user data back in the response
+    const login = async (userData, token) => {
         setUser(userData);
+        if (token) localStorage.setItem('token', token);
     };
 
     const logout = async () => {
         try {
-            await axiosInstance.post('/auth/logout');
+            await axiosInstance.post('/api/auth/logout');
             setUser(null);
+            localStorage.removeItem('token');
         } catch (err) {
             console.error('Logout failed', err);
-            // Even if backend fails, clear local state
             setUser(null);
+            localStorage.removeItem('token');
         }
     };
 

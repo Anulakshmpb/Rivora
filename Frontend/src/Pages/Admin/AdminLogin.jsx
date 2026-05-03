@@ -33,7 +33,7 @@ const AdminLogin = () => {
             console.log('Admin login successful:', data);
 
             // Update Auth Context
-            await login(data.data.admin);
+            await login(data.data.admin, data.data.token);
 
             // Redirect to admin dashboard
             navigate('/admin/dashboard');
