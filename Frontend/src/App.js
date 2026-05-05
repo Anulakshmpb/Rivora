@@ -24,6 +24,7 @@ import ProductListing from './Pages/User/ProductListing';
 import ProductDetails from './Pages/User/ProductDetails';
 import WishList from './Pages/User/WishList';
 import { WishlistProvider } from './context/WishlistContext';
+import { ToastProvider } from './Toast/ToastContext';
 import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
 
 
@@ -39,7 +40,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
 
-        {/* Guest Only Routes */}
+        {/* users  */}
         <Route
           path="/login"
           element={
@@ -64,9 +65,9 @@ function AppContent() {
         <Route path="/product-list/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<WishList />} />
+
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
-
         <Route
           path="/admin/dashboard"
           element={
@@ -152,7 +153,9 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <AppContent />
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>

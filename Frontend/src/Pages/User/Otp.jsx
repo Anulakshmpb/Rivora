@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../../api/authService';
 import { useAuth } from '../../context/AuthContext';
-
+import { useToast } from '../../Toast/ToastContext';
 const Otp = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
+    const { showToast } = useToast();
     const userId = location.state?.userId;
 
     const [otp, setOtp] = useState('');
@@ -17,10 +18,8 @@ const Otp = () => {
     const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
     useEffect(() => {
-        console.log('Otp Page Loaded. userId from state:', userId);
-
         if (!userId) {
-            console.warn('No userId found in state, redirecting to register');
+            showToast("No userId found in state", "error");
             navigate('/register');
         }
     }, [userId, navigate]);
@@ -45,7 +44,8 @@ const Otp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (otp.length !== 6) {
-            return setError('Please enter a 6-digit code');
+            // return setError('Please enter a 6-digit code');
+            showToast("Please enter a 6-digit code", "error");
         }
 
         setLoading(true);
@@ -56,29 +56,29 @@ const Otp = () => {
             if (location.state?.isReset) {
                 const response = await authService.verifyResetOTP({ userId, otp });
                 const resetToken = response.data?.resetToken || response.data?.data?.resetToken || response.resetToken;
-                setMessage('OTP verified successfully! Redirecting to reset password...');
+                showToast("OTP verified successfully! Redirecting to reset password...", "success");
                 setTimeout(() => navigate('/reset-password', { state: { userId, resetToken }, replace: true }), 2000);
             } else {
                 const response = await authService.verifyEmail({ userId, otp });
-                
+
                 // Update auth context for auto-login
                 if (response.data?.user) {
                     await login(response.data.user);
                 }
-                
-                setMessage('Email verified successfully! Redirecting to home...');
+
+                showToast("Email verified successfully! Redirecting to home...", "success");
                 setTimeout(() => navigate('/', { replace: true }), 2000);
             }
         } catch (err) {
             const message = err.error?.message || err.message || 'Invalid OTP. Please try again.';
-            setError(message);
+            showToast(message, "error");
         } finally {
             setLoading(false);
         }
     };
 
     const handleResend = async () => {
-        if (timeLeft > 0) return; // Prevent resend if timer is active
+        if (timeLeft > 0) return;
 
         setResending(true);
         setError('');
@@ -86,11 +86,11 @@ const Otp = () => {
 
         try {
             await authService.resendOTP(userId);
-            setMessage('A new OTP has been sent to your email.');
-            setTimeLeft(300); // Reset timer to 5 minutes
+            showToast("A new OTP has been sent to your email.", "success");
+            setTimeLeft(300);
         } catch (err) {
             const message = err.error?.message || err.message || 'Failed to resend OTP. Please try again later.';
-            setError(message);
+            showToast(message, "error");
         } finally {
             setResending(false);
         }

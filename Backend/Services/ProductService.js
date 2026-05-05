@@ -3,8 +3,8 @@ const logger = require('../utils/logger');
 const { NotFoundError, AuthorizationError } = require('../utils/errors');
 
 class ProductService {
-  static async getAll(userId = null, isAdmin = false) {
-    const filter = userId ? { user: userId } : {};
+  static async getAll(userId = null, isAdmin = false, filters = {}) {
+    const filter = userId ? { user: userId, ...filters } : { ...filters };
     if (!isAdmin) {
       filter.isVisible = true;
     }

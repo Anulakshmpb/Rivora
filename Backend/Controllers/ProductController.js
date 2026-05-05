@@ -5,7 +5,11 @@ const { createProductValidation, updateProductValidation } = require('../utils/v
 class ProductController extends BaseController {
 	static getAll = BaseController.asyncHandler(async (req, res) => {
 		const ownerId = req.admin ? null : (req.user?._id || null);
-		const products = await ProductService.getAll(ownerId, !!req.admin);
+		const { category } = req.query;
+		const filters = {};
+		if (category) filters.category = category;
+
+		const products = await ProductService.getAll(ownerId, !!req.admin, filters);
 		BaseController.sendSuccess(res, 'Products received successfully', { products });
 	});
 

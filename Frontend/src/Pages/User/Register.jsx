@@ -5,7 +5,7 @@ import authService from '../../api/authService';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
-
+import { useToast } from '../../Toast/ToastContext';
 const schema = Joi.object({
     name: Joi.string().min(3).max(50).required().messages({
         'string.empty': 'Full name is required',
@@ -35,7 +35,7 @@ const Register = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [apiError, setApiError] = useState('');
-
+const {showToast}=useToast();
     const {
         register,
         handleSubmit,
@@ -52,34 +52,33 @@ const Register = () => {
         try {
             const { name, email, password } = data;
             const response = await authService.register({ name, email, password });
-            console.log('Registration Response:', response);
-            
+            showToast("Registration successful", "success");
             const userId = response.data?.userId || response.data?.user?._id || response.userId || response.user?._id;
-            console.log('Calculated userId for navigation:', userId);
 
             if (!userId) {
                 console.error('Failed to extract userId from response');
-                setApiError('Registration successful, but system failed to process verification. Please try logging in.');
+                showToast("Registration successful, Please verify your email.", "error");
                 return;
             }
 
             navigate('/verify-otp', { state: { userId }, replace: true });
         } catch (err) {
-            console.error('Registration error:', err);
+
+            showToast('Registration error'+err, "error");
             
             const errorInfo = err.error || err;
             const { message, details, statusCode } = errorInfo;
 
             if (statusCode === 409 && details?.userId && !details?.isVerified) {
-                console.log('User exists but unverified. Redirecting to OTP...');
+                showToast('User exists but unverified. Redirecting to OTP...', "error");
                 return navigate('/verify-otp', { state: { userId: details.userId }, replace: true });
             }
 
             if (details && Array.isArray(details)) {
                 const detailMessages = details.map(d => d.message).join('. ');
-                setApiError(`Validation failed: ${detailMessages}`);
+                showToast(`Validation failed: ${detailMessages}`, "error");
             } else {
-                setApiError(message || 'Registration failed. Please try again.');
+                showToast(message || 'Registration failed. Please try again.', "error");
             }
         } finally {
             setLoading(false);
