@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import { useWishlist } from '../../context/WishlistContext';
 import axiosInstance from '../../api/axiosInstance';
 
 export default function ProductListing() {
@@ -49,21 +49,22 @@ export default function ProductListing() {
 			const matchesPrice = p.price <= priceRange[1];
 			const matchesStock = !inStockOnly || p.quantity > 0;
 			const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
-			return matchesCat && matchesPrice && matchesStock && matchesSearch;
+			const matchesSize = selectedSizes.length === 0 || (Array.isArray(p.size) && p.size.some(s => selectedSizes.includes(s)));
+			return matchesCat && matchesPrice && matchesStock && matchesSearch && matchesSize;
 		});
 
 
 		if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
 		if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
 		return result;
-	}, [products, selectedCategories, priceRange, inStockOnly, sortBy, searchQuery]);
+	}, [products, selectedCategories, priceRange, selectedSizes, inStockOnly, sortBy, searchQuery]);
 
 	const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 	const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 	useEffect(() => {
 		setCurrentPage(1);
-	}, [selectedCategories, priceRange, inStockOnly, sortBy, searchQuery]);
+	}, [selectedCategories, priceRange, selectedSizes, inStockOnly, sortBy, searchQuery]);
 
 	return (
 		<div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
@@ -100,9 +101,9 @@ export default function ProductListing() {
 								onChange={(e) => setSortBy(e.target.value)}
 								className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer px-4 appearance-none"
 							>
-								<option value="newest text-black">Newest Arrivals</option>
-								<option value="price-low text-black">Price Low to High</option>
-								<option value="price-high text-black">Price High to Low</option>
+								<option value="newest">Newest Arrivals</option>
+								<option value="price-low">Price Low to High</option>
+								<option value="price-high">Price High to Low</option>
 							</select>
 						</div>
 					</div>
@@ -273,7 +274,7 @@ export default function ProductListing() {
 							<h2 className="text-3xl font-serif italic text-slate-600 mb-2">No matching pieces</h2>
 							<p className="text-slate-600 text-sm font-medium tracking-wide">Adjust your filters to discover our collection.</p>
 							<button
-								onClick={() => { setSelectedCategories([]); setPriceRange([0, 2500]); setInStockOnly(false); }}
+								onClick={() => { setSelectedCategories([]); setPriceRange([0, 2500]); setSelectedSizes([]); setInStockOnly(false); }}
 								className="mt-8 px-8 py-3 bg-white border border-slate-200 rounded-full text-[12px] font-black uppercase tracking-widest hover:border-slate-900 transition-all"
 							>
 								Clear all filters
@@ -288,6 +289,8 @@ export default function ProductListing() {
 // Sub-components
 function ProductCard({ product, onClick }) {
 	const [isHovered, setIsHovered] = useState(false);
+	const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
+	const isWishlisted = wishlistItems.some(item => item._id === product._id);
 
 	return (
 		<div
@@ -308,8 +311,19 @@ function ProductCard({ product, onClick }) {
 				/>
 
 				{/* Wishlist Button */}
-				<button className="absolute top-6 right-6 p-3 bg-white/60 backdrop-blur-md rounded-full border border-white/40 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:bg-white">
-					<HeartIcon className="w-4 h-4 text-slate-900" />
+				<button
+					onClick={(e) => {
+						e.stopPropagation();
+						if (isWishlisted) removeFromWishlist(product._id);
+						else addToWishlist(product);
+					}}
+					className={`absolute top-6 right-6 p-3 backdrop-blur-md rounded-full border transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:scale-110 active:scale-95 ${
+						isWishlisted
+							? 'bg-red-50/80 border-red-200 opacity-100'
+							: 'bg-white/60 border-white/40 opacity-0 group-hover:opacity-100 hover:bg-white'
+					}`}
+				>
+					<HeartIcon className={`w-4 h-4 transition-colors duration-300 ${isWishlisted ? 'text-red-500 fill-red-500' : 'text-slate-900'}`} filled={isWishlisted} />
 				</button>
 
 				{/* Quick Add  */}
@@ -367,6 +381,6 @@ function SkeletonCard() {
 
 // Icons
 const AdjustmentsIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path d="M3 4h13M3 8h9M3 12h5m0 0v-2m0 2v2M12 8V6m0 2v2m4-6V2m0 2v2M3 16h18M3 20h13" /></svg>;
-const HeartIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>;
+const HeartIcon = ({ filled, ...props }) => <svg {...props} fill={filled ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>;
 const StarIcon = (props) => <svg {...props} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>;
 const SearchIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>;

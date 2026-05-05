@@ -29,11 +29,10 @@ const setupMiddleware = (app)=>{
     }));
 
     app.use(cors({
-
         origin:config.CORS.ORIGIN,
-
-        credentials:true
-
+        credentials:true,
+        methods:config.CORS.METHODS,
+        allowedHeaders:config.CORS.ALLOWED_HEADERS
     }));
 
     app.use(cookieParser());

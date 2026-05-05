@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
-
+import { useToast } from '../../Toast/ToastContext';
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('');
   const [activeImage, setActiveImage] = useState(0);
-
+const {showToast}=useToast();
   const { addToCart, cartItems } = useCart();
   const { addToWishlist } = useWishlist();
 
@@ -53,26 +53,41 @@ export default function ProductDetails() {
         }
       } catch (error) {
         console.error('Error fetching product details:', error);
+        showToast('Error fetching product details', "error");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProductDetails();
+  }, [id, showToast]);
+
+  useEffect(() => {
+    if (!product) return;
 
     const fetchSimilar = async () => {
       try {
-        const response = await axiosInstance.get('/api/products');
-        if (response.success) {
-          const others = response.data.products.filter(p => p._id !== id).slice(0, 4);
+        const category = Array.isArray(product.category) ? product.category[0] : product.category;
+        const response = await axiosInstance.get('/api/products', {
+          params: { category }
+        });
+        
+        // Handle both response structures for consistency
+        const products = response.data?.products || response.products || [];
+        const isSuccess = response.success || response.data?.success;
+
+        if (isSuccess) {
+          const others = products.filter(p => p._id !== product._id).slice(0, 4);
           setSimilarProducts(others);
         }
       } catch (error) {
         console.error('Error fetching similar products:', error);
+        showToast('Error fetching similar products', "error");
       }
     };
+
     fetchSimilar();
-  }, [id]);
+  }, [product?._id, product?.category, showToast]);
 
   if (!product) return null;
 
@@ -234,13 +249,13 @@ export default function ProductDetails() {
                     const exists = cartItems.some(item =>
                       item.product._id === product._id
                     );
-                    
+
                     if (exists) {
-                      alert('This item is already in your bag.');
+                      showToast('This item is already in your bag.', 'warning');
                       navigate('/cart');
                       return;
                     }
-                    
+
                     addToCart(product, quantity, selectedSize, selectedColor);
                     navigate('/cart');
                   }}

@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import Joi from 'joi';
-
+import { useToast } from '../../Toast/ToastContext';
 const schema = Joi.object({
     email: Joi.string().email({ tlds: { allow: false } }).required().messages({
         'string.empty': 'Email is required',
@@ -29,7 +29,7 @@ const Login = () => {
     const [apiError, setApiError] = useState('');
 
     const from = location.state?.from?.pathname || "/";
-
+const {showToast}=useToast();
     const {
         register,
         handleSubmit,
@@ -45,15 +45,16 @@ const Login = () => {
 
         try {
             const response = await authService.login(data);
-            console.log('Login successful:', response);
-            
+            // console.log('Login successful:', response);
+            showToast("Login successful", "success");
             await login(response.data.user, response.data.token);
             
             navigate(from, { replace: true });
         } catch (err) {
             console.error('Login error:', err);
             const message = err.error?.message || err.message || 'Failed to sign in. Please check your credentials.';
-            setApiError(message);
+            // setApiError(message);
+            showToast(message, "error");
         } finally {
             setLoading(false);
         }
