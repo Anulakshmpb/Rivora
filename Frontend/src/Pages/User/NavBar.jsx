@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import axiosInstance from '../../api/axiosInstance';
 
 export default function NavBar() {
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
     const { cartTotalItems } = useCart();
     const { wishlisttotal } = useWishlist();
     const [searchQuery, setSearchQuery] = useState('');
+    const [allProducts, setAllProducts] = useState([]);
+    const [filteredResults, setFilteredResults] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const location = useLocation();
 
 
     useEffect(() => {
@@ -23,6 +27,64 @@ export default function NavBar() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Fetch products for live search
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axiosInstance.get('/api/products');
+                if (response.success) {
+                    setAllProducts(response.data.products);
+                }
+            } catch (error) {
+                console.error('Failed to fetch products for search:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    // Handle search filtering and dropdown visibility
+    useEffect(() => {
+        if (searchQuery.trim().length > 0) {
+            const filtered = allProducts.filter(product =>
+                product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (product.category && product.category.some(cat => cat.toLowerCase().includes(searchQuery.toLowerCase())))
+            ).slice(0, 5); // Limit to 5 results
+            setFilteredResults(filtered);
+            setShowDropdown(true);
+        } else {
+            setFilteredResults([]);
+            setShowDropdown(false);
+        }
+    }, [searchQuery, allProducts]);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = () => setShowDropdown(false);
+        window.addEventListener('click', handleClickOutside);
+        return () => window.removeEventListener('click', handleClickOutside);
+    }, []);
+
+    // Sync search query from URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const q = params.get('search');
+        if (q) setSearchQuery(q);
+    }, [location.search]);
+
+    // Dynamic search: update URL as user types (only if on product-list)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (location.pathname === '/product-list') {
+                if (searchQuery.trim()) {
+                    navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`, { replace: true });
+                } else if (searchQuery === '') {
+                    navigate('/product-list', { replace: true });
+                }
+            }
+        }, 500); // 500ms debounce
+        return () => clearTimeout(timer);
+    }, [searchQuery, location.pathname, navigate]);
 
     const handleLogout = async () => {
         try {
@@ -111,35 +173,83 @@ export default function NavBar() {
                 {/* Actions */}
                 <div className="flex items-center gap-4 lg:gap-7">
                     {/* Search Bar */}
-                    <div className="hidden md:flex relative items-center">
-                        <div className={`overflow-hidden transition-all duration-300 flex items-center ${isSearchOpen ? 'w-48 lg:w-64 opacity-100 mr-2' : 'w-0 opacity-0'}`}>
+                    <div className="hidden md:flex relative items-center group" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center bg-gray-100/50 hover:bg-gray-100 border border-transparent focus-within:border-black/5 focus-within:bg-white rounded-full transition-all duration-300 w-48 lg:w-64 px-4 py-1.5 shadow-sm">
                             <input
                                 type="text"
                                 placeholder="Search products..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => searchQuery.trim() && setShowDropdown(true)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' && searchQuery.trim()) {
                                         navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
-                                        setIsSearchOpen(true);
+                                        setShowDropdown(false);
                                     }
                                 }}
-                                className="bg-gray-100 border-none rounded-full px-4 py-1.5 text-sm w-full focus:ring-1 focus:ring-black/10 outline-none"
+                                className="bg-transparent border-none text-sm w-full outline-none placeholder:text-gray-400 font-medium"
                             />
+                            <button
+                                onClick={() => {
+                                    if (searchQuery.trim()) {
+                                        navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
+                                        setShowDropdown(false);
+                                    }
+                                }}
+                                className="p-1 text-gray-400 hover:text-black transition-colors"
+                            >
+                                <SearchIcon />
+                            </button>
                         </div>
-                        <button
-                            onClick={() => {
-                                if (isSearchOpen && searchQuery.trim()) {
-                                    navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
-                                    setIsSearchOpen(false);
-                                } else {
-                                    setIsSearchOpen(!isSearchOpen);
-                                }
-                            }}
-                            className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all"
-                        >
-                            <SearchIcon />
-                        </button>
+
+                        {/* Search Results Dropdown */}
+                        {showDropdown && filteredResults.length > 0 && (
+                            <div className="absolute top-full right-0 mt-2 w-72 lg:w-80 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-[110] animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="p-2">
+                                    <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-50">
+                                        Suggested Results
+                                    </div>
+                                    <div className="py-1">
+                                        {filteredResults.map((product) => (
+                                            <button
+                                                key={product._id}
+                                                onClick={() => {
+                                                    navigate(`/product-list/${product._id}`, { state: { product } });
+                                                    setSearchQuery('');
+                                                    setShowDropdown(false);
+                                                }}
+                                                className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 rounded-xl transition-all group/item"
+                                            >
+                                                <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                                                    <img 
+                                                        src={Array.isArray(product.image) ? product.image[0] : product.image} 
+                                                        alt={product.name} 
+                                                        className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" 
+                                                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=100&h=100'; }}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 text-left">
+                                                    <div className="text-xs font-bold text-gray-900 group-hover/item:text-black transition-colors line-clamp-1">{product.name}</div>
+                                                    <div className="text-[10px] text-gray-500 font-medium">${product.price}</div>
+                                                </div>
+                                                <div className="opacity-0 group-hover/item:opacity-100 transition-opacity text-gray-300 pr-2">
+                                                    →
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
+                                            setShowDropdown(false);
+                                        }}
+                                        className="w-full py-2 text-[11px] font-bold text-gray-500 hover:text-black hover:bg-gray-50 rounded-lg transition-all mt-1"
+                                    >
+                                        View all results
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
 
@@ -197,12 +307,33 @@ export default function NavBar() {
             <div className={`fixed top-0 left-0 h-screen w-[280px] bg-white z-[52] shadow-2xl transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="flex flex-col h-full p-8">
-                    <div className="flex justify-between items-center mb-12">
+                    <div className="flex justify-between items-center mb-8">
                         <img src={Logo} alt="LOGO" className="h-8 w-auto" />
                         <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-all">
                             <XIcon />
                         </button>
                     </div>
+
+                    {/* Mobile Search */}
+                    <div className="mb-8 relative">
+                        <div className="flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && searchQuery.trim()) {
+                                        navigate(`/product-list?search=${encodeURIComponent(searchQuery.trim())}`);
+                                        setIsMobileMenuOpen(false);
+                                    }
+                                }}
+                                className="bg-transparent border-none text-sm w-full outline-none font-medium"
+                            />
+                            <SearchIcon />
+                        </div>
+                    </div>
+
                     <div className="flex flex-col gap-8">
                         {navLinks.map((link) => (
                             <a

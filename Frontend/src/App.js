@@ -26,12 +26,15 @@ import WishList from './Pages/User/WishList';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './Toast/ToastContext';
 import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
+import SiteManagement from './Pages/Admin/SiteManagement';
+import UserManagement from './Pages/Admin/UserManagement';
+import HomeCategory from './Pages/Admin/HomeCategory';
 
 
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/products', '/add-product'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -85,6 +88,30 @@ function AppContent() {
           }
         />
         <Route
+          path="/site"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <SiteManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/site/home-category"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <HomeCategory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/add-product"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
@@ -93,7 +120,7 @@ function AppContent() {
           }
         />
 
-        {/* User Protected Routes */}
+        {/* User */}
         <Route
           path="/profile"
           element={

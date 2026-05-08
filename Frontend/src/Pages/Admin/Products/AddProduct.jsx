@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import axiosInstance from '../../../api/axiosInstance';
 import Joi from 'joi';
+import { useToast } from '../../../Toast/ToastContext';
 
 const schema = Joi.object({
 	name: Joi.string().min(3).max(50).required().messages({
@@ -56,7 +57,7 @@ export default function AddProduct() {
 	const isEditMode = mode === 'edit';
 	const [isLoading, setIsLoading] = useState(false);
 	const [errors, setErrors] = useState({});
-
+	const { showToast } = useToast();
 	const [isProcessingImages, setIsProcessingImages] = useState(false);
 	const [name, setName] = useState('');
 	const [code, setCode] = useState('');
@@ -69,6 +70,11 @@ export default function AddProduct() {
 	const [selectedColors, setSelectedColors] = useState(['black']);
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [categories, setCategories] = useState([]);
+	const clearError = (field) => {
+		if (errors[field]) {
+			setErrors(prev => ({ ...prev, [field]: '' }));
+		}
+	};
 
 	useEffect(() => {
 		const fetchCategories = async () => {
@@ -143,6 +149,7 @@ export default function AddProduct() {
 			id: Math.random().toString(36).substr(2, 9)
 		}));
 		setImages(prev => [...prev, ...newImages]);
+		clearError('image');
 	};
 
 
@@ -220,12 +227,12 @@ export default function AddProduct() {
 			}
 
 			if (response.success || (response.data && response.data.success)) {
-				alert(isEditMode ? 'Product updated successfully!' : 'Product published successfully!');
+				showToast(isEditMode ? 'Product updated successfully!' : 'Product published successfully!', 'success');
 				navigate('/products');
 			}
 		} catch (error) {
 			const errorMessage = error.message || error.response?.data?.error?.message || error.response?.data?.message || 'Failed to publish product';
-			alert(errorMessage);
+			showToast(errorMessage, 'error');
 		} finally {
 			setIsLoading(false);
 		}
@@ -286,7 +293,7 @@ export default function AddProduct() {
 											type="text"
 											name="name"
 											value={name}
-											onChange={(e) => setName(e.target.value)}
+											onChange={(e) => { setName(e.target.value); clearError('name'); }}
 											placeholder="e.g. Silk Drape Evening Gown"
 											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-semibold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
@@ -298,7 +305,7 @@ export default function AddProduct() {
 											type="text"
 											name="code"
 											value={code}
-											onChange={(e) => setCode(e.target.value)}
+											onChange={(e) => { setCode(e.target.value); clearError('code'); }}
 											placeholder="LAT-2026-BLK-01"
 											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-mono font-bold text-indigo-600 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.code ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
@@ -317,7 +324,7 @@ export default function AddProduct() {
 											rows="8"
 											name="description"
 											value={description}
-											onChange={(e) => setDescription(e.target.value)}
+											onChange={(e) => { setDescription(e.target.value); clearError('description'); }}
 											placeholder="Craft a compelling story for this luxury piece..."
 											className={`w-full p-6 bg-transparent border-none text-sm font-medium leading-relaxed placeholder:text-slate-300 outline-none resize-none ${errors.description ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
@@ -350,7 +357,15 @@ export default function AddProduct() {
 											{!isViewMode && (
 												<button
 													type="button"
-													onClick={() => setImages(images.filter((_, i) => i !== idx))}
+													onClick={() => {
+														const newImages = images.filter((_, i) => i !== idx);
+														setImages(newImages);
+														if (newImages.length === 0) {
+															// Optional: trigger error if all images removed after submission
+														} else {
+															clearError('image');
+														}
+													}}
 													className="absolute top-3 right-3 w-6 h-6 bg-white/90 backdrop-blur shadow-sm rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-rose-500 hover:bg-rose-50"
 												>
 													<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -413,6 +428,7 @@ export default function AddProduct() {
 												onChange={(e) => {
 													if (e.target.value && !selectedCategories.includes(e.target.value)) {
 														setSelectedCategories([...selectedCategories, e.target.value]);
+														clearError('category');
 													}
 													e.target.value = "";
 												}}
@@ -441,7 +457,7 @@ export default function AddProduct() {
 											type="number"
 											name="price"
 											value={price}
-											onChange={(e) => setPrice(e.target.value)}
+											onChange={(e) => { setPrice(e.target.value); clearError('price'); }}
 											placeholder="0.00"
 											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.price ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
@@ -453,7 +469,7 @@ export default function AddProduct() {
 											type="number"
 											name="quantity"
 											value={quantity}
-											onChange={(e) => setQuantity(e.target.value)}
+											onChange={(e) => { setQuantity(e.target.value); clearError('quantity'); }}
 											placeholder="0"
 											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.quantity ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
@@ -489,8 +505,12 @@ export default function AddProduct() {
 												type="button"
 												id="size"
 												onClick={() => {
-													if (selectedSizes.includes(size)) setSelectedSizes(selectedSizes.filter(s => s !== size));
-													else setSelectedSizes([...selectedSizes, size]);
+													if (selectedSizes.includes(size)) {
+														setSelectedSizes(selectedSizes.filter(s => s !== size));
+													} else {
+														setSelectedSizes([...selectedSizes, size]);
+														clearError('size');
+													}
 												}}
 												className={`w-11 h-11 flex items-center justify-center rounded-xl text-xs font-black transition-all ${selectedSizes.includes(size) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-100'} ${errors.size ? 'ring-2 ring-rose-500/50' : ''}`}
 											>
@@ -513,6 +533,7 @@ export default function AddProduct() {
 															setSelectedColors(selectedColors.filter(c => c !== color.id));
 														} else {
 															setSelectedColors([...selectedColors, color.id]);
+															clearError('color');
 														}
 													}}
 													className={`w-8 h-8 rounded-full transition-all relative ${selectedColors.includes(color.id) ? 'ring-2 ring-indigo-500 ring-offset-4 scale-110' : ''}`}

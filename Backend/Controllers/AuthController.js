@@ -418,14 +418,67 @@ class AuthController extends BaseController {
     BaseController.sendSuccess(res, 'Users retrieved successfully', { users });
   });
 
-  // Placeholder methods for other admin routes to prevent crashes
-  static getUserById = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
+  // ADMIN: Get user by ID
+  static getUserById = BaseController.asyncHandler(async (req, res) => {
+    const User = require('../Modals/User');
+    const user = await User.findById(req.params.id).select('-password -verificationOTP -otpExpires -resetPasswordToken -resetPasswordExpires -__v');
+    if (!user) return BaseController.sendNotFound(res, 'User');
+    BaseController.sendSuccess(res, 'User retrieved successfully', { user });
+  });
+
+  // ADMIN: Update user
+  static updateUser = BaseController.asyncHandler(async (req, res) => {
+    const User = require('../Modals/User');
+    const { name, email, phone, role, isVerified, isBanned } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) return BaseController.sendNotFound(res, 'User');
+
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (phone !== undefined) user.phone = phone;
+    if (role !== undefined) user.role = role;
+    if (isVerified !== undefined) user.isVerified = isVerified;
+    if (isBanned !== undefined) user.isBanned = isBanned;
+
+    await user.save();
+    BaseController.logAction('USER_UPDATED', req, { userId: user._id });
+    BaseController.sendSuccess(res, 'User updated successfully', { user: BaseController.sanitizeUser(user) });
+  });
+
+  // ADMIN: Delete user
+  static deleteUser = BaseController.asyncHandler(async (req, res) => {
+    const User = require('../Modals/User');
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) return BaseController.sendNotFound(res, 'User');
+    BaseController.logAction('USER_DELETED', req, { userId: req.params.id });
+    BaseController.sendSuccess(res, 'User deleted successfully');
+  });
+
+  // ADMIN: Ban user
+  static banUser = BaseController.asyncHandler(async (req, res) => {
+    const User = require('../Modals/User');
+    const user = await User.findById(req.params.id);
+    if (!user) return BaseController.sendNotFound(res, 'User');
+    user.isBanned = true;
+    await user.save();
+    BaseController.logAction('USER_BANNED', req, { userId: user._id });
+    BaseController.sendSuccess(res, 'User banned successfully', { user: BaseController.sanitizeUser(user) });
+  });
+
+  // ADMIN: Unban user
+  static unbanUser = BaseController.asyncHandler(async (req, res) => {
+    const User = require('../Modals/User');
+    const user = await User.findById(req.params.id);
+    if (!user) return BaseController.sendNotFound(res, 'User');
+    user.isBanned = false;
+    await user.save();
+    BaseController.logAction('USER_UNBANNED', req, { userId: user._id });
+    BaseController.sendSuccess(res, 'User unbanned successfully', { user: BaseController.sanitizeUser(user) });
+  });
+
+  // Placeholder methods for other admin routes
   static updateUserStatus = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
-  static banUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
-  static unbanUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
   static forceLogoutUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
-  static updateUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
-  static deleteUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
   static getDashboardStats = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
 }
 
