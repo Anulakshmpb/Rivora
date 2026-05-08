@@ -20,7 +20,6 @@ class ProductController extends BaseController {
 	});
 
 	static create = BaseController.asyncHandler(async (req, res) => {
-		// Handle images from req.files
 		if (req.files && req.files.length > 0) {
 			req.body.image = req.files.map(file => `/uploads/${file.filename}`);
 		}
@@ -31,7 +30,6 @@ class ProductController extends BaseController {
 				try {
 					req.body[field] = JSON.parse(req.body[field]);
 				} catch (e) {
-					// If parsing fails, keep it as is or handle appropriately
 					if (req.body[field].includes(',')) {
 						req.body[field] = req.body[field].split(',').map(s => s.trim());
 					} else {
@@ -49,11 +47,8 @@ class ProductController extends BaseController {
 	});
 
 	static update = BaseController.asyncHandler(async (req, res) => {
-		// Handle images from req.files
 		if (req.files && req.files.length > 0) {
 			const newImages = req.files.map(file => `/uploads/${file.filename}`);
-			
-			// If existing images are sent in body, combine them
 			let existingImages = [];
 			if (req.body.image) {
 				try {
@@ -64,7 +59,6 @@ class ProductController extends BaseController {
 			}
 			req.body.image = [...existingImages, ...newImages];
 		} else if (req.body.image && typeof req.body.image === 'string') {
-			// If no new files but image field is string (JSON), parse it
 			try {
 				req.body.image = JSON.parse(req.body.image);
 			} catch (e) {
@@ -72,7 +66,6 @@ class ProductController extends BaseController {
 			}
 		}
 
-		// Parse JSON strings for array fields if they come from FormData
 		['category', 'size', 'color'].forEach(field => {
 			if (typeof req.body[field] === 'string') {
 				try {

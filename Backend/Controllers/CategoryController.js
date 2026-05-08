@@ -14,9 +14,12 @@ class CategoryController extends BaseController {
             return BaseController.sendError(res, 'Category name is required', 400);
         }
 
-        const existing = await Category.findOne({ name: name.trim() });
+        const existing = await Category.findOne({ 
+            name: name.trim() 
+        }).collation({ locale: 'en', strength: 2 });
+
         if (existing) {
-            return BaseController.sendError(res, 'Category already exists', 400);
+            return BaseController.sendError(res, 'Category name already exists', 400);
         }
 
         const category = await Category.create({
@@ -33,9 +36,20 @@ class CategoryController extends BaseController {
 
     static update = BaseController.asyncHandler(async (req, res) => {
         const { name, description, main, images } = req.body;
+        if (name) {
+            const existing = await Category.findOne({ 
+                name: name.trim(),
+                _id: { $ne: req.params.id }
+            }).collation({ locale: 'en', strength: 2 });
+
+            if (existing) {
+                return BaseController.sendError(res, 'Category name already exists', 400);
+            }
+        }
+
         const category = await Category.findByIdAndUpdate(
             req.params.id,
-            { name: name.trim(), description, main, images },
+            { name: name?.trim(), description, main, images },
             { new: true, runValidators: true }
         );
 

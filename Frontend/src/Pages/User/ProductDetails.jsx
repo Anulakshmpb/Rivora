@@ -15,7 +15,9 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('');
   const [activeImage, setActiveImage] = useState(0);
-const {showToast}=useToast();
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZooming, setIsZooming] = useState(false);
+  const { showToast } = useToast();
   const { addToCart, cartItems } = useCart();
   const { addToWishlist } = useWishlist();
 
@@ -31,7 +33,7 @@ const {showToast}=useToast();
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setActiveImage(0); 
+    setActiveImage(0);
     const fetchProductDetails = async () => {
       setIsLoading(true);
       try {
@@ -71,8 +73,6 @@ const {showToast}=useToast();
         const response = await axiosInstance.get('/api/products', {
           params: { category }
         });
-        
-        // Handle both response structures for consistency
         const products = response.data?.products || response.products || [];
         const isSuccess = response.success || response.data?.success;
 
@@ -88,6 +88,13 @@ const {showToast}=useToast();
 
     fetchSimilar();
   }, [product?._id, product?.category, showToast]);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.pageX - left - window.scrollX) / width) * 100;
+    const y = ((e.pageY - top - window.scrollY) / height) * 100;
+    setZoomPos({ x, y });
+  };
 
   if (!product) return null;
 
@@ -118,17 +125,22 @@ const {showToast}=useToast();
                       : 'border-transparent opacity-40 hover:opacity-100 hover:scale-105'
                       }`}
                   >
-                    <img 
-                      src={img.startsWith('http') || img.startsWith('/uploads') ? (img.startsWith('http') ? img : `http://localhost:5000${img}`) : img} 
-                      className="w-full h-full object-cover" 
-                      alt={`Thumbnail ${i + 1}`} 
+                    <img
+                      src={img.startsWith('http') || img.startsWith('/uploads') ? (img.startsWith('http') ? img : `http://localhost:5000${img}`) : img}
+                      className="w-full h-full object-cover"
+                      alt={`Thumbnail ${i + 1}`}
                     />
                   </button>
                 ))}
               </div>
             )}
 
-            <div className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative">
+            <div
+              className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative cursor-zoom-in"
+              onMouseMove={handleMouseMove}
+              onMouseEnter={() => setIsZooming(true)}
+              onMouseLeave={() => setIsZooming(false)}
+            >
               <img
                 src={(() => {
                   const imgPath = productImages[activeImage];
@@ -136,7 +148,11 @@ const {showToast}=useToast();
                   return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
                 })()}
                 alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 ease-out"
+                style={{
+                  transform: isZooming ? 'scale(2.5)' : 'scale(1)',
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`
+                }}
               />
 
               <div className="absolute top-8 right-8 flex flex-col gap-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">

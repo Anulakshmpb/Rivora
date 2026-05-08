@@ -3,15 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
 import axiosInstance from '../../../api/axiosInstance';
+import { useToast } from '../../../Toast/ToastContext';
 
 export default function ProductManagement() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [stockSort, setStockSort] = useState('');
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, name: '' });
   const itemsPerPage = 5;
 
   const [categories, setCategories] = useState([]);
@@ -97,17 +100,20 @@ export default function ProductManagement() {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date().toLocaleDateString(undefined, options);
   };
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+  const handleDelete = (id, name) => {
+    setDeleteModal({ isOpen: true, id, name });
+  };
+
+  const confirmDelete = async () => {
     try {
-      const response = await axiosInstance.delete(`/api/products/${id}`);
-      if (response.success || (response.data && response.data.success)) {
+      const response = await axiosInstance.delete(`/api/products/${deleteModal.id}`);
+      if (response.success) {
+        showToast('Product deleted successfully', 'success');
         fetchProducts();
-      } else {
-        alert('Failed to delete product');
+        setDeleteModal({ isOpen: false, id: null, name: '' });
       }
     } catch (error) {
-      alert(error.message || 'Failed to delete product');
+      showToast(error.error?.message || error.message || 'Failed to delete product', 'error');
     }
   };
   return (
@@ -270,7 +276,7 @@ export default function ProductManagement() {
                         <div className="flex items-center justify-center gap-2">
                           <IconButton icon={<EyeIcon />} className="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100" title='View' onClick={() => navigate('/add-product', { state: { product, mode: 'view' } })} />
                           <IconButton icon={<EditIcon />} className=" text-yellow-600 hover:text-yellow-800 bg-yellow-50 hover:bg-yellow-100" title='Edit' onClick={() => navigate('/add-product', { state: { product, mode: 'edit' } })} />
-                          <IconButton icon={<TrashIcon />} className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100" onClick={() => handleDelete(product.id)} title='Delete' />
+                          <IconButton icon={<TrashIcon />} className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100" onClick={() => handleDelete(product.id, product.name)} title='Delete' />
                         </div>
                       </td>
                     </tr>
@@ -312,12 +318,20 @@ export default function ProductManagement() {
         </div>
       </main>
 
-      <AddCategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        existingCategories={categories}
-        refreshCategories={fetchCategories}
-      />
+        <AddCategoryModal 
+          isOpen={isCategoryModalOpen} 
+          onClose={() => setIsCategoryModalOpen(false)} 
+          existingCategories={categories}
+          refreshCategories={fetchCategories}
+        />
+
+        <DeleteConfirmationModal 
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
+          onConfirm={confirmDelete}
+          title="Delete Product"
+          message={`Are you sure you want to delete "${deleteModal.name}"? This action cannot be undone.`}
+        />
     </div>
   );
 }
@@ -395,12 +409,15 @@ function PageButton({ children, active, disabled, onClick }) {
 }
 
 function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategories }) {
+  const { showToast } = useToast();
   const [newCategory, setNewCategory] = useState('');
   const [main, setMain] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [images, setImages] = useState([]);
   const [isProcessingImages, setIsProcessingImages] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, name: '' });
+
   if (!isOpen) return null;
 
   const handleAdd = async () => {
@@ -408,13 +425,14 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
     try {
       const response = await axiosInstance.post('/api/categories', { name: newCategory, main, images });
       if (response.success) {
+        showToast('Category added successfully', 'success');
         setNewCategory('');
         setMain(false);
         setImages([]);
         refreshCategories();
       }
     } catch (error) {
-      alert(error.message || 'Failed to add category');
+      showToast(error.error?.message || error.message || 'Failed to add category', 'error');
     }
   };
 
@@ -423,23 +441,29 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
     try {
       const response = await axiosInstance.put(`/api/categories/${id}`, { name: editValue });
       if (response.success) {
+        showToast('Category updated successfully', 'success');
         setEditingId(null);
         refreshCategories();
       }
     } catch (error) {
-      alert(error.message || 'Failed to update category');
+      showToast(error.error?.message || error.message || 'Failed to update category', 'error');
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) return;
+  const handleDelete = (id, name) => {
+    setDeleteModal({ isOpen: true, id, name });
+  };
+
+  const confirmDelete = async () => {
     try {
-      const response = await axiosInstance.delete(`/api/categories/${id}`);
+      const response = await axiosInstance.delete(`/api/categories/${deleteModal.id}`);
       if (response.success) {
+        showToast('Category deleted successfully', 'success');
         refreshCategories();
+        setDeleteModal({ isOpen: false, id: null, name: '' });
       }
     } catch (error) {
-      alert(error.message || 'Failed to delete category');
+      showToast(error.error?.message || error.message || 'Failed to delete category', 'error');
     }
   };
   const handleImageUpload = (e) => {
@@ -547,7 +571,7 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
                       <EditIcon className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(cat._id)}
+                      onClick={() => handleDelete(cat._id, cat.name)}
                       className="p-1.5 text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
                     >
                       <TrashIcon className="w-4 h-4" />
@@ -569,9 +593,35 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
           </button>
         </div>
       </div>
+      <DeleteConfirmationModal 
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
+        onConfirm={confirmDelete}
+        title="Delete Category"
+        message={`Are you sure you want to delete the category "${deleteModal.name}"? This will affect all products in this category.`}
+      />
     </div>
   );
 }
+
+function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, message }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 space-y-6 animate-in zoom-in-95 duration-300">
+        <div className="space-y-2">
+          <h2 className="text-xl font-black text-slate-900">{title}</h2>
+          <p className="text-sm text-slate-500">{message}</p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">Cancel</button>
+          <button onClick={() => { onConfirm(); onClose(); }} className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-all shadow-lg shadow-red-600/20 active:scale-95">Delete</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Icons
 const CalendarIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>;
 const PackageIcon = (props) => <svg {...props} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;

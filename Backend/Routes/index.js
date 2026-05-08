@@ -5,6 +5,7 @@ const authRoutes = require('./auth');
 const adminRoutes = require('./admin');
 const productRoutes = require('./product');
 const categoryRoutes = require('./category');
+const homeCategoryRoutes = require('./homeCategory');
 
 const setupRoutes = (app) => {
     const authLimiter = createAuthLimiter();
@@ -14,6 +15,7 @@ const setupRoutes = (app) => {
     app.use('/api/admin', adminRoutes);
     app.use('/api/products', productRoutes);
     app.use('/api/categories', categoryRoutes);
+    app.use('/api/home-category', homeCategoryRoutes);
 };
 
 module.exports = {
