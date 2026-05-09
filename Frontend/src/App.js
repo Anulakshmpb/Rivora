@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Cart from './Pages/User/Cart';
+import Checkout from './Pages/User/Checkout';
 import Login from './Pages/User/Login';
 import Register from './Pages/User/Register';
 import ForgotPW from './Pages/User/ForgotPW';
@@ -26,15 +27,17 @@ import WishList from './Pages/User/WishList';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './Toast/ToastContext';
 import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
-import SiteManagement from './Pages/Admin/SiteManagement';
+import SiteManagement, { Coupons, Reviews } from './Pages/Admin/SiteManagement';
 import UserManagement from './Pages/Admin/UserManagement';
 import HomeCategory from './Pages/Admin/HomeCategory';
+import OrderSuccess from './Pages/User/OrderSuccess';
+import PaymentFailed from './Pages/User/PaymentFailed';
 
 
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category', '/site/coupons', '/site/reviews'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -67,6 +70,9 @@ function AppContent() {
         <Route path="/product-list" element={<ProductListing />} />
         <Route path="/product-list/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/wishlist" element={<WishList />} />
 
         {/* Admin */}
@@ -108,6 +114,22 @@ function AppContent() {
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/site/coupons"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <Coupons />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/site/reviews"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <Reviews />
             </ProtectedRoute>
           }
         />

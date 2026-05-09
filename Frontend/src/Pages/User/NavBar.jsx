@@ -127,7 +127,7 @@ export default function NavBar() {
     const navLinks = [
         { name: 'Home', href: '/' },
         { name: 'Collections', href: '/product-list', hasBadge: 'New' },
-        { name: 'About', href: '#' },
+        { name: 'About', href: '/#about-section' },
         { name: 'Contact', href: '#' },
     ];
 
@@ -203,7 +203,7 @@ export default function NavBar() {
                         </div>
 
                         {/* Search Results Dropdown */}
-                        {showDropdown && filteredResults.length > 0 && (
+                        {/* {showDropdown && filteredResults.length > 0 && (
                             <div className="absolute top-full right-0 mt-2 w-72 lg:w-80 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-2xl overflow-hidden z-[110] animate-in fade-in slide-in-from-top-2 duration-300">
                                 <div className="p-2">
                                     <div className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 border-b border-gray-50">
@@ -249,7 +249,7 @@ export default function NavBar() {
                                     </button>
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
 
 

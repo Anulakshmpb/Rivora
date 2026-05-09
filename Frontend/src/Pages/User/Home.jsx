@@ -63,7 +63,7 @@ function Home() {
 			<Banner />
 			<Category />
 
-			{/* Trending Collections Section */}
+			{/* Trending Collections */}
 			<section className="bg-white overflow-hidden ms-16 me-16">
 				<div className="max-w-9xl mx-auto">
 					<div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
@@ -194,8 +194,8 @@ function Home() {
 					</div>
 				</div>
 			</section>
-			{/* Sub-Banner Section */}
-			<div className="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row items-center gap-16 relative overflow-hidden">
+			{/* About Section */}
+			<div id="about-section" className="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row items-center gap-16 relative overflow-hidden">
 				<div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-50/40 rounded-full blur-[120px] pointer-events-none"></div>
 
 				{/* Left  */}

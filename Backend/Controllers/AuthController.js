@@ -307,14 +307,18 @@ class AuthController extends BaseController {
 
     );
 
-    const user =
-    await AuthService.updateProfile(
-
-      req.user._id,
-
-      validatedData
-
-    );
+    let user;
+    if (req.user) {
+        user = await AuthService.updateProfile(req.user._id, validatedData);
+    } else if (req.admin) {
+        const Admin = require('../Modals/Admin');
+        user = await Admin.findByIdAndUpdate(
+            req.admin._id,
+            { $set: validatedData },
+            { new: true, runValidators: true }
+        );
+        user = BaseController.sanitizeUser(user);
+    }
 
     BaseController.logAction(
 
@@ -348,13 +352,17 @@ class AuthController extends BaseController {
 
     );
 
-    await AuthService.changePassword(
-
-      req.user._id,
-
-      validatedData
-
-    );
+    if (req.user) {
+        await AuthService.changePassword(req.user._id, validatedData);
+    } else if (req.admin) {
+        const Admin = require('../Modals/Admin');
+        const admin = await Admin.findById(req.admin._id).select("+password");
+        if (!admin) return BaseController.sendNotFound(res, "Admin");
+        const isValid = await admin.comparePassword(validatedData.currentPassword);
+        if (!isValid) return BaseController.sendError(res, "Invalid current password", 401);
+        admin.password = validatedData.newPassword;
+        await admin.save();
+    }
 
     BaseController.logAction(
 
