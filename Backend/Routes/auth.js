@@ -15,8 +15,8 @@ router.post('/verify-reset-otp', otpLimiter, AuthController.verifyResetOTP);
 router.post('/reset-password', otpLimiter, AuthController.resetPassword);
 
 router.get('/get-profile', checkUserStatus, authenticateUserOrAdmin, AuthController.getProfile);
-router.put('/profile', checkUserStatus, authenticateUser, AuthController.updateProfile);
-router.put('/change-password', checkUserStatus, authenticateUser, AuthController.changePassword);
+router.put('/profile', checkUserStatus, authenticateUserOrAdmin, AuthController.updateProfile);
+router.put('/change-password', checkUserStatus, authenticateUserOrAdmin, AuthController.changePassword);
 router.post('/logout', checkUserStatus, authenticateUser, AuthController.logout);
 
 module.exports = router;
