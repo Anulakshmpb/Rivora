@@ -8,7 +8,7 @@ export default function OrderSuccess() {
     const navigate = useNavigate();
     const [similarProducts, setSimilarProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     // Fallback if accessed directly without state
     const order = location.state?.order || {
         _id: 'ORDER-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
@@ -44,83 +44,100 @@ export default function OrderSuccess() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#FDFDFB] pt-20 pb-16 px-4">
-            <div className="max-w-6xl mx-auto">
+        <div className="min-h-screen bg-[#FDFDFB] pt-10 pb-16 px-4">
+            <div className="max-w-7xl mx-auto">
                 {/* Success Header */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] border border-slate-50 overflow-hidden"
                 >
-                    {/* Animated Background Element */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20" />
-                    
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                        <div className="mb-4">
-                            <span className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-200">
-                                <SparklesIcon className="w-3.5 h-3.5" />
-                                Order Confirmed
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-10" />
+
+                    <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+                        {/* Left Container */}
+                        <div className="flex-1 text-center lg:text-left">
+                            <div className="mb-4">
+                                <span className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-200">
+                                    <SparklesIcon className="w-3.5 h-3.5" />
+                                    Order Confirmed
+                                </span>
+                            </div>
+
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 mb-4 block">
+                                Transaction Successful
                             </span>
-                        </div>
 
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 mb-2">
-                            Transaction Successful
-                        </span>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight mb-6 leading-tight">
+                                Thank you for <br />
+                                <span className="italic text-slate-900">your order!</span>
+                            </h1>
 
-                        <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight mb-4">
-                            Thank you for <br />
-                            <span className="italic text-slate-400">your order!</span>
-                        </h1>
-
-                        <p className="text-slate-500 text-base font-medium max-w-md leading-relaxed mb-6">
-                            Your sartorial journey has begun. We've sent a confirmation to <span className="text-slate-900 font-bold">{order.shippingAddress?.email || 'your email'}</span>.
-                        </p>
-
-                        {/* Order Info Card */}
-                        <div className="w-full max-w-3xl bg-slate-50 rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-100 mb-8">
-                            <div className="text-left space-y-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Order Number</span>
-                                <span className="text-2xl font-serif font-medium text-slate-900">#{order._id.toString().slice(-8).toUpperCase()}</span>
-                            </div>
-                            
-                            <div className="w-px h-12 bg-slate-200 hidden md:block" />
-
-                            <div className="text-left space-y-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Estimated Delivery</span>
-                                <span className="text-2xl font-serif font-medium text-slate-900">{formattedDelivery}</span>
-                            </div>
-
-                            <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
-                                <BoxIcon className="w-8 h-8 text-slate-200" />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl mb-8">
-                            <button 
-                                onClick={() => navigate('/orders')}
-                                className="flex-1 bg-blue-600 text-white h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3"
-                            >
-                                Track Order
-                                <ArrowUpRightIcon className="w-4 h-4" />
-                            </button>
-                            <button 
-                                onClick={() => navigate('/product-list')}
-                                className="flex-1 bg-white text-slate-900 border border-slate-200 h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-50 transition-all"
-                            >
-                                Continue Shopping
-                            </button>
-                        </div>
-
-                        <div className="pt-6 border-t border-slate-100 w-full">
-                            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                                Need help? <span className="text-blue-600 cursor-pointer hover:underline">Contact Atelier Support</span>
+                            <p className="text-slate-500 text-base font-medium max-w-md mx-auto lg:mx-0 leading-relaxed mb-10">
+                                Your sartorial journey has begun. We've sent a confirmation to <span className="text-slate-900 font-bold">{order.user?.email || 'your email'}</span>.
                             </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl mx-auto lg:mx-0">
+                                <button
+                                    onClick={() => navigate('/orders')}
+                                    className="flex-1 bg-blue-600 text-white h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3"
+                                >
+                                    Track Order
+                                    <ArrowUpRightIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => navigate('/product-list')}
+                                    className="flex-1 bg-white text-slate-900 border border-slate-200 h-14 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-slate-50 transition-all"
+                                >
+                                    Continue Shopping
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Right Container: Order Info Card */}
+                        <div className="w-full lg:w-[450px]">
+                            <div className="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 border border-slate-100 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-1000" />
+
+                                <div className="relative z-10 space-y-10">
+                                    <div className="flex items-center justify-between">
+                                        <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-100">
+                                            <BoxIcon className="w-8 h-8 text-blue-600" />
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Status</span>
+                                            <span className="text-sm font-bold text-green-600 uppercase tracking-widest">Processing</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-8">
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Order Number</span>
+                                            <span className="text-3xl font-serif font-medium text-slate-900">#{order._id.toString().slice(-8).toUpperCase()}</span>
+                                        </div>
+
+                                        <div className="h-px bg-slate-200 w-full" />
+
+                                        <div className="space-y-2">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Estimated Delivery</span>
+                                            <span className="text-3xl font-serif font-medium text-slate-900">{formattedDelivery}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-8 border-t border-slate-100">
+                                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                                            Need help? <br />
+                                            <span className="text-blue-600 cursor-pointer hover:underline">Contact Atelier Support</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
 
                 {/* Similar Products */}
-                <section className="mt-16 space-y-8">
+                <section className="mt-6 space-y-8 max-w-6xl">
                     <div className="flex flex-col items-center text-center space-y-4">
                         <h2 className="text-3xl font-serif font-medium tracking-tight italic text-slate-400">
                             More from <span className="text-slate-900">The Collection</span>
@@ -143,17 +160,16 @@ export default function OrderSuccess() {
     );
 }
 
-// Sub-components (Reused styles from ProductDetails/Home)
 function ProductCard({ product }) {
     const navigate = useNavigate();
     return (
-        <motion.div 
+        <motion.div
             whileHover={{ y: -10 }}
             className="group cursor-pointer"
             onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
         >
             <div className="relative aspect-[3/4] overflow-hidden bg-slate-100 rounded-[2rem] mb-6 shadow-sm group-hover:shadow-2xl transition-all duration-700">
-                <img 
+                <img
                     src={(() => {
                         const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
                         if (!imgPath) return 'https://via.placeholder.com/600x800';
