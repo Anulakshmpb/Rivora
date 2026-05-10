@@ -79,15 +79,38 @@ export default function Checkout() {
             return;
         }
 
-        if (paymentMethod !== 'razorpay') {
-            showToast('Notice', 'Only Razorpay is currently supported in this demo', 'info');
-            return;
-        }
-
         setIsProcessing(true);
 
         try {
-            // 1. Load Razorpay script
+            if (paymentMethod === 'cod') {
+                const res = await axiosInstance.post('/api/orders/place-cod-order', {
+                    orderDetails: {
+                        items: cartItems.map(item => ({
+                            product: item.product._id,
+                            quantity: item.quantity,
+                            size: item.size,
+                            color: item.color,
+                            price: item.product.price
+                        })),
+                        shippingAddress: selectedAddress,
+                        totalAmount: total,
+                        discountAmount: discountAmount,
+                        shippingCost: shippingCost,
+                        taxAmount: taxes
+                    }
+                });
+
+                if (res.success) {
+                    showToast('Success', 'Order placed successfully (COD)!', 'success');
+                    clearCart();
+                    navigate('/order-success', { state: { order: res.data } });
+                } else {
+                    throw new Error(res.message || 'Failed to place COD order');
+                }
+                return;
+            }
+
+            // Razorpay flow
             const isLoaded = await loadRazorpayScript();
             if (!isLoaded) {
                 showToast('Error', 'Razorpay SDK failed to load. Check your internet connection.', 'error');

@@ -24,6 +24,7 @@ import AddProduct from './Pages/Admin/Products/AddProduct';
 import ProductListing from './Pages/User/ProductListing';
 import ProductDetails from './Pages/User/ProductDetails';
 import WishList from './Pages/User/WishList';
+import Orders from './Pages/User/Orders';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './Toast/ToastContext';
 import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
@@ -180,6 +181,14 @@ function AppContent() {
           element={
             <ProtectedRoute allowedRoles={['user', 'admin']}>
               <Address />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute allowedRoles={['user', 'admin']}>
+              <Orders />
             </ProtectedRoute>
           }
         />
