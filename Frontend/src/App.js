@@ -33,6 +33,7 @@ import UserManagement from './Pages/Admin/UserManagement';
 import HomeCategory from './Pages/Admin/HomeCategory';
 import OrderSuccess from './Pages/User/OrderSuccess';
 import PaymentFailed from './Pages/User/PaymentFailed';
+import WalletPayment from './Pages/User/WalletPayment';
 
 
 function AppContent() {
@@ -72,6 +73,7 @@ function AppContent() {
         <Route path="/product-list/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/wallet-payment" element={<WalletPayment />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/wishlist" element={<WishList />} />
@@ -208,15 +210,15 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-            <ToastProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
               <AppContent />
-            </ToastProvider>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

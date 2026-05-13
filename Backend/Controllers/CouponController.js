@@ -7,10 +7,18 @@ class CouponController extends BaseController {
         BaseController.sendSuccess(res, 'Coupons retrieved successfully', { coupons });
     });
 
-    static create = BaseController.asyncHandler(async (req, res) => {
-        const { name, code, discount, expiryDate } = req.body;
+    static getActive = BaseController.asyncHandler(async (req, res) => {
+        const now = new Date();
+        const coupons = await Coupon.find({
+            expiryDate: { $gte: now }
+        }).sort({ discount: -1 });
+        BaseController.sendSuccess(res, 'Active coupons retrieved successfully', { coupons });
+    });
 
-        if (!name || !code || !discount || !expiryDate) {
+    static create = BaseController.asyncHandler(async (req, res) => {
+        const { name, code, discount, minAmount, expiryDate } = req.body;
+
+        if (!name || !code || !discount || minAmount === undefined || !expiryDate) {
             return BaseController.sendError(res, 'All fields are required', 400);
         }
 
@@ -23,6 +31,7 @@ class CouponController extends BaseController {
             name,
             code: code.toUpperCase(),
             discount,
+            minAmount,
             expiryDate
         });
 
@@ -31,7 +40,7 @@ class CouponController extends BaseController {
     });
 
     static update = BaseController.asyncHandler(async (req, res) => {
-        const { name, code, discount, expiryDate } = req.body;
+        const { name, code, discount, minAmount, expiryDate } = req.body;
 
         if (code) {
             const existing = await Coupon.findOne({
@@ -46,7 +55,7 @@ class CouponController extends BaseController {
 
         const coupon = await Coupon.findByIdAndUpdate(
             req.params.id,
-            { name, code: code?.toUpperCase(), discount, expiryDate },
+            { name, code: code?.toUpperCase(), discount, minAmount, expiryDate },
             { new: true, runValidators: true }
         );
 
@@ -70,7 +79,7 @@ class CouponController extends BaseController {
     });
 
     static validate = BaseController.asyncHandler(async (req, res) => {
-        const { code } = req.body;
+        const { code, cartTotal } = req.body;
 
         if (!code) {
             return BaseController.sendError(res, 'Coupon code is required', 400);
@@ -87,10 +96,15 @@ class CouponController extends BaseController {
             return BaseController.sendError(res, 'Coupon has expired', 400);
         }
 
+        if (cartTotal && cartTotal < coupon.minAmount) {
+            return BaseController.sendError(res, `This coupon requires a minimum purchase of ₹${coupon.minAmount}`, 400);
+        }
+
         BaseController.sendSuccess(res, 'Coupon applied successfully', {
             code: coupon.code,
             discount: coupon.discount,
-            name: coupon.name
+            name: coupon.name,
+            minAmount: coupon.minAmount
         });
     });
 }

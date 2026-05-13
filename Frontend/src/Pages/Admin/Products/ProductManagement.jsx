@@ -257,7 +257,7 @@ export default function ProductManagement() {
                                 }}
                               />
                             ) : (
-                              <PackageIcon className="w-6 h-6 text-slate-300" />
+                              <PackageIcon className="w-6 h-6 text-slate-500" />
                             )}
                           </div>
                           <div className="flex flex-col">

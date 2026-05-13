@@ -36,8 +36,8 @@ module.exports = {
 
    RATE_LIMIT: {
       WINDOW_MS: 15 * 60 * 1000,
-      MAX_REQUESTS: 100,
-      AUTH_MAX_REQUESTS: 5
+      MAX_REQUESTS: 1000,
+      AUTH_MAX_REQUESTS: 100
    },
    
    SOCKET: {

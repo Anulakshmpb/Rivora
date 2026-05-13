@@ -24,7 +24,7 @@ export default function PaymentFailed() {
 
                 <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight mb-8">
                     Something went <br />
-                    <span className="italic text-slate-400">incorrect.</span>
+                    <span className="italic text-slate-500">incorrect.</span>
                 </h1>
 
                 <p className="text-slate-500 text-lg font-medium leading-relaxed mb-12">
@@ -47,7 +47,7 @@ export default function PaymentFailed() {
                 </div>
 
                 <div className="mt-12 pt-10 border-t border-slate-100">
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-loose">
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-loose">
                         Need assistance? Our concierge is here to help. <br />
                         <span className="text-slate-900 cursor-pointer hover:underline">Contact Support</span> or call <span className="text-slate-900 font-black">1-800-RIVORA</span>
                     </p>

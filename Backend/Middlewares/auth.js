@@ -51,7 +51,7 @@ const authenticateUser = async (req, res, next) => {
             url: req.originalUrl,
             ip: req.ip
         });
-
+        res.clearCookie('token');
         return sendError(res, "Invalid or expired token", 401);
     }
 };
@@ -134,7 +134,7 @@ const authenticateUserOrAdmin = async (req, res, next) => {
         } catch (userErr) {
             console.log(userErr);
         }
-
+        res.clearCookie('token');
         return sendError(res, "Invalid or expired token", 401);
     } catch (error) {
         logger.error("Combined auth error", { error: error.message });

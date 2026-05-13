@@ -26,6 +26,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response.data,
     (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            window.dispatchEvent(new Event('auth-error'));
+            // We don't redirect here to avoid breaking guest checkout flow
+        }
         const errorData = error.response?.data || { message: 'Something went wrong' };
         
         return Promise.reject(errorData);

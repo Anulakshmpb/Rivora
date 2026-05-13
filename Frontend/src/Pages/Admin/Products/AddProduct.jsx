@@ -295,7 +295,7 @@ export default function AddProduct() {
 											value={name}
 											onChange={(e) => { setName(e.target.value); clearError('name'); }}
 											placeholder="e.g. Silk Drape Evening Gown"
-											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-semibold placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'ring-2 ring-rose-500/50' : ''}`}
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-semibold placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
 										{errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.name}</p>}
 									</div>
@@ -307,7 +307,7 @@ export default function AddProduct() {
 											value={code}
 											onChange={(e) => { setCode(e.target.value); clearError('code'); }}
 											placeholder="LAT-2026-BLK-01"
-											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-mono font-bold text-indigo-600 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.code ? 'ring-2 ring-rose-500/50' : ''}`}
+											className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-mono font-bold text-indigo-600 placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.code ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
 										{errors.code && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.code}</p>}
 									</div>
@@ -326,7 +326,7 @@ export default function AddProduct() {
 											value={description}
 											onChange={(e) => { setDescription(e.target.value); clearError('description'); }}
 											placeholder="Craft a compelling story for this luxury piece..."
-											className={`w-full p-6 bg-transparent border-none text-sm font-medium leading-relaxed placeholder:text-slate-300 outline-none resize-none ${errors.description ? 'ring-2 ring-rose-500/50' : ''}`}
+											className={`w-full p-6 bg-transparent border-none text-sm font-medium leading-relaxed placeholder:text-slate-500 outline-none resize-none ${errors.description ? 'ring-2 ring-rose-500/50' : ''}`}
 										/>
 									</div>
 									{errors.description && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.description}</p>}
@@ -387,7 +387,7 @@ export default function AddProduct() {
 
 								<div className="p-4 bg-slate-100 rounded-2xl border border-slate-100 text-center">
 									<p className="text-[12px]font-bold text-slate-500 uppercase tracking-[0.1em]">Recommended: 2400 × 3200px</p>
-									<p className="text-[12px]font-medium text-slate-300 mt-1 uppercase tracking-widest">Max 15MB per file • JPEG, PNG, WEBP</p>
+									<p className="text-[12px]font-medium text-slate-500 mt-1 uppercase tracking-widest">Max 15MB per file • JPEG, PNG, WEBP</p>
 								</div>
 								{errors.image && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider text-center mt-2">{errors.image}</p>}
 							</div>
@@ -587,7 +587,7 @@ export default function AddProduct() {
 												<button
 													type="button"
 													onClick={() => setIsPickingColor(false)}
-													className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2 py-2 hover:text-slate-600 transition-all"
+													className="text-[10px] font-black uppercase tracking-widest text-slate-500 px-2 py-2 hover:text-slate-600 transition-all"
 												>
 													Cancel
 												</button>

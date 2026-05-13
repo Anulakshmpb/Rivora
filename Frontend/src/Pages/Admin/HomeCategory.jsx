@@ -119,7 +119,7 @@ export default function HomeCategory() {
                                 <h2 className="text-lg font-black text-slate-900 leading-none mb-1">
                                     {editId ? 'Edit Category Item' : 'Add New Category Item'}
                                 </h2>
-                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
                                     {editId ? 'Update the details below' : 'Fill in all fields to create a new entry'}
                                 </p>
                             </div>
@@ -128,27 +128,27 @@ export default function HomeCategory() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Title</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Title</label>
                                     <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Summer Collection"
                                         className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Button Text</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Button Text</label>
                                     <input name="buttonText" value={form.buttonText} onChange={handleChange} placeholder="e.g. Shop Now"
                                         className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Link URL</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Link URL</label>
                                     <input name="link" value={form.link} onChange={handleChange} placeholder="e.g. /product-list?category=summer"
                                         className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Category Image</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Category Image</label>
                                     <div className="flex gap-4 items-center">
                                         <div className="relative flex-1">
                                             <input type="file" name="image" onChange={handleChange} accept="image/*" id="image-upload" className="hidden" />
                                             <label htmlFor="image-upload" className="flex items-center justify-center gap-3 px-4 py-3.5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer hover:border-indigo-500 hover:text-indigo-600 transition-all duration-300 group">
-                                                <svg className="w-5 h-5 text-slate-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg className="w-5 h-5 text-slate-500 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                                 </svg>
                                                 <span className="text-xs font-bold text-slate-500 group-hover:text-indigo-600 truncate">
@@ -166,7 +166,7 @@ export default function HomeCategory() {
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">Description</label>
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Description</label>
                                 <textarea name="description" value={form.description} onChange={handleChange} placeholder="Brief description of the category..."
                                     rows={3} className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 resize-none" />
                             </div>
@@ -197,7 +197,7 @@ export default function HomeCategory() {
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-black text-slate-900 leading-none mb-1">Category Items</h2>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{items.length} item{items.length !== 1 ? 's' : ''} total</p>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">{items.length} item{items.length !== 1 ? 's' : ''} total</p>
                                 </div>
                             </div>
                         </div>
@@ -205,7 +205,7 @@ export default function HomeCategory() {
                         {loading ? (
                             <div className="py-20 flex flex-col items-center">
                                 <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading...</p>
+                                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading...</p>
                             </div>
                         ) : items.length === 0 ? (
                             <div className="py-20 flex flex-col items-center text-center">
@@ -213,7 +213,7 @@ export default function HomeCategory() {
                                     <span className="text-4xl">📭</span>
                                 </div>
                                 <h3 className="text-base font-black text-slate-900 mb-1">No items yet</h3>
-                                <p className="text-sm font-medium text-slate-400">Add your first home category item using the form above</p>
+                                <p className="text-sm font-medium text-slate-500">Add your first home category item using the form above</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
@@ -221,14 +221,14 @@ export default function HomeCategory() {
                                     <thead>
                                         <tr>
                                             {['#', 'Image', 'Title', 'Description', 'Button', 'Actions'].map(h => (
-                                                <th key={h} className="px-4 py-2 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{h}</th>
+                                                <th key={h} className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {items.map((item, idx) => (
                                             <tr key={item._id} className="bg-slate-50/50 hover:bg-indigo-50/50 transition-all duration-300 group">
-                                                <td className="px-4 py-4 rounded-l-2xl text-xs font-black text-slate-400">{idx + 1}</td>
+                                                <td className="px-4 py-4 rounded-l-2xl text-xs font-black text-slate-500">{idx + 1}</td>
                                                 <td className="px-4 py-4">
                                                     <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
                                                         <img src={`${API_URL}${item.image}`} alt={item.title} className="w-full h-full object-cover"
@@ -239,7 +239,7 @@ export default function HomeCategory() {
                                                     <span className="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{item.title}</span>
                                                 </td>
                                                 <td className="px-4 py-4 max-w-xs">
-                                                    <p className="text-xs font-bold text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
+                                                    <p className="text-xs font-bold text-slate-500 line-clamp-2 leading-relaxed">{item.description}</p>
                                                 </td>
                                                 <td className="px-4 py-4">
                                                     <span className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-[10px] font-black text-indigo-600 uppercase tracking-wider shadow-sm">

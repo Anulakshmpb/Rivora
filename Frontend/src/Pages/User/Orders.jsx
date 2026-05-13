@@ -17,6 +17,19 @@ export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
     const { showToast } = useToast();
     const navigate = useNavigate();
+    
+    // Modal State
+    const [modalConfig, setModalConfig] = useState({
+        isOpen: false,
+        type: null,
+        orderId: null,
+        title: '',
+        message: '',
+        confirmText: '',
+        confirmColor: ''
+    });
+
+    const closeModal = () => setModalConfig(prev => ({ ...prev, isOpen: false }));
 
     const fetchOrders = async () => {
         try {
@@ -40,29 +53,44 @@ export default function Orders() {
         fetchOrders();
     }, []);
 
-    const handleCancelOrder = async (orderId) => {
-        if (!window.confirm('Are you sure you want to cancel this order? Pre-paid orders will be refunded to your wallet.')) return;
-        try {
-            const res = await axiosInstance.post(`/api/orders/${orderId}/cancel`);
-            if (res.success) {
-                showToast('Success', 'Order cancelled successfully', 'success');
-                fetchOrders();
-            }
-        } catch (err) {
-            showToast('Error', err.response?.data?.message || 'Failed to cancel order', 'error');
-        }
+    const handleCancelOrder = (orderId) => {
+        setModalConfig({
+            isOpen: true,
+            type: 'cancel',
+            orderId,
+            title: 'Cancel Order',
+            message: 'Are you sure you want to cancel this order? Pre-paid orders will be refunded to your wallet balance instantly.',
+            confirmText: 'Yes, Cancel Order',
+            confirmColor: 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/20'
+        });
     };
 
-    const handleReturnOrder = async (orderId) => {
-        if (!window.confirm('Request a return for this order? Refund will be credited to your wallet.')) return;
+    const handleReturnOrder = (orderId) => {
+        setModalConfig({
+            isOpen: true,
+            type: 'return',
+            orderId,
+            title: 'Request Return',
+            message: 'Would you like to request a return for this order? Once approved, the refund will be credited to your wallet.',
+            confirmText: 'Request Return',
+            confirmColor: 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20'
+        });
+    };
+
+    const executeAction = async () => {
+        const { type, orderId } = modalConfig;
+        closeModal();
+        
         try {
-            const res = await axiosInstance.post(`/api/orders/${orderId}/return`);
+            const endpoint = type === 'cancel' ? `/api/orders/${orderId}/cancel` : `/api/orders/${orderId}/return`;
+            const res = await axiosInstance.post(endpoint);
+            
             if (res.success) {
-                showToast('Success', 'Return requested successfully', 'success');
+                showToast('Success', type === 'cancel' ? 'Order cancelled successfully' : 'Return requested successfully', 'success');
                 fetchOrders();
             }
         } catch (err) {
-            showToast('Error', err.response?.data?.message || 'Failed to request return', 'error');
+            showToast('Error', err.response?.data?.message || `Failed to ${type} order`, 'error');
         }
     };
 
@@ -89,7 +117,7 @@ export default function Orders() {
             <div className="max-w-5xl mx-auto">
                 <div className="mb-12">
                     <h1 className="text-5xl font-serif font-medium tracking-tight">Your Orders</h1>
-                    <p className="text-slate-400 mt-3 font-medium">Track and manage your luxury selections</p>
+                    <p className="text-slate-500 mt-3 font-medium">Track and manage your luxury selections</p>
                 </div>
 
                 {orders.length === 0 ? (
@@ -97,7 +125,7 @@ export default function Orders() {
                         <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
                             <PackageIcon />
                         </div>
-                        <h2 className="text-2xl font-serif italic text-slate-400 mb-6">No orders yet</h2>
+                        <h2 className="text-2xl font-serif italic text-slate-500 mb-6">No orders yet</h2>
                         <button 
                             onClick={() => navigate('/product-list')}
                             className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all"
@@ -120,18 +148,18 @@ export default function Orders() {
                                     <div className="p-8 border-b border-slate-50 bg-slate-50/30 flex flex-wrap justify-between items-center gap-6">
                                         <div className="flex gap-10">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Order Placed</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Order Placed</p>
                                                 <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
                                                     <CalendarIcon />
                                                     {new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                 </div>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Total Amount</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Amount</p>
                                                 <p className="text-sm font-black text-slate-900">${order.totalAmount.toFixed(2)}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Order ID</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Order ID</p>
                                                 <p className="text-sm font-medium text-slate-500">#{order._id.slice(-8).toUpperCase()}</p>
                                             </div>
                                         </div>
@@ -153,7 +181,7 @@ export default function Orders() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <h4 className="text-base font-serif font-medium">{item.product?.name || 'Product'}</h4>
-                                                    <p className="text-xs text-slate-400 mt-1">Qty: {item.quantity} | Size: {item.size} | Color: {item.color}</p>
+                                                    <p className="text-xs text-slate-500 mt-1">Qty: {item.quantity} | Size: {item.size} | Color: {item.color}</p>
                                                     <p className="text-sm font-bold text-slate-900 mt-2">${item.price || item.product?.price}</p>
                                                 </div>
                                                 {order.orderStatus === 'Delivered' && (
@@ -193,6 +221,56 @@ export default function Orders() {
                     </div>
                 )}
             </div>
+
+            {/* Premium Confirmation Modal */}
+            <AnimatePresence>
+                {modalConfig.isOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={closeModal}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="relative bg-white w-full max-w-md rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] overflow-hidden"
+                        >
+                            <div className="p-10">
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 ${modalConfig.type === 'cancel' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}`}>
+                                    {modalConfig.type === 'cancel' ? (
+                                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    ) : (
+                                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" /></svg>
+                                    )}
+                                </div>
+                                <h3 className="text-3xl font-serif font-medium text-slate-900 mb-4">{modalConfig.title}</h3>
+                                <p className="text-slate-500 leading-relaxed font-medium">
+                                    {modalConfig.message}
+                                </p>
+                                
+                                <div className="mt-10 flex flex-col gap-3">
+                                    <button
+                                        onClick={executeAction}
+                                        className={`w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all shadow-xl active:scale-[0.98] ${modalConfig.confirmColor}`}
+                                    >
+                                        {modalConfig.confirmText}
+                                    </button>
+                                    <button
+                                        onClick={closeModal}
+                                        className="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-slate-900 transition-colors"
+                                    >
+                                        Keep Order
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

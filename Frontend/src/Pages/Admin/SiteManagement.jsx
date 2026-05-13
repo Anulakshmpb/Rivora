@@ -101,7 +101,7 @@ export default function SiteManagement() {
                                         <div className={`p-3.5 rounded-2xl ${page.bgLight} ${page.textColor} group-hover:scale-110 transition-transform duration-300`}>
                                             {page.icon}
                                         </div>
-                                        <div className="p-2 rounded-xl bg-slate-50 text-slate-300 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-all duration-300">
+                                        <div className="p-2 rounded-xl bg-slate-50 text-slate-500 group-hover:bg-indigo-50 group-hover:text-indigo-500 transition-all duration-300">
                                             <svg className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 17L17 7M17 7H7M17 7v10" />
                                             </svg>
@@ -120,7 +120,7 @@ export default function SiteManagement() {
 
                                     {/* Bottom label */}
                                     <div className="mt-5 pt-4 border-t border-slate-50">
-                                        <span className="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em] group-hover:text-indigo-400 transition-colors duration-300">
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] group-hover:text-indigo-400 transition-colors duration-300">
                                             Manage →
                                         </span>
                                     </div>
@@ -137,7 +137,7 @@ export default function SiteManagement() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [editId, setEditId] = useState(null);
-    const [form, setForm] = useState({ name: '', code: '', discount: '', expiryDate: '' });
+    const [form, setForm] = useState({ name: '', code: '', discount: '', minAmount: '', expiryDate: '' });
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const { showToast } = useToast();
@@ -162,13 +162,13 @@ export default function SiteManagement() {
     };
 
     const resetForm = () => {
-        setForm({ name: '', code: '', discount: '', expiryDate: '' });
+        setForm({ name: '', code: '', discount: '', minAmount: '', expiryDate: '' });
         setEditId(null);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.name || !form.code || !form.discount || !form.expiryDate) {
+        if (!form.name || !form.code || !form.discount || form.minAmount === '' || !form.expiryDate) {
             return showToast('Warning', 'All fields are required', 'warning');
         }
 
@@ -193,7 +193,7 @@ export default function SiteManagement() {
     const handleEdit = (coupon) => {
         setEditId(coupon._id);
         const date = new Date(coupon.expiryDate).toISOString().split('T')[0];
-        setForm({ name: coupon.name, code: coupon.code, discount: coupon.discount, expiryDate: date });
+        setForm({ name: coupon.name, code: coupon.code, discount: coupon.discount,minAmount:coupon.minAmount, expiryDate: date });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -281,6 +281,11 @@ export default function SiteManagement() {
                                                 className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
                                         </div>
                                         <div>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Minimum Amount (₹)</label>
+                                            <input type="number" name="minAmount" value={form.minAmount} onChange={handleChange} placeholder="0"
+                                                className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
+                                        </div>
+                                        <div>
                                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Expiry Date</label>
                                             <input type="date" name="expiryDate" value={form.expiryDate} onChange={handleChange}
                                                 className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
@@ -300,7 +305,7 @@ export default function SiteManagement() {
                             </div>
                         </div>
 
-                        {/* Coupon List Table */}
+                        {/*  Table */}
                         <div className="xl:col-span-2">
                             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden min-h-[500px]">
                                 <div className="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600 absolute top-0 left-0 right-0" />
@@ -323,19 +328,19 @@ export default function SiteManagement() {
                                     {loading ? (
                                         <div className="py-20 flex flex-col items-center">
                                             <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                                            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading Coupons...</p>
+                                            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading Coupons...</p>
                                         </div>
                                     ) : coupons.length === 0 ? (
                                         <div className="py-20 flex flex-col items-center text-center">
                                             <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-4 text-4xl">📭</div>
                                             <h3 className="text-base font-black text-slate-900 mb-1">No coupons yet</h3>
-                                            <p className="text-sm font-medium text-slate-400">Create your first discount code using the form</p>
+                                            <p className="text-sm font-medium text-slate-500">Create your first discount code using the form</p>
                                         </div>
                                     ) : (
                                         <table className="w-full border-separate border-spacing-y-3">
                                             <thead>
                                                 <tr>
-                                                    {['Code', 'Name', 'Discount', 'Expiry', 'Status', 'Actions'].map(h => (
+                                                    {['Code', 'Name', 'Discount','Min Amount','Expiry', 'Status', 'Actions'].map(h => (
                                                         <th key={h} className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{h}</th>
                                                     ))}
                                                 </tr>
@@ -348,6 +353,7 @@ export default function SiteManagement() {
                                                             <td className="px-4 py-4 rounded-l-2xl font-black text-indigo-600 text-sm">{coupon.code}</td>
                                                             <td className="px-4 py-4 font-bold text-slate-700 text-sm">{coupon.name}</td>
                                                             <td className="px-4 py-4 font-black text-slate-900 text-sm">{coupon.discount}% OFF</td>
+                                                            <td className="px-4 py-4 font-black text-slate-900 text-sm">{coupon.minAmount}₹</td>
                                                             <td className="px-4 py-4 text-xs font-bold text-slate-500 uppercase">
                                                                 {new Date(coupon.expiryDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                             </td>

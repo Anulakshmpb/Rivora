@@ -45,7 +45,7 @@ export default function ProfileWallet() {
         return (
             <div className="flex flex-col items-center justify-center h-64">
                 <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
-                <p className="text-slate-400 mt-4 font-medium">Synchronizing Wallet...</p>
+                <p className="text-slate-500 mt-4 font-medium">Synchronizing Wallet...</p>
             </div>
         );
     }
@@ -64,13 +64,13 @@ export default function ProfileWallet() {
                             <WalletIcon />
                         </div>
                         <div className="text-right">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Rivora Credits</span>
-                            <p className="text-xs font-medium text-slate-300 mt-1 italic">Exclusive Rewards Program</p>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Rivora Credits</span>
+                            <p className="text-xs font-medium text-slate-500 mt-1 italic">Exclusive Rewards Program</p>
                         </div>
                     </div>
                     
                     <div className="space-y-2">
-                        <span className="text-sm font-medium text-slate-400">Available Balance</span>
+                        <span className="text-sm font-medium text-slate-500">Available Balance</span>
                         <h2 className="text-6xl font-serif tracking-tighter">${wallet?.balance.toFixed(2)}</h2>
                     </div>
                     
@@ -90,9 +90,9 @@ export default function ProfileWallet() {
                 <div className="flex justify-between items-center mb-10">
                     <div>
                         <h3 className="text-2xl font-serif font-medium">Transaction History</h3>
-                        <p className="text-slate-400 text-sm mt-1">Recent activity and rewards</p>
+                        <p className="text-slate-500 text-sm mt-1">Recent activity and rewards</p>
                     </div>
-                    <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">View All</button>
+                    <button className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors">View All</button>
                 </div>
 
                 {wallet?.transactions.length === 0 ? (
@@ -100,7 +100,7 @@ export default function ProfileWallet() {
                         <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                             <CreditCardIcon />
                         </div>
-                        <p className="text-slate-400 text-sm font-medium italic">No transactions found in your history.</p>
+                        <p className="text-slate-500 text-sm font-medium italic">No transactions found in your history.</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
@@ -118,7 +118,7 @@ export default function ProfileWallet() {
                                     </div>
                                     <div>
                                         <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-900">{tx.description || 'Wallet Transaction'}</h4>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter mt-1">
                                             {new Date(tx.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                                         </p>
                                     </div>
@@ -127,7 +127,7 @@ export default function ProfileWallet() {
                                     <span className={`text-xl font-light tracking-tighter ${tx.type === 'Credit' ? 'text-emerald-600' : 'text-slate-900'}`}>
                                         {tx.type === 'Credit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                     </span>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-300 mt-1">Completed</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-1">Completed</p>
                                 </div>
                             </motion.div>
                         ))}

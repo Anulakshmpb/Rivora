@@ -2,6 +2,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Order = require('../Modals/Order');
 const Product = require('../Modals/Product');
+const User = require('../Modals/User');
 const { sendSuccess, sendError } = require('../utils/response');
 
 const createRazorpayOrder = async (req, res) => {
@@ -131,7 +132,7 @@ const placeCODOrder = async (req, res) => {
     }
 };
 
-const Wallet = require('../Modals/Wallet');
+
 
 const cancelOrder = async (req, res) => {
     try {
@@ -153,19 +154,19 @@ const cancelOrder = async (req, res) => {
         
         // Refund to wallet if payment status is 'Paid'
         if (order.paymentStatus === 'Paid') {
-            let wallet = await Wallet.findOne({ user: userId });
-            if (!wallet) {
-                wallet = await Wallet.create({ user: userId, balance: 0, transactions: [] });
-            }
+            const user = await User.findById(userId);
+            if (!user) return sendError(res, 'User not found', 404);
 
-            wallet.balance += order.totalAmount;
-            wallet.transactions.push({
+            if (!user.wallet) user.wallet = { balance: 0, transactions: [] };
+
+            user.wallet.balance += order.totalAmount;
+            user.wallet.transactions.push({
                 type: 'Credit',
                 amount: order.totalAmount,
                 description: `Refund for cancelled order #${order._id}`,
                 orderId: order._id
             });
-            await wallet.save();
+            await user.save();
             order.paymentStatus = 'Refunded';
         }
 
@@ -199,19 +200,19 @@ const returnOrder = async (req, res) => {
         // Return logic: For demo, we just set status to 'Returned' and refund to wallet
         order.orderStatus = 'Returned';
         
-        let wallet = await Wallet.findOne({ user: userId });
-        if (!wallet) {
-            wallet = await Wallet.create({ user: userId, balance: 0, transactions: [] });
-        }
+        const user = await User.findById(userId);
+        if (!user) return sendError(res, 'User not found', 404);
 
-        wallet.balance += order.totalAmount;
-        wallet.transactions.push({
+        if (!user.wallet) user.wallet = { balance: 0, transactions: [] };
+
+        user.wallet.balance += order.totalAmount;
+        user.wallet.transactions.push({
             type: 'Credit',
             amount: order.totalAmount,
             description: `Refund for returned order #${order._id}`,
             orderId: order._id
         });
-        await wallet.save();
+        await user.save();
         order.paymentStatus = 'Refunded';
 
         await order.save();
@@ -219,6 +220,80 @@ const returnOrder = async (req, res) => {
         return sendSuccess(res, 'Order return requested and processed', order);
     } catch (err) {
         return sendError(res, err.message, 500);
+    }
+};
+
+const OTPService = require('../Services/OtpService');
+
+const sendWalletOTP = async (req, res) => {
+    try {
+        const user = req.user;
+        await OTPService.createOTP(user, 'walletPayment');
+        return sendSuccess(res, 'OTP sent to your email for wallet payment confirmation');
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
+const verifyWalletOTP = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const userId = req.user._id;
+        await OTPService.verifyOTP(userId, otp, 'walletPayment');
+        return sendSuccess(res, 'OTP verified successfully');
+    } catch (err) {
+        return sendError(res, err.message, 400);
+    }
+};
+
+const placeWalletOrder = async (req, res) => {
+    try {
+        const { orderDetails } = req.body;
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
+        if (!user || !user.wallet || user.wallet.balance < orderDetails.totalAmount) {
+            return sendError(res, 'Insufficient wallet balance', 400);
+        }
+
+        // Deduct balance
+        user.wallet.balance -= orderDetails.totalAmount;
+        
+        const newOrder = new Order({
+            user: userId,
+            items: orderDetails.items,
+            shippingAddress: orderDetails.shippingAddress,
+            totalAmount: orderDetails.totalAmount,
+            discountAmount: orderDetails.discountAmount,
+            shippingCost: orderDetails.shippingCost,
+            taxAmount: orderDetails.taxAmount,
+            paymentMethod: 'wallet',
+            paymentStatus: 'Paid',
+            orderStatus: 'Processing'
+        });
+
+        await newOrder.save();
+
+        user.wallet.transactions.push({
+            type: 'Debit',
+            amount: orderDetails.totalAmount,
+            description: `Payment for order #${newOrder._id}`,
+            orderId: newOrder._id
+        });
+        await user.save();
+
+        // Update product stock
+        for (const item of orderDetails.items) {
+            await Product.findByIdAndUpdate(item.product, {
+                $inc: { quantity: -item.quantity }
+            });
+        }
+
+        const populatedOrder = await Order.findById(newOrder._id).populate('user', 'name email');
+        return sendSuccess(res, 'Order placed successfully using wallet balance', populatedOrder);
+    } catch (err) {
+        console.error('Error placing wallet order:', err);
+        return sendError(res, err.message || 'Internal server error', 500);
     }
 };
 
@@ -241,5 +316,8 @@ module.exports = {
     placeCODOrder,
     cancelOrder,
     returnOrder,
-    getUserOrders
+    getUserOrders,
+    sendWalletOTP,
+    verifyWalletOTP,
+    placeWalletOrder
 };

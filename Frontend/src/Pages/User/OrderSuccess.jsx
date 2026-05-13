@@ -9,7 +9,6 @@ export default function OrderSuccess() {
     const [similarProducts, setSimilarProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Fallback if accessed directly without state
     const order = location.state?.order || {
         _id: 'ORDER-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
         totalAmount: 0,
@@ -31,7 +30,6 @@ export default function OrderSuccess() {
                 const response = await axiosInstance.get('/api/products');
                 if (response.data?.success || response.success) {
                     const allProducts = response.data?.products || response.products || [];
-                    // Just pick 4 random or first 4 for now
                     setSimilarProducts(allProducts.slice(0, 4));
                 }
             } catch (error) {
@@ -46,7 +44,7 @@ export default function OrderSuccess() {
     return (
         <div className="min-h-screen bg-[#FDFDFB] pt-10 pb-16 px-4">
             <div className="max-w-7xl mx-auto">
-                {/* Success Header */}
+                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -55,7 +53,7 @@ export default function OrderSuccess() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-10" />
 
                     <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-                        {/* Left Container */}
+                        {/* Left */}
                         <div className="flex-1 text-center lg:text-left">
                             <div className="mb-4">
                                 <span className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-200">
@@ -94,7 +92,7 @@ export default function OrderSuccess() {
                             </div>
                         </div>
 
-                        {/* Right Container: Order Info Card */}
+                        {/* Right */}
                         <div className="w-full lg:w-[450px]">
                             <div className="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 border border-slate-100 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-1000" />
@@ -105,27 +103,27 @@ export default function OrderSuccess() {
                                             <BoxIcon className="w-8 h-8 text-blue-600" />
                                         </div>
                                         <div className="text-right">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Status</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Status</span>
                                             <span className="text-sm font-bold text-green-600 uppercase tracking-widest">Processing</span>
                                         </div>
                                     </div>
 
                                     <div className="space-y-8">
                                         <div className="space-y-2">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Order Number</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Order Number</span>
                                             <span className="text-3xl font-serif font-medium text-slate-900">#{order._id.toString().slice(-8).toUpperCase()}</span>
                                         </div>
 
                                         <div className="h-px bg-slate-200 w-full" />
 
                                         <div className="space-y-2">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Estimated Delivery</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Estimated Delivery</span>
                                             <span className="text-3xl font-serif font-medium text-slate-900">{formattedDelivery}</span>
                                         </div>
                                     </div>
 
                                     <div className="pt-8 border-t border-slate-100">
-                                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
                                             Need help? <br />
                                             <span className="text-blue-600 cursor-pointer hover:underline">Contact Atelier Support</span>
                                         </p>
@@ -139,7 +137,7 @@ export default function OrderSuccess() {
                 {/* Similar Products */}
                 <section className="mt-6 space-y-8 max-w-6xl">
                     <div className="flex flex-col items-center text-center space-y-4">
-                        <h2 className="text-3xl font-serif font-medium tracking-tight italic text-slate-400">
+                        <h2 className="text-3xl font-serif font-medium tracking-tight italic text-slate-500">
                             More from <span className="text-slate-900">The Collection</span>
                         </h2>
                         <div className="h-1 w-12 bg-slate-900 rounded-full" />
@@ -181,7 +179,7 @@ function ProductCard({ product }) {
             </div>
             <div className="space-y-1 text-center">
                 <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-widest">{product.name}</h3>
-                <span className="text-lg font-serif italic text-slate-400">${product.price}</span>
+                <span className="text-lg font-serif italic text-slate-500">${product.price}</span>
             </div>
         </motion.div>
     );
