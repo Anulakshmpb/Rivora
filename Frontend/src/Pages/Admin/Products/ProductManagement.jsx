@@ -318,20 +318,20 @@ export default function ProductManagement() {
         </div>
       </main>
 
-        <AddCategoryModal 
-          isOpen={isCategoryModalOpen} 
-          onClose={() => setIsCategoryModalOpen(false)} 
-          existingCategories={categories}
-          refreshCategories={fetchCategories}
-        />
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        existingCategories={categories}
+        refreshCategories={fetchCategories}
+      />
 
-        <DeleteConfirmationModal 
-          isOpen={deleteModal.isOpen}
-          onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
-          onConfirm={confirmDelete}
-          title="Delete Product"
-          message={`Are you sure you want to delete "${deleteModal.name}"? This action cannot be undone.`}
-        />
+      <DeleteConfirmationModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
+        onConfirm={confirmDelete}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${deleteModal.name}"? This action cannot be undone.`}
+      />
     </div>
   );
 }
@@ -593,7 +593,7 @@ function AddCategoryModal({ isOpen, onClose, existingCategories, refreshCategori
           </button>
         </div>
       </div>
-      <DeleteConfirmationModal 
+      <DeleteConfirmationModal
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, id: null, name: '' })}
         onConfirm={confirmDelete}
