@@ -9,10 +9,14 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkAuth = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const res = await axiosInstance.get('/api/auth/get-profile');
-                // The axios interceptor returns res.data, so res is the backend response object
-                // Backend returns { success: true, data: { user: { ... } } }
                 if (res.success && res.data && res.data.user) {
                     setUser(res.data.user);
                 } else {
@@ -27,6 +31,16 @@ export const AuthProvider = ({ children }) => {
         };
 
         checkAuth();
+    }, []);
+
+    useEffect(() => {
+        const handleAuthError = () => {
+            setUser(null);
+            localStorage.removeItem('token');
+        };
+
+        window.addEventListener('auth-error', handleAuthError);
+        return () => window.removeEventListener('auth-error', handleAuthError);
     }, []);
 
     const login = async (userData, token) => {

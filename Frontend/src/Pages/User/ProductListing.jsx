@@ -18,6 +18,7 @@ export default function ProductListing() {
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const searchQuery = searchParams.get('search') || '';
+	const categoryParam = searchParams.get('category') || '';
 
 	
 	useEffect(() => {
@@ -34,6 +35,10 @@ export default function ProductListing() {
 				if (catRes.success) {
 					setCategories(catRes.data.categories);
 				}
+
+				if (categoryParam) {
+					setSelectedCategories([categoryParam]);
+				}
 			} catch (error) {
 				console.error('Data fetch error:', error);
 			} finally {
@@ -43,9 +48,23 @@ export default function ProductListing() {
 		fetchData();
 	}, []);
 
+	useEffect(() => {
+		if (categoryParam) {
+			setSelectedCategories([categoryParam]);
+		}
+	}, [categoryParam]);
+
 	const filteredProducts = useMemo(() => {
+		const getCatName = (cat) => {
+			if (!cat) return null;
+			if (typeof cat === 'string') return cat;
+			if (typeof cat === 'object' && cat.name) return cat.name;
+			return null;
+		};
+
 		let result = products.filter(p => {
-			const matchesCat = selectedCategories.length === 0 || (Array.isArray(p.category) ? p.category.some(c => selectedCategories.includes(c)) : selectedCategories.includes(p.category));
+			const productCats = Array.isArray(p.category) ? p.category.map(getCatName) : [getCatName(p.category)];
+			const matchesCat = selectedCategories.length === 0 || productCats.some(c => selectedCategories.includes(c));
 			const matchesPrice = p.price <= priceRange[1];
 			const matchesStock = !inStockOnly || p.quantity > 0;
 			const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -228,7 +247,7 @@ export default function ProductListing() {
 											window.scrollTo({ top: 0, behavior: 'smooth' });
 										}}
 										disabled={currentPage === 1}
-										className="p-4 rounded-full border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+										className="p-4 rounded-full border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
 									>
 										<svg className="w-5 h-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -245,7 +264,7 @@ export default function ProductListing() {
 												}}
 												className={`w-12 h-12 rounded-full text-xs font-black transition-all ${currentPage === i + 1 
 													? 'bg-slate-900 text-white shadow-xl' 
-													: 'bg-white border border-slate-100 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+													: 'bg-white border border-slate-100 text-slate-500 hover:border-slate-900 hover:text-slate-900'
 												}`}
 											>
 												{i + 1}
@@ -259,7 +278,7 @@ export default function ProductListing() {
 											window.scrollTo({ top: 0, behavior: 'smooth' });
 										}}
 										disabled={currentPage === totalPages}
-										className="p-4 rounded-full border border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+										className="p-4 rounded-full border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
 									>
 										<svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../../api/authService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../Toast/ToastContext';
+import axiosInstance from '../../api/axiosInstance';
 const Otp = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -58,6 +59,11 @@ const Otp = () => {
                 const resetToken = response.data?.resetToken || response.data?.data?.resetToken || response.resetToken;
                 showToast("OTP verified successfully! Redirecting to reset password...", "success");
                 setTimeout(() => navigate('/reset-password', { state: { userId, resetToken }, replace: true }), 2000);
+            } else if (location.state?.isWalletPayment) {
+                const orderDetails = location.state?.orderDetails;
+                await axiosInstance.post('/api/orders/verify-wallet-otp', { otp });
+                showToast("OTP verified! Redirecting to wallet payment confirmation...", "success");
+                setTimeout(() => navigate('/wallet-payment', { state: { orderDetails }, replace: true }), 2000);
             } else {
                 const response = await authService.verifyEmail({ userId, otp });
 

@@ -1,60 +1,115 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { useAuth } from './AuthContext';
+import { useToast } from '../Toast/ToastContext';
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-    const { user } = useAuth();
+    const { showToast } = useToast();
+    const { user, loading: authLoading } = useAuth();
     const [cartItems, setCartItems] = useState([]);
+    const [appliedCoupon, setAppliedCoupon] = useState(() => {
+        const saved = localStorage.getItem('applied_coupon');
+        return saved ? JSON.parse(saved) : null;
+    });
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
-    // Initial load: from localStorage or Backend
     useEffect(() => {
         const loadCart = async () => {
-            if (user) {
+            if (authLoading) return;
+
+            const token = localStorage.getItem('token');
+            if (user && token && user.role === 'user') {
                 setIsLoading(true);
                 try {
                     const res = await axiosInstance.get('/api/cart');
-                    if (res.success) {
-                        // Transform backend items to frontend format if needed
-                        const items = res.data.items.map(item => ({
-                            id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
-                            product: item.product,
-                            quantity: item.quantity,
-                            size: item.size,
-                            color: item.color
-                        }));
+                    const success = res.success || res.data?.success;
+                    const data = res.data?.items ? res.data : (res.items ? res : res.data);
+
+                    if (success && data.items) {
+                        const items = data.items
+                            .filter(item => item.product)
+                            .map(item => ({
+                                id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
+                                product: item.product,
+                                quantity: item.quantity,
+                                size: item.size,
+                                color: item.color || 'default'
+                            }));
                         setCartItems(items);
                     }
                 } catch (error) {
                     console.error('Error fetching cart from backend:', error);
+                    if (error.statusCode === 401 || error.status === 401) {
+                        const savedCart = localStorage.getItem('atelier_cart');
+                        if (savedCart) {
+                            try {
+                                setCartItems(JSON.parse(savedCart));
+                            } catch (e) {}
+                        }
+                    }
                 } finally {
                     setIsLoading(false);
+                    setIsInitialized(true);
                 }
             } else {
                 const savedCart = localStorage.getItem('atelier_cart');
-                if (savedCart) setCartItems(JSON.parse(savedCart));
+                if (savedCart) {
+                    try {
+                        setCartItems(JSON.parse(savedCart));
+                    } catch (e) {
+                        console.error('Error parsing cart from localStorage');
+                    }
+                }
+                setIsInitialized(true);
             }
         };
         loadCart();
-    }, [user]);
+    }, [user, authLoading]);
 
-    // Save guest cart to localStorage
     useEffect(() => {
-        if (!user) {
-            localStorage.setItem('atelier_cart', JSON.stringify(cartItems));
+        if (isInitialized) {
+            if (!user) {
+                localStorage.setItem('atelier_cart', JSON.stringify(cartItems));
+            }
+            if (appliedCoupon) {
+                localStorage.setItem('applied_coupon', JSON.stringify(appliedCoupon));
+            } else {
+                localStorage.removeItem('applied_coupon');
+            }
         }
-    }, [cartItems, user]);
+    }, [cartItems, appliedCoupon, user, isInitialized]);
 
-    const addToCart = async (product, quantity, size, color) => {
+    const addToGuestCart = (product, quantity, size, itemColor) => {
         const newItem = { 
-            id: `${product._id}-${size}-${color || 'default'}`, 
+            id: `${product._id}-${size}-${itemColor}`, 
             product, 
             quantity, 
             size, 
-            color 
+            color: itemColor 
         };
+
+        setCartItems(prevItems => {
+            const existingItemIndex = prevItems.findIndex(
+                item => item.product._id === product._id && 
+                        item.size === size && 
+                        (item.color || 'default') === itemColor
+            );
+
+            if (existingItemIndex >= 0) {
+                const updatedItems = [...prevItems];
+                updatedItems[existingItemIndex].quantity += quantity;
+                return updatedItems;
+            } else {
+                return [...prevItems, newItem];
+            }
+        });
+    };
+
+    const addToCart = async (product, quantity, size, color = 'default') => {
+        const itemColor = color || 'default';
 
         if (user) {
             try {
@@ -62,35 +117,35 @@ export function CartProvider({ children }) {
                     productId: product._id,
                     quantity,
                     size,
-                    color
+                    color: itemColor
                 });
-                if (res.success) {
-                    const items = res.data.items.map(item => ({
-                        id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
-                        product: item.product,
-                        quantity: item.quantity,
-                        size: item.size,
-                        color: item.color
-                    }));
+                const success = res.success || res.data?.success;
+                const data = res.data?.items ? res.data : (res.items ? res : res.data);
+
+                if (success && data.items) {
+                    const items = data.items
+                        .filter(item => item.product)
+                        .map(item => ({
+                            id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
+                            product: item.product,
+                            quantity: item.quantity,
+                            size: item.size,
+                            color: item.color || 'default'
+                        }));
                     setCartItems(items);
+                    showToast("Product added to cart successfully", "success");
                 }
             } catch (error) {
-                console.error('Error adding to cart:', error);
+                showToast(error.message, "error");  
+                const isAuthError = error.error?.statusCode === 401 || error.statusCode === 401 || error.message?.includes('token');
+                
+                if (isAuthError) {
+                    // Fallback to guest cart if token expired
+                    addToGuestCart(product, quantity, size, itemColor);
+                }
             }
         } else {
-            setCartItems(prevItems => {
-                const existingItemIndex = prevItems.findIndex(
-                    item => item.product._id === product._id && item.size === size && item.color === color
-                );
-
-                if (existingItemIndex >= 0) {
-                    const updatedItems = [...prevItems];
-                    updatedItems[existingItemIndex].quantity += quantity;
-                    return updatedItems;
-                } else {
-                    return [...prevItems, newItem];
-                }
-            });
+            addToGuestCart(product, quantity, size, itemColor);
         }
     };
 
@@ -116,9 +171,10 @@ export function CartProvider({ children }) {
                         color: item.color
                     }));
                     setCartItems(items);
+                    showToast("Product removed from cart successfully", "success");
                 }
             } catch (error) {
-                console.error('Error removing from cart:', error);
+                showToast(error.message, "error");
             }
         } else {
             setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
@@ -147,9 +203,10 @@ export function CartProvider({ children }) {
                         color: item.color
                     }));
                     setCartItems(items);
+                    showToast("Product quantity updated successfully", "success");
                 }
             } catch (error) {
-                console.error('Error updating quantity:', error);
+                showToast(error.message, "error");
             }
         } else {
             setCartItems(prevItems => 
@@ -166,7 +223,7 @@ export function CartProvider({ children }) {
                 await axiosInstance.delete('/api/cart/clear');
                 setCartItems([]);
             } catch (error) {
-                console.error('Error clearing cart:', error);
+                showToast(error.message, "error");
             }
         } else {
             setCartItems([]);
@@ -185,6 +242,8 @@ export function CartProvider({ children }) {
             clearCart,
             cartTotalItems,
             cartTotalPrice,
+            appliedCoupon,
+            setAppliedCoupon,
             isLoading
         }}>
             {children}

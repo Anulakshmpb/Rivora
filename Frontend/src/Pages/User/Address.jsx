@@ -11,6 +11,8 @@ export default function Address() {
     const [editingIndex, setEditingIndex] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleteIndex, setDeleteIndex] = useState(null);
 
     const [form, setForm] = useState({
         street: '',
@@ -112,14 +114,24 @@ export default function Address() {
         }
     };
 
-    const handleDelete = async (index) => {
-        if (!window.confirm("Remove this address?")) return;
+    const openDeleteModal = (index) => {
+        setDeleteIndex(index);
+        setDeleteModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (deleteIndex === null) return;
         try {
-            const updatedAddresses = addresses.filter((_, i) => i !== index);
+            const updatedAddresses = addresses.filter((_, i) => i !== deleteIndex);
             await authService.updateProfile({ addresses: updatedAddresses });
+            setDeleteModalOpen(false);
+            setDeleteIndex(null);
+            setSuccess('Address removed successfully');
             fetchProfile();
+            setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError('Failed to delete address.');
+            setDeleteModalOpen(false);
         }
     };
 
@@ -186,7 +198,7 @@ export default function Address() {
 
                             <div className="border-t border-[#F3F4F6] flex items-center gap-6">
                                 <button onClick={() => openEditModal(index)} className="text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors">Edit</button>
-                                <button onClick={() => handleDelete(index)} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Remove</button>
+                                <button onClick={() => openDeleteModal(index)} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Remove</button>
                             </div>
                         </div>
                     ))}
@@ -329,6 +341,37 @@ export default function Address() {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Delete Confirmation Modal */}
+            {deleteModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-[#111827]/40 backdrop-blur-sm transition-opacity" onClick={() => setDeleteModalOpen(false)}></div>
+                    <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-10 text-center">
+                            <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </div>
+                            <h3 className="text-2xl font-extrabold text-[#111827] mb-3">Remove Address?</h3>
+                            <p className="text-[#6B7280] leading-relaxed mb-8 font-medium">
+                                This will permanently delete this shipping destination from your profile. This action cannot be undone.
+                            </p>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setDeleteModalOpen(false)}
+                                    className="flex-1 py-4 bg-gray-50 text-[#6B7280] font-bold rounded-2xl hover:bg-gray-100 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDelete}
+                                    className="flex-1 py-4 bg-rose-500 text-white font-bold rounded-2xl hover:bg-rose-600 shadow-lg shadow-rose-200 transition-all active:scale-95"
+                                >
+                                    Yes, Remove
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

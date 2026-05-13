@@ -68,7 +68,7 @@ const AdminLogin = () => {
                             <img src={Logo} alt="LOGO" className="h-12 w-auto" />
                         </div>
                         <p className="text-sm font-medium uppercase tracking-[0.2em] text-indigo-400 mb-2 font-mono">System Authentication</p>
-                        <p className="text-slate-400 text-xs">Enter administrative credentials to proceed</p>
+                        <p className="text-slate-500 text-xs">Enter administrative credentials to proceed</p>
                     </div>
 
                     {error && (

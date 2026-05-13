@@ -82,7 +82,35 @@ const UserSchema = new mongoose.Schema({
     verificationOTP: String,
     otpExpires: Date,
     resetPasswordToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    wallet: {
+        balance: {
+            type: Number,
+            default: 0
+        },
+        transactions: [
+            {
+                type: {
+                    type: String,
+                    enum: ['Credit', 'Debit'],
+                    required: true
+                },
+                amount: {
+                    type: Number,
+                    required: true
+                },
+                description: String,
+                orderId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Order'
+                },
+                date: {
+                    type: Date,
+                    default: Date.now
+                }
+            }
+        ]
+    }
 }, {
     timestamps: true
 });

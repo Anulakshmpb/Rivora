@@ -102,7 +102,7 @@ export default function ProductDetails() {
     <div className="py-24 bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pb-20">
 
       <div className="max-w-[1440px] mx-auto px-8 pt-12">
-        <nav className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-12">
+        <nav className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-12">
           <a onClick={() => navigate('/')} className="hover:text-black cursor-pointer transition-colors">Atelier</a>
           <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
           <a onClick={() => navigate('/shop')} className="hover:text-black cursor-pointer transition-colors">Shop</a>
@@ -157,10 +157,10 @@ export default function ProductDetails() {
 
               <div className="absolute top-8 right-8 flex flex-col gap-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
                 <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
-                  <HeartIcon className="w-5 h-5 text-slate-400 group-hover/btn:text-rose-500 transition-colors" />
+                  <HeartIcon className="w-5 h-5 text-slate-500 group-hover/btn:text-rose-500 transition-colors" />
                 </button>
                 <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
-                  <ShareIcon className="w-5 h-5 text-slate-400 group-hover/btn:text-indigo-500 transition-colors" />
+                  <ShareIcon className="w-5 h-5 text-slate-500 group-hover/btn:text-indigo-500 transition-colors" />
                 </button>
               </div>
 
@@ -182,11 +182,11 @@ export default function ProductDetails() {
           <div className="flex flex-col justify-center">
             <header className="space-y-4 mb-10">
               <div className="flex items-center gap-4">
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Essential Collection</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Essential Collection</span>
                 <div className="h-[1px] w-12 bg-slate-200" />
                 <div className="flex items-center gap-1">
                   <StarIcon className="w-3 h-3 text-yellow-500" />
-                  <span className="text-[10px] font-black text-slate-400 italic">4.9 (124 reviews)</span>
+                  <span className="text-[10px] font-black text-slate-500 italic">4.9 (124 reviews)</span>
                 </div>
               </div>
               <h1 className="text-6xl font-serif font-medium tracking-tight leading-tight">
@@ -208,7 +208,7 @@ export default function ProductDetails() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Hue</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Hue</h3>
                 <div className="flex gap-4">
                   {(Array.isArray(product.color) ? product.color : (product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : [])).map((color, idx) => (
                     <button
@@ -224,7 +224,7 @@ export default function ProductDetails() {
               {/* Size */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center max-w-md">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Metric</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Metric</h3>
                   <button className="text-[9px] font-black uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-0.5">Size Guide</button>
                 </div>
                 <div className="flex gap-3">
@@ -234,7 +234,7 @@ export default function ProductDetails() {
                       onClick={() => setSelectedSize(size)}
                       className={`w-16 h-14 flex items-center justify-center rounded-2xl text-xs font-black transition-all border ${selectedSize === size
                         ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-900/20'
-                        : 'bg-white border-slate-200 text-slate-400 hover:border-slate-900 hover:text-slate-900'
+                        : 'bg-white border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900'
                         }`}
                     >
                       {size}
@@ -248,14 +248,14 @@ export default function ProductDetails() {
                 <div className="flex items-center bg-slate-50 rounded-2xl border border-slate-100 p-1">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
+                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
                   >
                     —
                   </button>
                   <span className="w-12 text-center font-black text-sm">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-12 h-12 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
+                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
                   >
                     +
                   </button>
@@ -280,7 +280,7 @@ export default function ProductDetails() {
                   Add to Bag
                 </button>
                 <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group">
-                  <HeartIcon className="w-5 h-5 text-slate-300 group-hover:text-red-500 group-hover:scale-110 transition-all" />
+                  <HeartIcon className="w-5 h-5 text-slate-500 group-hover:text-red-500 group-hover:scale-110 transition-all" />
                 </button>
               </div>
 
@@ -326,7 +326,7 @@ function Feature({ icon, title, desc }) {
       </div>
       <div>
         <h4 className="text-[10px] font-black uppercase tracking-[0.1em] mb-1 text-slate-900">{title}</h4>
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{desc}</p>
+        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{desc}</p>
       </div>
     </div>
   );
@@ -355,11 +355,11 @@ function ProductCard({ product }) {
 
         {/* Quick Wishlist */}
         <button onClick={(e) => { e.stopPropagation(); addToWishlist(product); navigate('/wishlist'); }} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/40 shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-white hover:scale-110">
-          <HeartIcon className="w-4 h-4 text-slate-400 hover:text-rose-500 transition-colors" />
+          <HeartIcon className="w-4 h-4 text-slate-500 hover:text-rose-500 transition-colors" />
         </button>
       </div>
       <div className="space-y-2 text-center">
-        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] block">
+        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block">
           {Array.isArray(product.category) ? product.category[0] : (product.category || 'Collection')}
         </span>
         <h3 className="text-sm font-bold text-slate-800 tracking-tight uppercase group-hover:text-slate-500 transition-colors">{product.name}</h3>

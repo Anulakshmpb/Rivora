@@ -49,7 +49,7 @@ export default function SideBar() {
                     <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white text-lg">R</div>
                     RIVORA<span className="text-indigo-600">.</span>
                 </h2>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 ml-10">Management</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1 ml-10">Management</p>
             </div>
 
             <nav className="flex-1 space-y-2">

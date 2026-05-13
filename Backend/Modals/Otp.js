@@ -17,7 +17,8 @@ const otpSchema = new mongoose.Schema({
   type:String,
   enum:[
    "emailVerification",
-   "passwordReset"
+   "passwordReset",
+   "walletPayment"
   ]
  },
 

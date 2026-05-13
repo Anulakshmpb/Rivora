@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
 
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
                 )}
             </div>
             <div>
-                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">{label}</p>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">{label}</p>
                 <h3 className="text-3xl font-black text-slate-900 tracking-tight">{value}</h3>
             </div>
         </div>
@@ -62,7 +62,7 @@ const AdminDashboard = () => {
                         <div className="p-6 border-b border-slate-50 flex justify-between items-center">
                             <div>
                                 <h3 className="text-lg font-black text-slate-900 tracking-tight">Recent User Registrations</h3>
-                                <p className="text-slate-400 text-xs font-medium uppercase tracking-[0.15em] mt-1">Live Feed</p>
+                                <p className="text-slate-500 text-xs font-medium uppercase tracking-[0.15em] mt-1">Live Feed</p>
                             </div>
                             <button className="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-all underline decoration-2 underline-offset-4 tracking-widest uppercase">
                                 Export Data
@@ -72,11 +72,11 @@ const AdminDashboard = () => {
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-slate-50/50">
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">User ID</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Full Name</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Integrity Score</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Registered</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">User ID</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Full Name</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Email Address</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Integrity Score</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Registered</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
                                     ].map((user, idx) => (
                                         <tr key={idx} className="hover:bg-slate-50/30 transition-colors group cursor-pointer">
                                             <td className="px-6 py-4">
-                                                <span className="text-xs font-mono font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">{user.id}</span>
+                                                <span className="text-xs font-mono font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">{user.id}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className="text-sm font-bold text-slate-900">{user.name}</span>
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className="text-xs font-bold text-slate-400 tracking-tight">{user.date}</span>
+                                                <span className="text-xs font-bold text-slate-500 tracking-tight">{user.date}</span>
                                             </td>
                                         </tr>
                                     ))}

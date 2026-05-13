@@ -1,5 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
 import best from '../../Images/best.png';
 import women from '../../Images/womens.png';
 import men from '../../Images/men.png';
@@ -12,49 +13,57 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const Banner = () => {
+	const navigate = useNavigate();
 
 	const banners = [
 		{
 			img: summer,
 			title: "Summer Collection 2026",
 			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now"
+			btn: "Shop Now",
+			category: "Summer Collections"
 		},
 		{
 			img: trend,
 			title: "Trending Fashion",
 			desc: "Upgrade your wardrobe with the latest global trends and styles.",
-			btn: "Explore"
+			btn: "Explore",
+			category: "Trending Collections"
 		},
 		{
 			img: Season,
 			title: "Premium Collection",
 			desc: "Style that defines your unique personality and elegance.",
-			btn: "View Collection"
+			btn: "View Collection",
+			category: "Ethnic Wear"
 		},
 		{
 			img: men,
 			title: "Men's Essentials",
 			desc: "Classic and contemporary pieces for every occasion.",
-			btn: "Shop Men"
+			btn: "Shop Men",
+			category: "Men's Cllections"
 		},
 		{
 			img: women,
 			title: "Women's Elegance",
 			desc: "Sophisticated designs that celebrate modern femininity.",
-			btn: "Shop Women"
+			btn: "Shop Women",
+			category: "Women's Collections"
 		},
 		{
 			img: best,
 			title: "Best Sellers",
 			desc: "Explore our most-loved pieces across all categories.",
-			btn: "Shop All"
+			btn: "Shop All",
+			category: ""
 		},
 		{
 			img: kids,
 			title: "Kids Collection",
 			desc: "Discover the latest trends and styles for your little ones.",
-			btn: "Shop Kids"
+			btn: "Shop Kids",
+			category: "Kid's Collections"
 		}
 	];
 
@@ -77,17 +86,13 @@ const Banner = () => {
 				{banners.map((item, index) => (
 					<SwiperSlide key={index}>
 						<div className="relative w-full h-full overflow-hidden">
-							{/* Background Image with better visibility */}
 							<img
 								src={item.img}
 								alt={item.title}
 								className="w-full h-full object-cover object-center transition-transform duration-700 ease-in-out group-hover:scale-105"
 							/>
 
-							{/* Gradient overlay for depth */}
 							<div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-
-							{/* Modern Content Card with Glassmorphism */}
 							<div className="absolute top-2/3 left-8 md:left-24 -translate-y-1/2 max-w-sm">
 								<div className="backdrop-blur-md bg-white/10 p-4 md:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-1 transform transition-all duration-500 hover:bg-white/15">
 									<h1 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight">
@@ -99,7 +104,15 @@ const Banner = () => {
 									</p>
 
 									<div className="pt-4">
-										<button className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300">
+										<button 
+											onClick={() => {
+												const path = item.category 
+													? `/product-list?category=${encodeURIComponent(item.category)}` 
+													: '/product-list';
+												navigate(path);
+											}}
+											className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300"
+										>
 											<span className="relative z-10 transition-colors duration-300 group-hover:text-white">
 												{item.btn}
 											</span>
@@ -112,9 +125,6 @@ const Banner = () => {
 					</SwiperSlide>
 				))}
 			</Swiper>
-
-			{/* Custom styling for Swiper navigation and pagination */}
-			{/* Modern Swiper Navigation Styling */}
 
 			<style jsx="true">{`
 

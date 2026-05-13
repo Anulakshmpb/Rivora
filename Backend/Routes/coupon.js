@@ -8,6 +8,7 @@ router.get('/', authenticateAdmin, CouponController.getAll);
 router.post('/', authenticateAdmin, CouponController.create);
 router.put('/:id', authenticateAdmin, CouponController.update);
 router.delete('/:id', authenticateAdmin, CouponController.delete);
+router.get('/active', authenticateUserOrAdmin, CouponController.getActive);
 router.post('/validate', authenticateUserOrAdmin, CouponController.validate);
 
 module.exports = router;
