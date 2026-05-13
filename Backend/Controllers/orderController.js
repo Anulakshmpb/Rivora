@@ -310,6 +310,43 @@ const getUserOrders = async (req, res) => {
     }
 };
 
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate('user', 'name email mobile')
+            .populate('items.product')
+            .sort({ createdAt: -1 });
+            
+        return sendSuccess(res, 'All orders fetched successfully', orders);
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body;
+        
+        const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
+        if (!validStatuses.includes(status)) {
+            return sendError(res, 'Invalid status', 400);
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            { orderStatus: status },
+            { new: true }
+        ).populate('user', 'name email');
+
+        if (!order) return sendError(res, 'Order not found', 404);
+
+        return sendSuccess(res, `Order status updated to ${status}`, order);
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
 module.exports = {
     createRazorpayOrder,
     verifyPayment,
@@ -319,5 +356,7 @@ module.exports = {
     getUserOrders,
     sendWalletOTP,
     verifyWalletOTP,
-    placeWalletOrder
+    placeWalletOrder,
+    getAllOrders,
+    updateOrderStatus
 };

@@ -29,6 +29,11 @@ export default function Orders() {
         confirmColor: ''
     });
 
+    const [detailsModal, setDetailsModal] = useState({
+        isOpen: false,
+        order: null
+    });
+
     const closeModal = () => setModalConfig(prev => ({ ...prev, isOpen: false }));
 
     const fetchOrders = async () => {
@@ -74,6 +79,13 @@ export default function Orders() {
             message: 'Would you like to request a return for this order? Once approved, the refund will be credited to your wallet.',
             confirmText: 'Request Return',
             confirmColor: 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20'
+        });
+    };
+
+    const handleViewDetails = (order) => {
+        setDetailsModal({
+            isOpen: true,
+            order
         });
     };
 
@@ -128,7 +140,7 @@ export default function Orders() {
                         <h2 className="text-2xl font-serif italic text-slate-500 mb-6">No orders yet</h2>
                         <button 
                             onClick={() => navigate('/product-list')}
-                            className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all"
+                            className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all"
                         >
                             Explore Collection
                         </button>
@@ -148,22 +160,22 @@ export default function Orders() {
                                     <div className="p-8 border-b border-slate-50 bg-slate-50/30 flex flex-wrap justify-between items-center gap-6">
                                         <div className="flex gap-10">
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Order Placed</p>
+                                                <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-1">Order Placed</p>
                                                 <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
                                                     <CalendarIcon />
                                                     {new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
                                                 </div>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Amount</p>
+                                                <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-1">Total Amount</p>
                                                 <p className="text-sm font-black text-slate-900">${order.totalAmount.toFixed(2)}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Order ID</p>
+                                                <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-1">Order ID</p>
                                                 <p className="text-sm font-medium text-slate-500">#{order._id.slice(-8).toUpperCase()}</p>
                                             </div>
                                         </div>
-                                        <div className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border ${getStatusColor(order.orderStatus)}`}>
+                                        <div className={`px-5 py-2 rounded-2xl text-[12px] font-black uppercase tracking-widest border ${getStatusColor(order.orderStatus)}`}>
                                             {order.orderStatus}
                                         </div>
                                     </div>
@@ -185,7 +197,7 @@ export default function Orders() {
                                                     <p className="text-sm font-bold text-slate-900 mt-2">${item.price || item.product?.price}</p>
                                                 </div>
                                                 {order.orderStatus === 'Delivered' && (
-                                                    <button className="text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 hover:text-slate-500 hover:border-slate-300 transition-all">
+                                                    <button className="text-[12px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 hover:text-slate-500 hover:border-slate-300 transition-all">
                                                         Write Review
                                                     </button>
                                                 )}
@@ -198,7 +210,7 @@ export default function Orders() {
                                         {['Processing', 'Pending'].includes(order.orderStatus) && (
                                             <button 
                                                 onClick={() => handleCancelOrder(order._id)}
-                                                className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all"
+                                                className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all"
                                             >
                                                 Cancel Order
                                             </button>
@@ -206,13 +218,16 @@ export default function Orders() {
                                         {order.orderStatus === 'Delivered' && (
                                             <button 
                                                 onClick={() => handleReturnOrder(order._id)}
-                                                className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-amber-600 border border-amber-100 hover:bg-amber-50 transition-all"
+                                                className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-amber-600 border border-amber-100 hover:bg-amber-50 transition-all"
                                             >
                                                 Return Items
                                             </button>
                                         )}
-                                        <button className="px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-black transition-all">
-                                            Track Shipment
+                                         <button 
+                                            onClick={() => handleViewDetails(order)}
+                                            className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-black transition-all"
+                                        >
+                                            View Details
                                         </button>
                                     </div>
                                 </motion.div>
@@ -255,16 +270,137 @@ export default function Orders() {
                                 <div className="mt-10 flex flex-col gap-3">
                                     <button
                                         onClick={executeAction}
-                                        className={`w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all shadow-xl active:scale-[0.98] ${modalConfig.confirmColor}`}
+                                        className={`w-full py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] text-white transition-all shadow-xl active:scale-[0.98] ${modalConfig.confirmColor}`}
                                     >
                                         {modalConfig.confirmText}
                                     </button>
                                     <button
                                         onClick={closeModal}
-                                        className="w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-slate-900 transition-colors"
+                                        className="w-full py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-slate-900 transition-colors"
                                     >
                                         Keep Order
                                     </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Order Details Modal */}
+            <AnimatePresence>
+                {detailsModal.isOpen && detailsModal.order && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setDetailsModal({ isOpen: false, order: null })}
+                            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                            className="relative bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                        >
+                            {/* Modal Header */}
+                            <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                                <div>
+                                    <h3 className="text-2xl font-serif font-medium text-slate-900">Order Details</h3>
+                                    <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mt-1">#{detailsModal.order._id.toUpperCase()}</p>
+                                </div>
+                                <button 
+                                    onClick={() => setDetailsModal({ isOpen: false, order: null })}
+                                    className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm"
+                                >
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                                    {/* Shipping Address */}
+                                    <div>
+                                        <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-4">Shipping Destination</h4>
+                                        <div className="text-sm font-bold text-slate-900 leading-relaxed">
+                                            {detailsModal.order.shippingAddress.street}<br />
+                                            {detailsModal.order.shippingAddress.apartment && `${detailsModal.order.shippingAddress.apartment}, `}
+                                            {detailsModal.order.shippingAddress.city}, {detailsModal.order.shippingAddress.state}<br />
+                                            {detailsModal.order.shippingAddress.pinCode}, {detailsModal.order.shippingAddress.country}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Payment Info */}
+                                    <div>
+                                        <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-4">Payment Information</h4>
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-medium text-slate-500">Method</span>
+                                                <span className="text-xs font-black uppercase tracking-widest text-slate-900">{detailsModal.order.paymentMethod}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-xs font-medium text-slate-500">Status</span>
+                                                <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter ${detailsModal.order.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                    {detailsModal.order.paymentStatus}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Items Breakdown */}
+                                <div className="mb-10">
+                                    <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-6">Items Summary</h4>
+                                    <div className="space-y-4">
+                                        {detailsModal.order.items.map((item, i) => (
+                                            <div key={i} className="flex gap-4 items-center bg-slate-50/50 p-4 rounded-2xl border border-slate-50">
+                                                <div className="w-16 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                                                    <img 
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'} 
+                                                        alt={item.product?.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h5 className="text-sm font-bold text-slate-900">{item.product?.name}</h5>
+                                                    <p className="text-[12px] text-slate-600 mt-0.5">{item.size} / {item.color} | Qty: {item.quantity}</p>
+                                                </div>
+                                                <div className="text-sm font-black text-slate-900">
+                                                    ${(item.price * item.quantity).toFixed(2)}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Pricing Breakdown */}
+                                <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
+                                    <div className="space-y-3 mb-6 pb-6 border-b border-white/10">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-white/50 font-medium">Subtotal</span>
+                                            <span className="font-bold">${(detailsModal.order.totalAmount - (detailsModal.order.shippingCost || 0) - (detailsModal.order.taxAmount || 0) + (detailsModal.order.discountAmount || 0)).toFixed(2)}</span>
+                                        </div>
+                                        {detailsModal.order.discountAmount > 0 && (
+                                            <div className="flex justify-between items-center text-sm text-emerald-400">
+                                                <span className="font-medium">Discount Applied</span>
+                                                <span className="font-bold">-${detailsModal.order.discountAmount.toFixed(2)}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-white/50 font-medium">Shipping</span>
+                                            <span className="font-bold">${(detailsModal.order.shippingCost || 0).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-white/50 font-medium">Estimated Tax</span>
+                                            <span className="font-bold">${(detailsModal.order.taxAmount || 0).toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-black uppercase tracking-[0.3em] text-white/40">Total Amount</span>
+                                        <span className="text-3xl font-serif tracking-tighter">${detailsModal.order.totalAmount.toFixed(2)}</span>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

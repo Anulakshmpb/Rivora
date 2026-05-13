@@ -34,12 +34,13 @@ import HomeCategory from './Pages/Admin/HomeCategory';
 import OrderSuccess from './Pages/User/OrderSuccess';
 import PaymentFailed from './Pages/User/PaymentFailed';
 import WalletPayment from './Pages/User/WalletPayment';
+import Order from './Pages/Admin/Order';
 
 
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category', '/site/coupons', '/site/reviews'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category', '/site/coupons', '/site/reviews', '/admin/orders'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -93,6 +94,14 @@ function AppContent() {
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <ProductManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <Order />
             </ProtectedRoute>
           }
         />

@@ -11,6 +11,7 @@ const {
 	deleteUser,
 	getDashboardStats
 } = require('../Controllers/AuthController');
+const { getAllOrders, updateOrderStatus } = require('../Controllers/orderController');
 const { authenticateAdmin } = require('../Middlewares/auth');
 
 const router = express.Router();
@@ -25,5 +26,9 @@ router.post('/users/:id/unban', authenticateAdmin, unbanUser);
 router.post('/users/:id/force-logout', authenticateAdmin, forceLogoutUser);
 router.patch('/user/:id/status', authenticateAdmin, updateUserStatus);
 router.get('/stats', authenticateAdmin, getDashboardStats);
+
+// Order Management
+router.get('/orders', authenticateAdmin, getAllOrders);
+router.patch('/orders/:orderId/status', authenticateAdmin, updateOrderStatus);
 
 module.exports = router;
