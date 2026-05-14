@@ -435,7 +435,7 @@ export default function AddProduct() {
 												className={`w-full px-5 py-4 bg-slate-100 border-none rounded-2xl text-sm font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none appearance-none cursor-pointer disabled:opacity-50 ${errors.category ? 'ring-2 ring-rose-500/50' : ''}`}
 											// disabled={fetchingCategories}
 											>
-												<option value="" disabled selected>+ Add Category</option>
+												<option value="" disabled>+ Add Category</option>
 												{categories.map(category => (
 													<option key={category._id} value={category.name}>
 														{category.name}

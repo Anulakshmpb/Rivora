@@ -9,7 +9,12 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('token');
+            const adminToken = localStorage.getItem('admin_token');
+            const userToken = localStorage.getItem('user_token');
+            const legacyToken = localStorage.getItem('token');
+            
+            const token = adminToken || userToken || legacyToken;
+
             if (!token) {
                 setLoading(false);
                 return;
@@ -37,6 +42,8 @@ export const AuthProvider = ({ children }) => {
         const handleAuthError = () => {
             setUser(null);
             localStorage.removeItem('token');
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('admin_token');
         };
 
         window.addEventListener('auth-error', handleAuthError);
@@ -45,7 +52,12 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (userData, token) => {
         setUser(userData);
-        if (token) localStorage.setItem('token', token);
+        if (token) {
+            const key = userData.role === 'admin' ? 'admin_token' : 'user_token';
+            localStorage.setItem(key, token);
+            // Clear legacy token to force migration
+            localStorage.removeItem('token');
+        }
     };
 
     const logout = async () => {
@@ -53,10 +65,14 @@ export const AuthProvider = ({ children }) => {
             await axiosInstance.post('/api/auth/logout');
             setUser(null);
             localStorage.removeItem('token');
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('admin_token');
         } catch (err) {
             console.error('Logout failed', err);
             setUser(null);
             localStorage.removeItem('token');
+            localStorage.removeItem('user_token');
+            localStorage.removeItem('admin_token');
         }
     };
 

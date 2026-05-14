@@ -114,29 +114,41 @@ const authenticateUserOrAdmin = async (req, res, next) => {
         const token = extractToken(req);
         if (!token) return sendError(res, "Authentication token required", 401);
 
+        const fs = require('fs');
+        fs.appendFileSync('debug.log', `--- Auth Debug ---\nToken present: ${!!token}\n`);
+
         try {
             const decodedAdmin = verifyAdminToken(token);
+            fs.appendFileSync('debug.log', `Admin Token Decoded: ${JSON.stringify(decodedAdmin)}\n`);
             const admin = await findAdmin(decodedAdmin.id);
             if (admin && admin.status !== "banned") {
                 req.admin = admin;
+                fs.appendFileSync('debug.log', `Auth Success: Admin ${admin._id}\n`);
                 return next();
             }
+            fs.appendFileSync('debug.log', `Admin not found or banned: ${decodedAdmin.id}\n`);
         } catch (adminErr) {
+            fs.appendFileSync('debug.log', `Admin Verify Failed: ${adminErr.message}\n`);
         }
 
         try {
             const decodedUser = verifyUserToken(token);
+            fs.appendFileSync('debug.log', `User Token Decoded: ${JSON.stringify(decodedUser)}\n`);
             const user = await findUser(decodedUser.id);
             if (user && user.status !== "banned") {
                 req.user = user;
+                fs.appendFileSync('debug.log', `Auth Success: User ${user._id}\n`);
                 return next();
             }
+            fs.appendFileSync('debug.log', `User not found or banned: ${decodedUser.id}\n`);
         } catch (userErr) {
-            console.log(userErr);
+            fs.appendFileSync('debug.log', `User Verify Failed: ${userErr.message}\n`);
         }
         res.clearCookie('token');
         return sendError(res, "Invalid or expired token", 401);
     } catch (error) {
+        const fs = require('fs');
+        fs.appendFileSync('debug.log', `Combined Auth Error: ${error.message}\n`);
         logger.error("Combined auth error", { error: error.message });
         return sendError(res, "Authentication failed", 401);
     }

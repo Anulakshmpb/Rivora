@@ -82,7 +82,24 @@ class ProductController extends BaseController {
 
 		const validatedData = BaseController.validateRequest(updateProductValidation, req.body);
 		const ownerId = req.admin ? null : (req.user?._id || null);
-		const product = await ProductService.update(req.params.id, ownerId, validatedData);
+		let productId = req.params.id;
+		if (productId && productId.includes(':')) {
+			productId = productId.split(':')[0];
+		}
+		productId = productId.trim();
+
+		const fs = require('fs');
+		const debugInfo = `
+--- Product Update Debug ---
+Timestamp: ${new Date().toISOString()}
+Product ID: ${productId}
+Is Admin: ${!!req.admin}
+Owner ID (filter): ${ownerId}
+Request Body: ${JSON.stringify(req.body, null, 2)}
+`;
+		fs.appendFileSync('debug.log', debugInfo);
+
+		const product = await ProductService.update(productId, ownerId, validatedData);
 		BaseController.logAction('PRODUCT_UPDATED', req);
 		BaseController.sendSuccess(res, 'Product updated successfully', { product });
 	});
