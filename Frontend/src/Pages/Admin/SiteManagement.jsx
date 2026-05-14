@@ -5,6 +5,36 @@ import Header from './Layouts/Header';
 import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import Joi from 'joi';
+
+const couponSchema = Joi.object({
+    name: Joi.string().min(3).max(50).required().messages({
+        'string.empty': 'Coupon name is required',
+        'string.min': 'Name must be at least 3 characters',
+        'any.required': 'Coupon name is required'
+    }),
+    code: Joi.string().min(3).max(20).required().messages({
+        'string.empty': 'Coupon code is required',
+        'string.min': 'Code must be at least 3 characters',
+        'any.required': 'Coupon code is required'
+    }),
+    discount: Joi.number().min(1).max(100).required().messages({
+        'number.base': 'Discount must be a number',
+        'number.min': 'Discount must be at least 1%',
+        'number.max': 'Discount cannot exceed 100%',
+        'any.required': 'Discount is required'
+    }),
+    minAmount: Joi.number().min(0).required().messages({
+        'number.base': 'Minimum amount must be a number',
+        'number.min': 'Amount cannot be negative',
+        'any.required': 'Minimum amount is required'
+    }),
+    expiryDate: Joi.date().greater('now').required().messages({
+        'date.base': 'Invalid date format',
+        'date.greater': 'Expiry date must be in the future',
+        'any.required': 'Expiry date is required'
+    })
+});
 
 const managementPages = [
     {
@@ -132,15 +162,23 @@ export default function SiteManagement() {
             </main>
         </div>
     );
-}export const Coupons = () => {
+}
+export const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [editId, setEditId] = useState(null);
     const [form, setForm] = useState({ name: '', code: '', discount: '', minAmount: '', expiryDate: '' });
+    const [errors, setErrors] = useState({});
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const { showToast } = useToast();
+
+    const clearError = (field) => {
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
+    };
 
     const fetchCoupons = async () => {
         try {
@@ -158,18 +196,45 @@ export default function SiteManagement() {
     }, []);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm({ ...form, [name]: value });
+        clearError(name);
     };
 
     const resetForm = () => {
         setForm({ name: '', code: '', discount: '', minAmount: '', expiryDate: '' });
+        setErrors({});
         setEditId(null);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.name || !form.code || !form.discount || form.minAmount === '' || !form.expiryDate) {
-            return showToast('Warning', 'All fields are required', 'warning');
+        
+        // Joi Validation
+        const { error } = couponSchema.validate(form, { abortEarly: false });
+        let newErrors = {};
+        
+        if (error) {
+            error.details.forEach(detail => {
+                newErrors[detail.path[0]] = detail.message;
+            });
+        }
+
+        // Uniqueness Check
+        const isCodeExists = coupons.some(c => 
+            c.code.toUpperCase() === form.code.toUpperCase() && c._id !== editId
+        );
+        
+        if (isCodeExists) {
+            newErrors.code = 'Coupon code already exists';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            const firstError = Object.keys(newErrors)[0];
+            const element = document.getElementsByName(firstError)[0];
+            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
         }
 
         setSaving(true);
@@ -265,30 +330,35 @@ export default function SiteManagement() {
 
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Coupon Name</label>
+                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Coupon Name <span className="text-red-500">*</span></label>
                                         <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Summer Sale 2024"
-                                            className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
+                                            className={`w-full px-4 py-3.5 bg-slate-50 border-2 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 ${errors.name ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-100'}`} />
+                                        {errors.name && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.name}</p>}
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Coupon Code</label>
+                                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Coupon Code <span className="text-red-500">*</span></label>
                                         <input type="text" name="code" value={form.code} onChange={handleChange} placeholder="SUMMER50"
-                                            className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-black text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 uppercase" />
+                                            className={`w-full px-4 py-3.5 bg-slate-50 border-2 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 uppercase ${errors.code ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-100'}`} />
+                                        {errors.code && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.code}</p>}
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Discount (%)</label>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Discount (%) <span className="text-red-500">*</span></label>
                                             <input type="number" name="discount" value={form.discount} onChange={handleChange} placeholder="20"
-                                                className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
+                                                className={`w-full px-4 py-3.5 bg-slate-50 border-2 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 ${errors.discount ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-100'}`} />
+                                            {errors.discount && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.discount}</p>}
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Minimum Amount (₹)</label>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Minimum Amount (₹) <span className="text-red-500">*</span></label>
                                             <input type="number" name="minAmount" value={form.minAmount} onChange={handleChange} placeholder="0"
-                                                className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
+                                                className={`w-full px-4 py-3.5 bg-slate-50 border-2 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 ${errors.minAmount ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-100'}`} />
+                                            {errors.minAmount && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.minAmount}</p>}
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Expiry Date</label>
+                                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Expiry Date <span className="text-red-500">*</span></label>
                                             <input type="date" name="expiryDate" value={form.expiryDate} onChange={handleChange}
-                                                className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300" />
+                                                className={`w-full px-4 py-3.5 bg-slate-50 border-2 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-amber-500 focus:bg-white transition-all duration-300 ${errors.expiryDate ? 'border-rose-500 ring-1 ring-rose-500/20' : 'border-slate-100'}`} />
+                                            {errors.expiryDate && <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider ml-1 mt-1">{errors.expiryDate}</p>}
                                         </div>
                                     </div>
                                     <div className="flex gap-3 pt-4">

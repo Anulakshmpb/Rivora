@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axiosInstance from '../../api/axiosInstance';
+import ReviewModal from '../../Components/ReviewModal';
 
 export default function OrderSuccess() {
     const location = useLocation();
     const navigate = useNavigate();
     const [similarProducts, setSimilarProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
     const order = location.state?.order || {
         _id: 'ORDER-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
@@ -55,17 +57,23 @@ export default function OrderSuccess() {
                     <div className="relative z-10 flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
                         {/* Left */}
                         <div className="flex-1 text-center lg:text-left">
-                            <div className="mb-4">
+                            <div className=" flex justify-between items-center mb-4">
                                 <span className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-200">
                                     <SparklesIcon className="w-3.5 h-3.5" />
                                     Order Confirmed
                                 </span>
+                                <button
+                                    onClick={() => setIsReviewModalOpen(true)}
+                                    className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg shadow-blue-200"
+                                >
+                                    <SparklesIcon className="w-3.5 h-3.5" />
+                                    Write a Review
+                                </button>
                             </div>
 
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 mb-4 block">
                                 Transaction Successful
                             </span>
-
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight mb-6 leading-tight">
                                 Thank you for <br />
                                 <span className="italic text-slate-900">your order!</span>
@@ -154,6 +162,12 @@ export default function OrderSuccess() {
                     </div>
                 </section>
             </div>
+            <ReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                productId={order._id}
+                type="order"
+            />
         </div>
     );
 }
