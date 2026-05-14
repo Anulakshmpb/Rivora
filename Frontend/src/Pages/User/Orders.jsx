@@ -208,12 +208,22 @@ export default function Orders() {
                                     {/* Order Actions */}
                                     <div className="p-8 bg-slate-50/20 border-t border-slate-50 flex justify-end gap-4">
                                         {['Processing', 'Pending'].includes(order.orderStatus) && (
-                                            <button 
-                                                onClick={() => handleCancelOrder(order._id)}
-                                                className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all"
-                                            >
-                                                Cancel Order
-                                            </button>
+                                            (() => {
+                                                const orderDate = new Date(order.createdAt);
+                                                const now = new Date();
+                                                const diffInHours = (now - orderDate) / (1000 * 60 * 60);
+                                                if (diffInHours <= 48) {
+                                                    return (
+                                                        <button 
+                                                            onClick={() => handleCancelOrder(order._id)}
+                                                            className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all"
+                                                        >
+                                                            Cancel Order
+                                                        </button>
+                                                    );
+                                                }
+                                                return null;
+                                            })()
                                         )}
                                         {order.orderStatus === 'Delivered' && (
                                             <button 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 
@@ -10,6 +11,7 @@ const TrashIcon = () => (
 
 export default function Cart() {
     const { cartItems, updateQuantity, removeFromCart, cartTotalPrice, cartTotalItems, appliedCoupon, setAppliedCoupon } = useCart();
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const { showToast } = useToast();
 
@@ -65,6 +67,27 @@ export default function Cart() {
     const discountAmount = appliedCoupon ? (cartTotalPrice * appliedCoupon.discount) / 100 : 0;
     const taxes = (cartTotalPrice - discountAmount) * 0.08; // Assuming 8% tax on discounted price
     const orderTotal = (cartTotalPrice - discountAmount) + shipping + taxes;
+
+    const handleCheckout = () => {
+        if (!isAuthenticated) {
+            showToast('Login Required', 'Please login to proceed with checkout.', 'info');
+            navigate('/login', { state: { from: '/cart' } });
+            return;
+        }
+
+        const outOfStockItems = cartItems.filter(item => {
+            const stock = item.product.quantity || 0;
+            return stock < item.quantity;
+        });
+
+        if (outOfStockItems.length > 0) {
+            const firstItem = outOfStockItems[0];
+            showToast('Insufficient Stock', `"${firstItem.product.name}" only has ${firstItem.product.quantity} items left.`, 'error');
+            return;
+        }
+
+        navigate('/checkout');
+    };
 
     return (
         <div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pt-[120px] pb-20">
@@ -278,7 +301,7 @@ export default function Cart() {
                             </div>
 
                             <button
-                                onClick={() => navigate('/checkout')}
+                                onClick={handleCheckout}
                                 className="w-full bg-slate-900 text-white h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-xl shadow-slate-900/20 hover:bg-black hover:-translate-y-0.5 transition-all active:scale-95 mb-4"
                             >
                                 Checkout

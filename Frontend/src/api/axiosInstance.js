@@ -11,7 +11,14 @@ const axiosInstance = axios.create({
 // Request Interceptor: Optional (can be used for other headers if needed)
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const adminToken = localStorage.getItem('admin_token');
+        const userToken = localStorage.getItem('user_token');
+        const legacyToken = localStorage.getItem('token');
+        
+        // Prioritize Admin token for admin routes or if specifically logged in as admin
+        const isAdminPath = window.location.pathname.startsWith('/admin');
+        const token = isAdminPath ? (adminToken || legacyToken) : (userToken || legacyToken);
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

@@ -146,6 +146,10 @@ const cancelOrder = async (req, res) => {
             return sendError(res, 'Order is already cancelled', 400);
         }
 
+        if ((new Date() - new Date(order.createdAt)) / (1000 * 60 * 60) > 48) {
+            return sendError(res, 'Cancellation window (2 days) has expired', 400);
+        }
+
         if (order.orderStatus === 'Shipped' || order.orderStatus === 'Delivered') {
             return sendError(res, `Cannot cancel order that is already ${order.orderStatus}`, 400);
         }

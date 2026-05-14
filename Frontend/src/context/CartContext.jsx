@@ -136,10 +136,11 @@ export function CartProvider({ children }) {
                     showToast("Product added to cart successfully", "success");
                 }
             } catch (error) {
-                showToast(error.message, "error");  
-                const isAuthError = error.error?.statusCode === 401 || error.statusCode === 401 || error.message?.includes('token');
+                const isAuthError = error.error?.statusCode === 401 || error.statusCode === 401 || error.message?.includes('token') || error.message?.toLowerCase().includes('authorized');
                 
-                if (isAuthError) {
+                if (!isAuthError) {
+                    showToast(error.message, "error");  
+                } else {
                     // Fallback to guest cart if token expired
                     addToGuestCart(product, quantity, size, itemColor);
                 }
@@ -203,7 +204,6 @@ export function CartProvider({ children }) {
                         color: item.color
                     }));
                     setCartItems(items);
-                    showToast("Product quantity updated successfully", "success");
                 }
             } catch (error) {
                 showToast(error.message, "error");

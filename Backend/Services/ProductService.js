@@ -13,6 +13,8 @@ class ProductService {
 
   static async getOne(productId, userId = null, isAdmin = false) {
     const filter = userId ? { _id: productId, user: userId } : { _id: productId };
+    const fs = require('fs');
+    fs.appendFileSync('debug.log', `ProductService Update Filter: ${JSON.stringify(filter)}\n`);
     if (!isAdmin) {
       filter.isVisible = true;
     }
@@ -35,6 +37,8 @@ class ProductService {
 
   static async update(productId, userId, data) {
     const filter = userId ? { _id: productId, user: userId } : { _id: productId };
+    const fs = require('fs');
+    fs.appendFileSync('debug.log', `ProductService Update Filter: ${JSON.stringify(filter)}\n`);
     const product = await Product.findOne(filter);
     if (!product) {
       throw new NotFoundError('Product not found');
@@ -49,6 +53,8 @@ class ProductService {
 
   static async delete(productId, userId) {
     const filter = userId ? { _id: productId, user: userId } : { _id: productId };
+    const fs = require('fs');
+    fs.appendFileSync('debug.log', `ProductService Update Filter: ${JSON.stringify(filter)}\n`);
     const product = await Product.findOne(filter);
     if (!product) {
       throw new NotFoundError('Product not found');
