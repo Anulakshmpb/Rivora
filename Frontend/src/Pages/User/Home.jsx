@@ -33,30 +33,30 @@ function Home() {
 			stars: 4,
 		},
 	]
-	
-		useEffect(() => {
-			const fetchData = async () => {
-				try {
-					const [prodRes, catRes] = await Promise.all([
-						axiosInstance.get('/api/products'),
-						axiosInstance.get('/api/categories')
-					]);
-					
-					if (prodRes.success) {
-						setProducts(prodRes.data.products);
-					}
-					if (catRes.success) {
-						setCategories(catRes.data.categories);
-					}
-				} catch (error) {
-					console.error('Data fetch error:', error);
-				} finally {
-					setIsLoading(false);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const [prodRes, catRes] = await Promise.all([
+					axiosInstance.get('/api/products'),
+					axiosInstance.get('/api/categories')
+				]);
+
+				if (prodRes.success) {
+					setProducts(prodRes.data.products);
 				}
-			};
-			fetchData();
-		}, []);
-		
+				if (catRes.success) {
+					setCategories(catRes.data.categories);
+				}
+			} catch (error) {
+				console.error('Data fetch error:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
+
 
 	return (
 		<div className='mt-[90px]'>
@@ -75,9 +75,9 @@ function Home() {
 								Trending <span className="text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-600 to-gray-400">Collections</span>
 							</h2>
 						</div>
-						
+
 						<div className="flex gap-4">
-							<button 
+							<button
 								onClick={() => {
 									if (scrollRef.current) scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
 								}}
@@ -87,7 +87,7 @@ function Home() {
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 19l-7-7 7-7" />
 								</svg>
 							</button>
-							<button 
+							<button
 								onClick={() => {
 									if (scrollRef.current) scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' });
 								}}
@@ -100,7 +100,7 @@ function Home() {
 						</div>
 					</div>
 
-					<div 
+					<div
 						ref={scrollRef}
 						className="flex gap-10 overflow-x-auto pb-12 snap-x snap-mandatory no-scrollbar"
 						style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -111,18 +111,18 @@ function Home() {
 								return categoryName === 'Trending Collection' || categoryName?.name === 'Trending Collection';
 							})
 							.map((product) => (
-								<div 
+								<div
 									key={product._id}
 									onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
 									className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
 								>
 									<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
-										<img 
+										<img
 											src={(() => {
 												const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
 												if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-												return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
-													? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) 
+												return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
+													? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`)
 													: imgPath;
 											})()}
 											alt={product.name}
@@ -147,25 +147,25 @@ function Home() {
 										</p>
 									</div>
 								</div>
-						))}
-						
+							))}
+
 						{/* Fallback */}
 						{products.filter(p => {
 							const categoryName = Array.isArray(p.category) ? p.category[0] : p.category;
 							return categoryName === 'Trending Collection' || categoryName?.name === 'Trending Collection';
 						}).length === 0 && products.slice(0, 5).map((product) => (
-							<div 
+							<div
 								key={product._id}
 								onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
 								className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
 							>
 								<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
-									<img 
+									<img
 										src={(() => {
 											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
 											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-											return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
-												? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) 
+											return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
+												? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`)
 												: imgPath;
 										})()}
 										alt={product.name}

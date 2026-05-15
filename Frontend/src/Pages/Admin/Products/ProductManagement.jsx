@@ -201,7 +201,7 @@ export default function ProductManagement() {
                 </div>
               </div>
               <button
-                onClick={() => navigate('/add-product')}
+                onClick={() => navigate('/admin/add-product')}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
               >
                 <PlusIcon className="w-5 h-5" />
@@ -274,8 +274,8 @@ export default function ProductManagement() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
-                          <IconButton icon={<EyeIcon />} className="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100" title='View' onClick={() => navigate('/add-product', { state: { product, mode: 'view' } })} />
-                          <IconButton icon={<EditIcon />} className=" text-yellow-600 hover:text-yellow-800 bg-yellow-50 hover:bg-yellow-100" title='Edit' onClick={() => navigate('/add-product', { state: { product, mode: 'edit' } })} />
+                          <IconButton icon={<EyeIcon />} className="text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100" title='View' onClick={() => navigate('/admin/add-product', { state: { product, mode: 'view' } })} />
+                          <IconButton icon={<EditIcon />} className=" text-yellow-600 hover:text-yellow-800 bg-yellow-50 hover:bg-yellow-100" title='Edit' onClick={() => navigate('/admin/add-product', { state: { product, mode: 'edit' } })} />
                           <IconButton icon={<TrashIcon />} className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100" onClick={() => handleDelete(product.id, product.name)} title='Delete' />
                         </div>
                       </td>

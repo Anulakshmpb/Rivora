@@ -228,7 +228,7 @@ export default function AddProduct() {
 
 			if (response.success || (response.data && response.data.success)) {
 				showToast(isEditMode ? 'Product updated successfully!' : 'Product published successfully!', 'success');
-				navigate('/products');
+				navigate('/admin/products');
 			}
 		} catch (error) {
 			const errorMessage = error.message || error.response?.data?.error?.message || error.response?.data?.message || 'Failed to publish product';

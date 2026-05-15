@@ -40,7 +40,7 @@ import Order from './Pages/Admin/Order';
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/products', '/add-product', '/site', '/site/home-category', '/site/coupons', '/site/reviews', '/admin/orders'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/admin/products', '/admin/add-product', '/admin/site', '/admin/site/home-category', '/admin/site/coupons', '/admin/site/reviews', '/admin/orders'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -90,7 +90,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/products"
+          path="/admin/products"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <ProductManagement />
@@ -106,7 +106,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/site"
+          path="/admin/site"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <SiteManagement />
@@ -114,7 +114,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/site/home-category"
+          path="/admin/site/home-category"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <HomeCategory />
@@ -130,7 +130,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/site/coupons"
+          path="/admin/site/coupons"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <Coupons />
@@ -138,7 +138,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/site/reviews"
+          path="/admin/site/reviews"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <Reviews />
@@ -146,7 +146,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/add-product"
+          path="/admin/add-product"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <AddProduct />

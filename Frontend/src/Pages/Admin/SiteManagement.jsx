@@ -10,7 +10,7 @@ const managementPages = [
     {
         title: 'Home Category',
         description: 'Manage hero banners, featured sections, and homepage layout',
-        path: '/site/home-category',
+        path: '/admin/site/home-category',
         color: 'from-indigo-500 to-blue-600',
         bgLight: 'bg-indigo-50',
         textColor: 'text-indigo-600',
@@ -23,7 +23,7 @@ const managementPages = [
     {
         title: 'About',
         description: 'Edit company story, mission, team members, and values',
-        path: '/site/about',
+        path: '/admin/site/about',
         color: 'from-violet-500 to-purple-600',
         bgLight: 'bg-violet-50',
         textColor: 'text-violet-600',
@@ -36,7 +36,7 @@ const managementPages = [
     {
         title: 'Contact',
         description: 'Update contact info, social links, and support channels',
-        path: '/site/contact',
+        path: '/admin/site/contact',
         color: 'from-emerald-500 to-teal-600',
         bgLight: 'bg-emerald-50',
         textColor: 'text-emerald-600',
@@ -49,7 +49,7 @@ const managementPages = [
     {
         title: 'Coupons',
         description: 'Create and manage discount codes, promotions, and offers',
-        path: '/site/coupons',
+        path: '/admin/site/coupons',
         color: 'from-amber-500 to-orange-600',
         bgLight: 'bg-amber-50',
         textColor: 'text-amber-600',
@@ -62,7 +62,7 @@ const managementPages = [
     {
         title: 'Reviews',
         description: 'Moderate customer reviews, ratings, and testimonials',
-        path: '/site/reviews',
+        path: '/admin/site/reviews',
         color: 'from-rose-500 to-pink-600',
         bgLight: 'bg-rose-50',
         textColor: 'text-rose-600',
@@ -132,7 +132,7 @@ export default function SiteManagement() {
             </main>
         </div>
     );
-}export const Coupons = () => {
+} export const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -193,7 +193,7 @@ export default function SiteManagement() {
     const handleEdit = (coupon) => {
         setEditId(coupon._id);
         const date = new Date(coupon.expiryDate).toISOString().split('T')[0];
-        setForm({ name: coupon.name, code: coupon.code, discount: coupon.discount,minAmount:coupon.minAmount, expiryDate: date });
+        setForm({ name: coupon.name, code: coupon.code, discount: coupon.discount, minAmount: coupon.minAmount, expiryDate: date });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -246,7 +246,7 @@ export default function SiteManagement() {
                         <div className="xl:col-span-1">
                             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden h-fit">
                                 <div className={`h-1.5 absolute top-0 left-0 right-0 ${editId ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-gradient-to-r from-indigo-500 to-blue-600'}`} />
-                                
+
                                 <div className="flex items-center gap-4 mb-8">
                                     <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${editId ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'}`}>
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -309,7 +309,7 @@ export default function SiteManagement() {
                         <div className="xl:col-span-2">
                             <div className="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden min-h-[500px]">
                                 <div className="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600 absolute top-0 left-0 right-0" />
-                                
+
                                 <div className="flex justify-between items-center mb-8">
                                     <div className="flex items-center gap-4">
                                         <div className="w-11 h-11 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -340,7 +340,7 @@ export default function SiteManagement() {
                                         <table className="w-full border-separate border-spacing-y-3">
                                             <thead>
                                                 <tr>
-                                                    {['Code', 'Name', 'Discount','Min Amount','Expiry', 'Status', 'Actions'].map(h => (
+                                                    {['Code', 'Name', 'Discount', 'Min Amount', 'Expiry', 'Status', 'Actions'].map(h => (
                                                         <th key={h} className="px-4 py-2 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{h}</th>
                                                     ))}
                                                 </tr>

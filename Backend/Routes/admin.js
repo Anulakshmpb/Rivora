@@ -11,7 +11,7 @@ const {
 	deleteUser,
 	getDashboardStats
 } = require('../Controllers/AuthController');
-const { getAllOrders, updateOrderStatus } = require('../Controllers/orderController');
+const { getAllOrders, updateOrderStatus, approveReturn, rejectReturn, getReturnRequests } = require('../Controllers/orderController');
 const { authenticateAdmin } = require('../Middlewares/auth');
 
 const router = express.Router();
@@ -29,6 +29,9 @@ router.get('/stats', authenticateAdmin, getDashboardStats);
 
 // Order Management
 router.get('/orders', authenticateAdmin, getAllOrders);
+router.get('/returns', authenticateAdmin, getReturnRequests);
 router.patch('/orders/:orderId/status', authenticateAdmin, updateOrderStatus);
+router.post('/orders/:orderId/approve-return', authenticateAdmin, approveReturn);
+router.post('/orders/:orderId/reject-return', authenticateAdmin, rejectReturn);
 
 module.exports = router;

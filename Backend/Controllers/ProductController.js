@@ -88,17 +88,6 @@ class ProductController extends BaseController {
 		}
 		productId = productId.trim();
 
-		const fs = require('fs');
-		const debugInfo = `
---- Product Update Debug ---
-Timestamp: ${new Date().toISOString()}
-Product ID: ${productId}
-Is Admin: ${!!req.admin}
-Owner ID (filter): ${ownerId}
-Request Body: ${JSON.stringify(req.body, null, 2)}
-`;
-		fs.appendFileSync('debug.log', debugInfo);
-
 		const product = await ProductService.update(productId, ownerId, validatedData);
 		BaseController.logAction('PRODUCT_UPDATED', req);
 		BaseController.sendSuccess(res, 'Product updated successfully', { product });
