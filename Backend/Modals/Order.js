@@ -60,9 +60,10 @@ const orderSchema = new mongoose.Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned', 'Return Requested'],
         default: 'Processing'
     },
+    returnReason: String,
     razorpayOrderId: String,
     razorpayPaymentId: String,
     razorpaySignature: String

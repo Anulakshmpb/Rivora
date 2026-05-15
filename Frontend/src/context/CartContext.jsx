@@ -20,7 +20,7 @@ export function CartProvider({ children }) {
         const loadCart = async () => {
             if (authLoading) return;
 
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('user_token') || localStorage.getItem('token');
             if (user && token && user.role === 'user') {
                 setIsLoading(true);
                 try {
@@ -71,7 +71,7 @@ export function CartProvider({ children }) {
 
     useEffect(() => {
         if (isInitialized) {
-            if (!user) {
+            if (!user || user.role === 'admin') {
                 localStorage.setItem('atelier_cart', JSON.stringify(cartItems));
             }
             if (appliedCoupon) {
@@ -110,8 +110,9 @@ export function CartProvider({ children }) {
 
     const addToCart = async (product, quantity, size, color = 'default') => {
         const itemColor = color || 'default';
+        const isNormalUser = user && user.role === 'user';
 
-        if (user) {
+        if (isNormalUser) {
             try {
                 const res = await axiosInstance.post('/api/cart/add', {
                     productId: product._id,
@@ -154,7 +155,7 @@ export function CartProvider({ children }) {
         const itemToRemove = cartItems.find(item => item.id === itemId);
         if (!itemToRemove) return;
 
-        if (user) {
+        if (user && user.role === 'user') {
             try {
                 const res = await axiosInstance.delete('/api/cart/remove', {
                     data: {
@@ -187,7 +188,7 @@ export function CartProvider({ children }) {
         const itemToUpdate = cartItems.find(item => item.id === itemId);
         if (!itemToUpdate) return;
 
-        if (user) {
+        if (user && user.role === 'user') {
             try {
                 const res = await axiosInstance.put('/api/cart/update', {
                     productId: itemToUpdate.product._id,
@@ -218,7 +219,7 @@ export function CartProvider({ children }) {
     };
 
     const clearCart = async () => {
-        if (user) {
+        if (user && user.role === 'user') {
             try {
                 await axiosInstance.delete('/api/cart/clear');
                 setCartItems([]);

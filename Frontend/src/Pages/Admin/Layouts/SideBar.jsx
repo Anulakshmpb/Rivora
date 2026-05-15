@@ -9,16 +9,16 @@ export default function SideBar() {
     const [activeTab, setActiveTab] = useState(() => {
         if (location.pathname === '/admin/dashboard') return 'overview';
         if (location.pathname === '/admin/users') return 'users';
-        if (location.pathname === '/products' || location.pathname === '/admin/products/add') return 'products';
-        if (location.pathname.startsWith('/site')) return 'site';
+        if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') return 'products';
+        if (location.pathname.startsWith('/admin/site')) return 'site';
         return 'overview';
     });
 
     useEffect(() => {
         if (location.pathname === '/admin/dashboard') setActiveTab('overview');
         else if (location.pathname === '/admin/users') setActiveTab('users');
-        else if (location.pathname === '/products' || location.pathname === '/admin/products/add') setActiveTab('products');
-        else if (location.pathname.startsWith('/site')) setActiveTab('site');
+        else if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') setActiveTab('products');
+        else if (location.pathname.startsWith('/admin/site')) setActiveTab('site');
     }, [location.pathname]);
 
     const handleLogout = () => {
@@ -68,13 +68,13 @@ export default function SideBar() {
                 <SidebarItem
                     id="products"
                     label="Product Management"
-                    path="/products"
+                    path="/admin/products"
                     icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>}
                 />
                 <SidebarItem
                     id="site"
                     label="Site Management"
-                    path="/site"
+                    path="/admin/site"
                     icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>}
                 />
                 <SidebarItem

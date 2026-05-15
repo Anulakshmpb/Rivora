@@ -5,20 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PackageIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
 );
 
 const CalendarIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
 );
 
 export default function Orders() {
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [returnReason, setReturnReason] = useState('');
     const { showToast } = useToast();
     const navigate = useNavigate();
-    
-    // Modal State
     const [modalConfig, setModalConfig] = useState({
         isOpen: false,
         type: null,
@@ -38,17 +37,13 @@ export default function Orders() {
 
     const fetchOrders = async () => {
         try {
-            const res = await axiosInstance.get('/api/orders/user'); // Need to check if this route exists
+            const res = await axiosInstance.get('/api/orders');
             if (res.success) {
                 setOrders(res.data);
             }
         } catch (err) {
             console.error('Error fetching orders:', err);
-            // Fallback: If route doesn't exist, maybe it's just /api/orders
-            try {
-                 const res = await axiosInstance.get('/api/orders');
-                 if (res.success) setOrders(res.data);
-            } catch (e) {}
+            showToast('Error', 'Failed to load your orders', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -71,13 +66,14 @@ export default function Orders() {
     };
 
     const handleReturnOrder = (orderId) => {
+        setReturnReason('');
         setModalConfig({
             isOpen: true,
             type: 'return',
             orderId,
             title: 'Request Return',
-            message: 'Would you like to request a return for this order? Once approved, the refund will be credited to your wallet.',
-            confirmText: 'Request Return',
+            message: 'Please provide a reason for returning this order. Once approved, the refund will be credited to your wallet.',
+            confirmText: 'Submit Return Request',
             confirmColor: 'bg-amber-600 hover:bg-amber-700 shadow-amber-600/20'
         });
     };
@@ -92,11 +88,12 @@ export default function Orders() {
     const executeAction = async () => {
         const { type, orderId } = modalConfig;
         closeModal();
-        
+
         try {
             const endpoint = type === 'cancel' ? `/api/orders/${orderId}/cancel` : `/api/orders/${orderId}/return`;
-            const res = await axiosInstance.post(endpoint);
-            
+            const payload = type === 'return' ? { reason: returnReason } : {};
+            const res = await axiosInstance.post(endpoint, payload);
+
             if (res.success) {
                 showToast('Success', type === 'cancel' ? 'Order cancelled successfully' : 'Return requested successfully', 'success');
                 fetchOrders();
@@ -138,7 +135,7 @@ export default function Orders() {
                             <PackageIcon />
                         </div>
                         <h2 className="text-2xl font-serif italic text-slate-500 mb-6">No orders yet</h2>
-                        <button 
+                        <button
                             onClick={() => navigate('/product-list')}
                             className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all"
                         >
@@ -149,11 +146,11 @@ export default function Orders() {
                     <div className="space-y-8">
                         <AnimatePresence>
                             {orders.map((order, idx) => (
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    key={order._id} 
+                                    key={order._id}
                                     className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-700"
                                 >
                                     {/* Order Header */}
@@ -185,8 +182,8 @@ export default function Orders() {
                                         {order.items.map((item, i) => (
                                             <div key={i} className="flex gap-6 items-center">
                                                 <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
-                                                    <img 
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'} 
+                                                    <img
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'}
                                                         alt={item.product?.name}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -214,7 +211,7 @@ export default function Orders() {
                                                 const diffInHours = (now - orderDate) / (1000 * 60 * 60);
                                                 if (diffInHours <= 48) {
                                                     return (
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleCancelOrder(order._id)}
                                                             className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-rose-500 border border-rose-100 hover:bg-rose-50 transition-all"
                                                         >
@@ -226,14 +223,14 @@ export default function Orders() {
                                             })()
                                         )}
                                         {order.orderStatus === 'Delivered' && (
-                                            <button 
+                                            <button
                                                 onClick={() => handleReturnOrder(order._id)}
                                                 className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest text-amber-600 border border-amber-100 hover:bg-amber-50 transition-all"
                                             >
                                                 Return Items
                                             </button>
                                         )}
-                                         <button 
+                                        <button
                                             onClick={() => handleViewDetails(order)}
                                             className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-black transition-all"
                                         >
@@ -276,7 +273,19 @@ export default function Orders() {
                                 <p className="text-slate-500 leading-relaxed font-medium">
                                     {modalConfig.message}
                                 </p>
-                                
+
+                                {modalConfig.type === 'return' && (
+                                    <div className="mt-6">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Reason for Return</label>
+                                        <textarea
+                                            value={returnReason}
+                                            onChange={(e) => setReturnReason(e.target.value)}
+                                            placeholder="Please describe why you are returning these items..."
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-amber-500/20 outline-none transition-all min-h-[120px] resize-none"
+                                        />
+                                    </div>
+                                )}
+
                                 <div className="mt-10 flex flex-col gap-3">
                                     <button
                                         onClick={executeAction}
@@ -320,7 +329,7 @@ export default function Orders() {
                                     <h3 className="text-2xl font-serif font-medium text-slate-900">Order Details</h3>
                                     <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mt-1">#{detailsModal.order._id.toUpperCase()}</p>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setDetailsModal({ isOpen: false, order: null })}
                                     className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm"
                                 >
@@ -341,7 +350,7 @@ export default function Orders() {
                                             {detailsModal.order.shippingAddress.pinCode}, {detailsModal.order.shippingAddress.country}
                                         </div>
                                     </div>
-                                    
+
                                     {/* Payment Info */}
                                     <div>
                                         <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-4">Payment Information</h4>
@@ -367,8 +376,8 @@ export default function Orders() {
                                         {detailsModal.order.items.map((item, i) => (
                                             <div key={i} className="flex gap-4 items-center bg-slate-50/50 p-4 rounded-2xl border border-slate-50">
                                                 <div className="w-16 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
-                                                    <img 
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'} 
+                                                    <img
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'}
                                                         alt={item.product?.name}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -412,6 +421,15 @@ export default function Orders() {
                                         <span className="text-3xl font-serif tracking-tighter">${detailsModal.order.totalAmount.toFixed(2)}</span>
                                     </div>
                                 </div>
+
+                                {detailsModal.order.returnReason && (
+                                    <div className="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100">
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2">Return Reason</h4>
+                                        <p className="text-sm font-medium text-amber-900 italic leading-relaxed">
+                                            "{detailsModal.order.returnReason}"
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
                     </div>

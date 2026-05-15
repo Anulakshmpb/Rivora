@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function Header ({ title = "System Overview", subtitle = "Monitoring Rivora infrastructure in real-time" }){
 

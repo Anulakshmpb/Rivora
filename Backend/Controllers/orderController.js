@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const Order = require('../Modals/Order');
 const Product = require('../Modals/Product');
 const User = require('../Modals/User');
+const Return = require('../Modals/Return');
 const { sendSuccess, sendError } = require('../utils/response');
 
 const createRazorpayOrder = async (req, res) => {
@@ -25,7 +26,7 @@ const createRazorpayOrder = async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-        
+
         if (!order) {
             return sendError(res, 'Failed to create Razorpay order', 500);
         }
@@ -55,7 +56,7 @@ const verifyPayment = async (req, res) => {
         if (razorpay_signature === expectedSign) {
             // Payment verified, save order to DB
             const userId = req.user?._id || req.admin?._id;
-            
+
             const newOrder = new Order({
                 user: userId,
                 items: orderDetails.items,
@@ -155,7 +156,7 @@ const cancelOrder = async (req, res) => {
         }
 
         order.orderStatus = 'Cancelled';
-        
+
         // Refund to wallet if payment status is 'Paid'
         if (order.paymentStatus === 'Paid') {
             const user = await User.findById(userId);
@@ -192,6 +193,7 @@ const cancelOrder = async (req, res) => {
 const returnOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
+        const { reason } = req.body;
         const userId = req.user._id;
 
         const order = await Order.findOne({ _id: orderId, user: userId });
@@ -201,27 +203,96 @@ const returnOrder = async (req, res) => {
             return sendError(res, 'Only delivered orders can be returned', 400);
         }
 
-        // Return logic: For demo, we just set status to 'Returned' and refund to wallet
-        order.orderStatus = 'Returned';
-        
-        const user = await User.findById(userId);
-        if (!user) return sendError(res, 'User not found', 404);
+        order.orderStatus = 'Return Requested';
+        order.returnReason = reason;
+        await order.save();
 
-        if (!user.wallet) user.wallet = { balance: 0, transactions: [] };
-
-        user.wallet.balance += order.totalAmount;
-        user.wallet.transactions.push({
-            type: 'Credit',
-            amount: order.totalAmount,
-            description: `Refund for returned order #${order._id}`,
-            orderId: order._id
+        // Create Return records for each product in the order
+        const returnPromises = order.items.map(item => {
+            return Return.create({
+                order: order._id,
+                user: userId,
+                product: item.product,
+                reason: reason
+            });
         });
-        await user.save();
+        await Promise.all(returnPromises);
+
+        return sendSuccess(res, 'Order return requested successfully', order);
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
+const approveReturn = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const order = await Order.findById(orderId).populate('user');
+        if (!order) return sendError(res, 'Order not found', 404);
+
+        if (order.orderStatus !== 'Return Requested') {
+            return sendError(res, 'Order is not in return requested state', 400);
+        }
+
+        order.orderStatus = 'Returned';
         order.paymentStatus = 'Refunded';
+
+        const user = await User.findById(order.user._id);
+        if (user) {
+            if (!user.wallet) user.wallet = { balance: 0, transactions: [] };
+            user.wallet.balance += order.totalAmount;
+            user.wallet.transactions.push({
+                type: 'Credit',
+                amount: order.totalAmount,
+                description: `Refund for returned order #${order._id}`,
+                orderId: order._id
+            });
+            await user.save();
+        }
 
         await order.save();
 
-        return sendSuccess(res, 'Order return requested and processed', order);
+        // Update all associated return records
+        await Return.updateMany({ order: orderId }, { status: 'Approved' });
+
+        return sendSuccess(res, 'Return approved and refund processed', order);
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
+const rejectReturn = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { reason } = req.body; // Reason for rejection
+        const order = await Order.findById(orderId);
+        if (!order) return sendError(res, 'Order not found', 404);
+
+        if (order.orderStatus !== 'Return Requested') {
+            return sendError(res, 'Order is not in return requested state', 400);
+        }
+
+        order.orderStatus = 'Delivered';
+        await order.save();
+
+        // Update all associated return records
+        await Return.updateMany({ order: orderId }, { status: 'Rejected', adminComment: reason });
+
+        return sendSuccess(res, 'Return request rejected', order);
+    } catch (err) {
+        return sendError(res, err.message, 500);
+    }
+};
+
+const getReturnRequests = async (req, res) => {
+    try {
+        const returns = await Return.find()
+            .populate('user', 'name email mobile')
+            .populate('product', 'name image price')
+            .populate('order', 'totalAmount createdAt')
+            .sort({ createdAt: -1 });
+
+        return sendSuccess(res, 'Return requests fetched successfully', returns);
     } catch (err) {
         return sendError(res, err.message, 500);
     }
@@ -262,7 +333,7 @@ const placeWalletOrder = async (req, res) => {
 
         // Deduct balance
         user.wallet.balance -= orderDetails.totalAmount;
-        
+
         const newOrder = new Order({
             user: userId,
             items: orderDetails.items,
@@ -307,7 +378,7 @@ const getUserOrders = async (req, res) => {
         const orders = await Order.find({ user: userId })
             .populate('items.product')
             .sort({ createdAt: -1 });
-            
+
         return sendSuccess(res, 'User orders fetched successfully', orders);
     } catch (err) {
         return sendError(res, err.message, 500);
@@ -320,7 +391,7 @@ const getAllOrders = async (req, res) => {
             .populate('user', 'name email mobile')
             .populate('items.product')
             .sort({ createdAt: -1 });
-            
+
         return sendSuccess(res, 'All orders fetched successfully', orders);
     } catch (err) {
         return sendError(res, err.message, 500);
@@ -331,7 +402,7 @@ const updateOrderStatus = async (req, res) => {
     try {
         const { orderId } = req.params;
         const { status } = req.body;
-        
+
         const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
         if (!validStatuses.includes(status)) {
             return sendError(res, 'Invalid status', 400);
@@ -362,5 +433,8 @@ module.exports = {
     verifyWalletOTP,
     placeWalletOrder,
     getAllOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    approveReturn,
+    rejectReturn,
+    getReturnRequests
 };

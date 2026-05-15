@@ -14,6 +14,7 @@ const {
 const { authenticateUser } = require('../Middlewares/auth');
 
 router.get('/', authenticateUser, getUserOrders);
+router.get('/user', authenticateUser, getUserOrders);
 router.post('/create-razorpay-order', authenticateUser, createRazorpayOrder);
 router.post('/verify-payment', authenticateUser, verifyPayment);
 router.post('/place-cod-order', authenticateUser, placeCODOrder);
