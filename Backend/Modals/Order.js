@@ -21,6 +21,11 @@ const orderSchema = new mongoose.Schema({
         price: {
             type: Number,
             required: true
+        },
+        status: {
+            type: String,
+            enum: ['Ordered', 'Shipped', 'Delivered', 'Cancelled', 'Return Requested', 'Returned'],
+            default: 'Ordered'
         }
     }],
     shippingAddress: {
@@ -39,6 +44,10 @@ const orderSchema = new mongoose.Schema({
     discountAmount: {
         type: Number,
         default: 0
+    },
+    appliedCoupon: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon'
     },
     shippingCost: {
         type: Number,

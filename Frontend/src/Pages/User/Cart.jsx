@@ -178,7 +178,8 @@ export default function Cart() {
                                                 <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors rounded-md hover:bg-white"
+                                                    disabled={item.quantity >= item.product.quantity}
+                                                    className={`w-8 h-8 flex items-center justify-center transition-colors rounded-md ${item.quantity >= item.product.quantity ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-900 hover:bg-white'}`}
                                                 >
                                                     +
                                                 </button>
