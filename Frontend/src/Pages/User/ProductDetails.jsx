@@ -4,6 +4,7 @@ import axiosInstance from '../../api/axiosInstance';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../Toast/ToastContext';
+import ReviewModal from './ReviewModal';
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export default function ProductDetails() {
   const { showToast } = useToast();
   const { addToCart, cartItems } = useCart();
   const { addToWishlist } = useWishlist();
+  const [productReviews, setProductReviews] = useState([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const productImages = Array.isArray(product.image) ? product.image : [product.image].filter(Boolean);
 
@@ -62,7 +65,19 @@ export default function ProductDetails() {
     };
 
     fetchProductDetails();
+    fetchProductReviews();
   }, [id, showToast]);
+
+  const fetchProductReviews = async () => {
+    try {
+      const res = await axiosInstance.get(`/api/reviews?type=product&productId=${id}`);
+      if (res.success) {
+        setProductReviews(res.reviews);
+      }
+    } catch (error) {
+      console.error('Error fetching product reviews:', error);
+    }
+  };
 
   useEffect(() => {
     if (!product) return;
@@ -186,7 +201,11 @@ export default function ProductDetails() {
                 <div className="h-[1px] w-12 bg-slate-200" />
                 <div className="flex items-center gap-1">
                   <StarIcon className="w-3 h-3 text-yellow-500" />
-                  <span className="text-[10px] font-black text-slate-500 italic">4.9 (124 reviews)</span>
+                  <span className="text-[10px] font-black text-slate-500 italic">
+                    {productReviews.length > 0
+                      ? `${(productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1)} (${productReviews.length} reviews)`
+                      : 'No reviews yet'}
+                  </span>
                 </div>
               </div>
               <h1 className="text-6xl font-serif font-medium tracking-tight leading-tight">
@@ -293,26 +312,97 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Similar Products Section */}
-        <section className="mt-40 space-y-16">
-          <div className="flex flex-col items-start text-left space-y-4">
-            <h2 className="text-3xl font-serif font-medium tracking-tight">Similar Products</h2>
-            <div className="h-1 w-20 bg-slate-900 rounded-full" />
-          </div>
+      </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-              {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 animate-in fade-in duration-1000">
-              {similarProducts.map(p => (
-                <ProductCard key={p._id} product={p} />
+      {/* Product Reviews Section */}
+      <section className="border-t border-slate-100 pt-24 max-w-5xl mx-auto px-4">
+        <div className="text-center space-y-4 mb-20">
+          <h2 className="text-4xl font-serif font-medium tracking-tight">Customer Reviews</h2>
+          <div className="flex items-center justify-center gap-4">
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map(star => (
+                <StarIcon key={star} className={`w-5 h-5 ${star <= Math.round(productReviews.reduce((acc, r) => acc + r.rating, 0) / (productReviews.length || 1)) ? 'text-yellow-400' : 'text-slate-200'}`} />
               ))}
             </div>
-          )}
-        </section>
-      </div>
+            <span className="text-lg font-bold text-slate-900">
+              {productReviews.length > 0
+                ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1)
+                : '0.0'}
+            </span>
+            <span className="text-slate-400 font-medium">({productReviews.length} reviews)</span>
+          </div>
+          <div className="h-1 w-20 bg-slate-900 mx-auto rounded-full mt-4" />
+        </div>
+
+        {productReviews.length === 0 ? (
+          <div className="bg-slate-50 rounded-[3rem] p-20 text-center border border-slate-100">
+            <p className="text-slate-500 font-medium italic">Be the first to review this exquisite piece.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {productReviews.map((item, index) => (
+              <div key={index} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-black font-black text-lg overflow-hidden shadow-lg">
+                      {item.img ? (
+                        <img
+                          src={item.img.startsWith('http') ? item.img : `http://localhost:5000${item.img}`}
+                          alt={item.name.charAt(0).toUpperCase()}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        item.name.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-base leading-none mb-1">{item.name}</h4>
+                      <div className="flex gap-0.5">
+                        {[...Array(item.rating)].map((_, i) => (
+                          <StarIcon key={i} className="w-2.5 h-2.5 text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                    {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed font-medium italic">"{item.review}"</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+      {/* Similar Products Section */}
+      <section className="mt-40 space-y-16">
+        <div className="flex flex-col items-start text-left space-y-4">
+          <h2 className="text-3xl font-serif font-medium tracking-tight">Similar Products</h2>
+          <div className="h-1 w-20 bg-slate-900 rounded-full" />
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 animate-in fade-in duration-1000">
+            {similarProducts.map(p => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <ReviewModal
+        isOpen={isReviewModalOpen}
+        onClose={() => {
+          setIsReviewModalOpen(false);
+          fetchProductReviews();
+        }}
+        productId={id}
+        type="product"
+      />
     </div>
   );
 }

@@ -97,27 +97,30 @@ export default function Order() {
         }
     };
 
-    const handleApproveReturn = async (orderId) => {
+    const handleApproveReturn = async (returnId) => {
         try {
-            const res = await axiosInstance.post(`/api/admin/orders/${orderId}/approve-return`);
+            const res = await axiosInstance.post(`/api/admin/returns/${returnId}/approve-return`);
             if (res.success) {
                 showToast('Return request approved', 'success');
                 fetchOrders();
             }
         } catch (err) {
-            showToast(err.message || 'Failed to approve return', 'error');
+            showToast(err.response?.data?.message || 'Failed to approve return', 'error');
         }
     };
 
-    const handleRejectReturn = async (orderId) => {
+    const handleRejectReturn = async (returnId) => {
+        const reason = window.prompt('Please enter a reason for rejection:');
+        if (reason === null) return; // User cancelled the prompt
+
         try {
-            const res = await axiosInstance.post(`/api/admin/orders/${orderId}/reject-return`);
+            const res = await axiosInstance.post(`/api/admin/returns/${returnId}/reject-return`, { reason });
             if (res.success) {
                 showToast('Return request rejected', 'success');
                 fetchOrders();
             }
         } catch (err) {
-            showToast(err.message || 'Failed to reject return', 'error');
+            showToast(err.response?.data?.message || 'Failed to reject return', 'error');
         }
     };
 
@@ -220,9 +223,12 @@ export default function Order() {
             case 'Delivered': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
             case 'Cancelled': return 'bg-rose-50 text-rose-600 border-rose-100';
             case 'Returned': return 'bg-amber-50 text-amber-600 border-amber-100';
+            case 'Return Requested': return 'bg-orange-50 text-orange-600 border-orange-100';
             case 'Shipped': return 'bg-blue-50 text-blue-600 border-blue-100';
             case 'Processing': return 'bg-indigo-50 text-indigo-600 border-indigo-100';
-            case 'Return Requested': return 'bg-orange-50 text-orange-600 border-orange-100';
+            case 'Approved': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+            case 'Rejected': return 'bg-rose-50 text-rose-600 border-rose-100';
+            case 'Pending': return 'bg-indigo-50 text-indigo-600 border-indigo-100';
             default: return 'bg-slate-50 text-slate-600 border-slate-100';
         }
     };
@@ -320,7 +326,6 @@ export default function Order() {
                                         <option value="All">All Status</option>
                                         <option value="Pending">Pending</option>
                                         <option value="Processing">Processing</option>
-                                        <option value="Shipped">Shipped</option>
                                         <option value="Delivered">Delivered</option>
                                         <option value="Cancelled">Cancelled</option>
                                         <option value="Returned">Returned</option>
@@ -455,9 +460,21 @@ export default function Order() {
                                                 ) : (
                                                     <>
                                                         <td className="px-6 py-4">
-                                                            <span className="text-xs font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-full">
-                                                                {item.items.length} items
-                                                            </span>
+                                                            <div className="flex flex-col gap-1">
+                                                                <span className="text-xs font-black text-slate-900 bg-slate-100 px-3 py-1 rounded-full w-fit">
+                                                                    {item.items.length} items
+                                                                </span>
+                                                                {item.items.some(i => i.status === 'Cancelled') && (
+                                                                    <span className="text-[9px] font-bold text-rose-500 uppercase tracking-tight">
+                                                                        {item.items.filter(i => i.status === 'Cancelled').length} Cancelled
+                                                                    </span>
+                                                                )}
+                                                                {item.items.some(i => i.status === 'Returned' || i.status === 'Return Requested') && (
+                                                                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-tight">
+                                                                        {item.items.filter(i => i.status === 'Returned' || i.status === 'Return Requested').length} Return/Req
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <span className="text-sm font-black text-slate-900">${item.totalAmount.toFixed(2)}</span>
@@ -473,27 +490,20 @@ export default function Order() {
                                                     <div className="flex justify-center gap-2">
                                                         {viewMode === 'returns' ? (
                                                             <>
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setSelectedOrder(item.order);
-                                                                        setIsModalOpen(true);
-                                                                    }}
-                                                                    className="p-2 text-slate-500 hover:text-indigo-600 transition-colors"
-                                                                    title="View Details"
-                                                                >
-                                                                    <Eye className="w-4 h-4" />
-                                                                </button>
+                                                                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
+                                                                    {item.status}
+                                                                </span>
                                                                 {item.status === 'Pending' && (
                                                                     <>
                                                                         <button
-                                                                            onClick={() => handleApproveReturn(item.order?._id)}
+                                                                            onClick={() => handleApproveReturn(item._id)}
                                                                             className="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-all"
                                                                             title="Accept Return"
                                                                         >
                                                                             <CheckCircle2 className="w-4 h-4" />
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => handleRejectReturn(item.order?._id)}
+                                                                            onClick={() => handleRejectReturn(item._id)}
                                                                             className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
                                                                             title="Reject Return"
                                                                         >
@@ -511,7 +521,6 @@ export default function Order() {
                                                                 >
                                                                     <option value="Pending">Pending</option>
                                                                     <option value="Processing">Processing</option>
-                                                                    <option value="Shipped">Shipped</option>
                                                                     <option value="Delivered">Delivered</option>
                                                                     <option value="Cancelled">Cancelled</option>
                                                                     <option value="Returned">Returned</option>
@@ -702,15 +711,22 @@ export default function Order() {
 
                                                         {/* Product Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <div className='flex justify-between'>
-                                                                <p className="text-sm font-black text-slate-900 truncate mb-1 group-hover:text-indigo-600 transition-colors">
-                                                                    {item.product?.name || 'Unknown Product'}
-                                                                </p>
+                                                            <div className='flex justify-between items-start'>
+                                                                <div>
+                                                                    <p className="text-sm font-black text-slate-900 truncate mb-1 group-hover:text-indigo-600 transition-colors">
+                                                                        {item.product?.name || 'Unknown Product'}
+                                                                    </p>
+                                                                    {item.status && item.status !== 'Ordered' && (
+                                                                        <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
+                                                                            {item.status}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                                 <div className=" bg-slate-100 text-black text-[10px] font-black w-5 h-5 rounded-lg flex items-center justify-center">
                                                                     {item.quantity}
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center gap-2 mb-2">
+                                                            <div className="flex items-center gap-2 mt-2 mb-2">
                                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-2 py-0.5 rounded border border-slate-100">
                                                                     {item.product?.code || 'SKU-N/A'}
                                                                 </span>
@@ -740,31 +756,50 @@ export default function Order() {
                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                                                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-500/10 rounded-full -ml-12 -mb-12 blur-2xl"></div>
 
-                                                <div className="relative space-y-4">
-                                                    <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
-                                                        <span>Subtotal</span>
-                                                        <span className="text-white">${selectedOrder.totalAmount.toFixed(2)}</span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
-                                                        <span>Shipping</span>
-                                                        <span className="text-emerald-400">FREE SHIPPING</span>
-                                                    </div>
+                                                {(() => {
+                                                    const activeItems = selectedOrder.items.filter(item => !['Cancelled', 'Returned'].includes(item.status));
+                                                    const subtotal = activeItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                                                    const shipping = selectedOrder.shippingCost || 0;
+                                                    const tax = selectedOrder.taxAmount || 0;
+                                                    const discount = selectedOrder.discountAmount || 0;
+                                                    const total = Math.max(0, subtotal + shipping + tax - discount);
 
-                                                    <div className="pt-6 mt-6 border-t border-slate-800 flex justify-between items-end">
-                                                        <div>
-                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Total Payable</p>
-                                                            <h4 className="text-3xl font-black text-white tracking-tight">
-                                                                ${selectedOrder.totalAmount.toFixed(2)}
-                                                            </h4>
+                                                    return (
+                                                        <div className="relative space-y-4">
+                                                            <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                                                <span>Subtotal (Active)</span>
+                                                                <span className="text-white">${subtotal.toFixed(2)}</span>
+                                                            </div>
+                                                            {discount > 0 && (
+                                                                <div className="flex justify-between items-center text-xs font-bold text-emerald-400 uppercase tracking-[0.2em]">
+                                                                    <span>Discount</span>
+                                                                    <span>-${discount.toFixed(2)}</span>
+                                                                </div>
+                                                            )}
+                                                            <div className="flex justify-between items-center text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                                                <span>Shipping</span>
+                                                                <span className={shipping === 0 ? "text-emerald-400" : "text-white"}>
+                                                                    {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="pt-6 mt-6 border-t border-slate-800 flex justify-between items-end">
+                                                                <div>
+                                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">Total Payable</p>
+                                                                    <h4 className="text-3xl font-black text-white tracking-tight">
+                                                                        ${total.toFixed(2)}
+                                                                    </h4>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Payment Method</p>
+                                                                    <span className="text-xs font-bold text-indigo-400 uppercase bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20">
+                                                                        {selectedOrder.paymentMethod || 'Credit Card'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className="text-right">
-                                                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Payment Method</p>
-                                                            <span className="text-xs font-bold text-indigo-400 uppercase bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20">
-                                                                {selectedOrder.paymentMethod || 'Credit Card'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
                                     </section>

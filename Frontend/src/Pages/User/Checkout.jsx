@@ -61,23 +61,23 @@ export default function Checkout() {
         }
     }, [cartTotalPrice, appliedCoupon, showToast]);
 
-    const handleApplyCoupon = async () => {
-        if (!couponCode.trim()) return;
-        setIsVerifying(true);
-        try {
-            const res = await axiosInstance.post('/api/coupons/validate', {
-                code: couponCode,
-                cartTotal: cartTotalPrice
-            });
-            setAppliedCoupon(res.data);
-            showToast('Success', `Coupon applied: ${res.data.discount}% OFF`, 'success');
-        } catch (err) {
-            showToast('Error', err.message || 'Invalid coupon', 'error');
-            setAppliedCoupon(null);
-        } finally {
-            setIsVerifying(false);
-        }
-    };
+    // const handleApplyCoupon = async () => {
+    //     if (!couponCode.trim()) return;
+    //     setIsVerifying(true);
+    //     try {
+    //         const res = await axiosInstance.post('/api/coupons/validate', {
+    //             code: couponCode,
+    //             cartTotal: cartTotalPrice
+    //         });
+    //         setAppliedCoupon(res.data);
+    //         showToast('Success', `Coupon applied: ${res.data.discount}% OFF`, 'success');
+    //     } catch (err) {
+    //         showToast('Error', err.message || 'Invalid coupon', 'error');
+    //         setAppliedCoupon(null);
+    //     } finally {
+    //         setIsVerifying(false);
+    //     }
+    // };
 
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
@@ -113,7 +113,8 @@ export default function Checkout() {
                         totalAmount: total,
                         discountAmount: discountAmount,
                         shippingCost: shippingCost,
-                        taxAmount: taxes
+                        taxAmount: taxes,
+                        appliedCouponId: appliedCoupon?._id
                     }
                 });
 
@@ -140,7 +141,8 @@ export default function Checkout() {
                     totalAmount: total,
                     discountAmount: discountAmount,
                     shippingCost: shippingCost,
-                    taxAmount: taxes
+                    taxAmount: taxes,
+                    appliedCouponId: appliedCoupon?._id
                 };
 
                 await axiosInstance.post('/api/orders/send-wallet-otp');
@@ -201,8 +203,9 @@ export default function Checkout() {
                                 shippingAddress: selectedAddress,
                                 totalAmount: total,
                                 discountAmount: discountAmount,
-                                shippingCost: shippingCost,
-                                taxAmount: taxes
+                                appliedCost: shippingCost,
+                                taxAmount: taxes,
+                                appliedCouponId: appliedCoupon?._id
                             }
                         });
 

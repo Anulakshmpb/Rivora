@@ -31,7 +31,7 @@ router.get('/stats', authenticateAdmin, getDashboardStats);
 router.get('/orders', authenticateAdmin, getAllOrders);
 router.get('/returns', authenticateAdmin, getReturnRequests);
 router.patch('/orders/:orderId/status', authenticateAdmin, updateOrderStatus);
-router.post('/orders/:orderId/approve-return', authenticateAdmin, approveReturn);
-router.post('/orders/:orderId/reject-return', authenticateAdmin, rejectReturn);
+router.post('/returns/:returnId/approve-return', authenticateAdmin, approveReturn);
+router.post('/returns/:returnId/reject-return', authenticateAdmin, rejectReturn);
 
 module.exports = router;
