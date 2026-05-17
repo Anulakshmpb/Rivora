@@ -72,6 +72,9 @@ export default function Order() {
             setIsLoading(false);
         }
     };
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
     const calculateStats = (data) => {
         const total = data.length;
@@ -80,10 +83,6 @@ export default function Order() {
         const inProcess = data.filter(o => ['Pending', 'Processing', 'Shipped'].includes(o.orderStatus)).length;
         setStats({ total, completed, cancelled, inProcess });
     };
-
-    useEffect(() => {
-        fetchOrders();
-    }, []);
 
     const handleStatusUpdate = async (orderId, newStatus) => {
         try {

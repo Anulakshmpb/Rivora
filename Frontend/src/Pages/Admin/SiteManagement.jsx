@@ -132,7 +132,9 @@ export default function SiteManagement() {
             </main>
         </div>
     );
-} export const Coupons = () => {
+} 
+
+export const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -439,8 +441,6 @@ export default function SiteManagement() {
     );
 }
 
-
-
 export const Reviews = () => {
     return (
         <div className="min-h-screen bg-slate-50 flex font-inter">
@@ -461,4 +461,209 @@ export const Reviews = () => {
         </div>
     );
 }
+
+export const Contact = () => {
+    const [form, setForm] = useState({
+        email: '',
+        phone: '',
+        address: '',
+        googleMapsUrl: '',
+        socialLinks: [
+            { platform: 'Instagram', url: '' },
+            { platform: 'Facebook', url: '' },
+            { platform: 'Twitter', url: '' },
+            { platform: 'LinkedIn', url: '' }
+        ]
+    });
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const { showToast } = useToast();
+
+    useEffect(() => {
+        const fetchContact = async () => {
+            try {
+                const res = await axiosInstance.get('/api/contact');
+                if (res.data?.contact) {
+                    const { email, phone, address, googleMapsUrl, socialLinks } = res.data.contact;
+                    
+                    // Ensure all platforms exist in the form
+                    const platforms = ['Instagram', 'Facebook', 'Twitter', 'LinkedIn'];
+                    const mappedSocial = platforms.map(p => {
+                        const existing = socialLinks.find(s => s.platform === p);
+                        return existing || { platform: p, url: '' };
+                    });
+
+                    setForm({ email, phone, address, googleMapsUrl, socialLinks: mappedSocial });
+                }
+            } catch (err) {
+                showToast('Error', 'Failed to fetch contact info', 'error');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchContact();
+    }, []);
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSocialChange = (index, value) => {
+        const newSocial = [...form.socialLinks];
+        newSocial[index].url = value;
+        setForm({ ...form, socialLinks: newSocial });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            await axiosInstance.put('/api/contact', form);
+            showToast('Success', 'Contact information updated successfully', 'success');
+        } catch (err) {
+            showToast('Error', err.response?.data?.message || 'Failed to update', 'error');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex font-inter">
+                <SideBar />
+                <main className="flex-1 lg:ml-72 min-h-screen bg-slate-50 flex items-center justify-center">
+                    <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin" />
+                </main>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-slate-50 flex font-inter">
+            <SideBar />
+            <main className="flex-1 lg:ml-72 min-h-screen bg-slate-50">
+                <Header title="Contact Information" subtitle="Manage your website's public contact details and social links" />
+
+                <div className="p-8 max-w-5xl mx-auto">
+                    <div className="bg-white rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100 relative overflow-hidden">
+                        <div className="h-2 bg-gradient-to-r from-emerald-500 to-teal-400 absolute top-0 left-0 right-0" />
+
+                        <div className="flex items-center gap-6 mb-12">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Contact Settings</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Update your business presence</p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Email Address</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        placeholder="contact@rivora.com"
+                                        className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all duration-300"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={form.phone}
+                                        onChange={handleChange}
+                                        placeholder="+1 (555) 000-0000"
+                                        className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all duration-300"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Physical Address</label>
+                                <textarea
+                                    name="address"
+                                    value={form.address}
+                                    onChange={handleChange}
+                                    rows="3"
+                                    placeholder="123 Luxury Lane, Fashion District..."
+                                    className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all duration-300 resize-none"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Google Maps Embed URL</label>
+                                <input
+                                    type="text"
+                                    name="googleMapsUrl"
+                                    value={form.googleMapsUrl}
+                                    onChange={handleChange}
+                                    placeholder="https://google.com/maps/embed/..."
+                                    className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-emerald-500 focus:bg-white transition-all duration-300"
+                                />
+                            </div>
+
+                            <div className="pt-6">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="h-0.5 flex-1 bg-slate-100" />
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Social Networks</span>
+                                    <div className="h-0.5 flex-1 bg-slate-100" />
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {form.socialLinks.map((social, index) => (
+                                        <div key={social.platform} className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">{social.platform}</label>
+                                            <div className="relative group">
+                                                <input
+                                                    type="text"
+                                                    value={social.url}
+                                                    onChange={(e) => handleSocialChange(index, e.target.value)}
+                                                    placeholder={`Your ${social.platform} URL`}
+                                                    className="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300"
+                                                />
+                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                                                    {social.platform === 'Instagram' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 7v5l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                                                    {social.platform === 'Facebook' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>}
+                                                    {social.platform === 'Twitter' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" /></svg>}
+                                                    {social.platform === 'LinkedIn' && <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" /></svg>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-3xl text-sm font-black shadow-[0_15px_30px_rgba(16,185,129,0.25)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.35)] hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-70 flex items-center justify-center gap-3"
+                            >
+                                {saving ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <span>Saving Changes...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>Save Information</span>
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+};
 

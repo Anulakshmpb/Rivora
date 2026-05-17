@@ -11,6 +11,7 @@ const orderRoutes = require('./order');
 const cartRoutes = require('./cart');
 const walletRoutes = require('./wallet');
 const reviewRoutes = require('./review');
+const contactRoutes = require('./contact');
 
 const setupRoutes = (app) => {
     const authLimiter = createAuthLimiter();
@@ -20,12 +21,13 @@ const setupRoutes = (app) => {
     app.use('/api/admin', adminRoutes);
     app.use('/api/products', productRoutes);
     app.use('/api/categories', categoryRoutes);
-    app.use('/api/home-category', homeCategoryRoutes);
+    app.use('/api/home-categories', homeCategoryRoutes);
     app.use('/api/coupons', couponRoutes);
     app.use('/api/orders', orderRoutes);
     app.use('/api/cart', cartRoutes);
     app.use('/api/wallet', walletRoutes);
     app.use('/api/reviews', reviewRoutes);
+    app.use('/api/contact', contactRoutes);
 };
 
 module.exports = {

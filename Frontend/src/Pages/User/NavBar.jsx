@@ -28,7 +28,7 @@ export default function NavBar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Fetch products for live search
+    // Fetch products
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -43,13 +43,12 @@ export default function NavBar() {
         fetchProducts();
     }, []);
 
-    // Handle search filtering and dropdown visibility
     useEffect(() => {
         if (searchQuery.trim().length > 0) {
             const filtered = allProducts.filter(product =>
                 product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (product.category && product.category.some(cat => cat.toLowerCase().includes(searchQuery.toLowerCase())))
-            ).slice(0, 5); // Limit to 5 results
+            ).slice(0, 5);
             setFilteredResults(filtered);
             setShowDropdown(true);
         } else {
@@ -58,21 +57,18 @@ export default function NavBar() {
         }
     }, [searchQuery, allProducts]);
 
-    // Close dropdown on click outside
     useEffect(() => {
         const handleClickOutside = () => setShowDropdown(false);
         window.addEventListener('click', handleClickOutside);
         return () => window.removeEventListener('click', handleClickOutside);
     }, []);
 
-    // Sync search query from URL
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const q = params.get('search');
         if (q) setSearchQuery(q);
     }, [location.search]);
 
-    // Dynamic search: update URL as user types (only if on product-list)
     useEffect(() => {
         const timer = setTimeout(() => {
             if (location.pathname === '/product-list') {
@@ -82,7 +78,7 @@ export default function NavBar() {
                     navigate('/product-list', { replace: true });
                 }
             }
-        }, 500); // 500ms debounce
+        }, 500);
         return () => clearTimeout(timer);
     }, [searchQuery, location.pathname, navigate]);
 
@@ -128,17 +124,16 @@ export default function NavBar() {
         { name: 'Home', href: '/' },
         { name: 'Collections', href: '/product-list', hasBadge: 'New' },
         { name: 'About', href: '/#about-section' },
-        { name: 'Contact', href: '#' },
+        { name: 'Contact', href: '/contact' },
     ];
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter mb-[50px] ${isScrolled ? 'py-0' : 'py-4'
+        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter mb-[50px] ${isScrolled ? 'py-0' : 'py-3'
             }`}>
             <div className={`mx-auto transition-all duration-500 ${isScrolled
                 ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
-                : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl rounded-[1.5rem] mx-6 px-8 py-4'
+                : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl mx-6 px-8 py-4'
                 } flex justify-between items-center`}>
-                {/* Mobile Menu Toggle */}
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     className="lg:hidden text-gray-700 hover:text-black transition-colors"
@@ -151,7 +146,6 @@ export default function NavBar() {
                     <img src={Logo} alt="LOGO" className="h-8 lg:h-10 w-auto object-contain cursor-pointer" />
                 </div>
 
-                {/* Desktop Nav Links */}
                 <div className="hidden lg:flex items-center gap-10">
                     {navLinks.map((link) => (
                         <a
@@ -170,7 +164,6 @@ export default function NavBar() {
                     ))}
                 </div>
 
-                {/* Actions */}
                 <div className="flex items-center gap-4 lg:gap-7">
                     {/* Search Bar */}
                     <div className="hidden md:flex relative items-center group" onClick={(e) => e.stopPropagation()}>
@@ -295,7 +288,6 @@ export default function NavBar() {
                 </div>
             </div>
 
-            {/* Mobile Menu Backdrop */}
             {isMobileMenuOpen && (
                 <div
                     className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[51] lg:hidden"
@@ -303,7 +295,6 @@ export default function NavBar() {
                 />
             )}
 
-            {/* Mobile Menu Sidebar */}
             <div className={`fixed top-0 left-0 h-screen w-[280px] bg-white z-[52] shadow-2xl transition-transform duration-300 lg:hidden ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="flex flex-col h-full p-8">
@@ -314,7 +305,6 @@ export default function NavBar() {
                         </button>
                     </div>
 
-                    {/* Mobile Search */}
                     <div className="mb-8 relative">
                         <div className="flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
                             <input
