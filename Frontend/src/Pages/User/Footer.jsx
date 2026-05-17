@@ -1,7 +1,9 @@
 import React from 'react';
 import Logo from '../../Images/logo.png';
+import { useNavigate } from 'react-router-dom';
 
 const Footer = () => {
+    const navigate = useNavigate();
     // SVG Icons
     const InstagramIcon = () => (
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
@@ -53,7 +55,7 @@ const Footer = () => {
                 <div className="space-y-6">
                     <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">Customer Support</h4>
                     <ul className="space-y-4">
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Contact Us</button></li>
+                        <li><button onClick={() => navigate('/contact')} className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Contact Us</button></li>
                         <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Shipping & Delivery</button></li>
                         <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Returns & Exchanges</button></li>
                         <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Track Order</button></li>

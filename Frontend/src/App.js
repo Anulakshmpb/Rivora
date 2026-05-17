@@ -28,19 +28,21 @@ import Orders from './Pages/User/Orders';
 import { WishlistProvider } from './context/WishlistContext';
 import { ToastProvider } from './Toast/ToastContext';
 import BadRequest400, { NotFound404, InternalServer500 } from './Pages/User/Errors';
-import SiteManagement, { Coupons, Reviews } from './Pages/Admin/SiteManagement';
+import SiteManagement, { Coupons, Reviews, Contact as ContactAdmin } from './Pages/Admin/SiteManagement';
 import UserManagement from './Pages/Admin/UserManagement';
 import HomeCategory from './Pages/Admin/HomeCategory';
 import OrderSuccess from './Pages/User/OrderSuccess';
 import PaymentFailed from './Pages/User/PaymentFailed';
 import WalletPayment from './Pages/User/WalletPayment';
 import Order from './Pages/Admin/Order';
+import Contact from './Pages/User/Contact';
+import SaleReport from './Pages/Admin/SaleReport';
 
 
 function AppContent() {
   const location = useLocation();
 
-  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/admin/products', '/admin/add-product', '/admin/site', '/admin/site/home-category', '/admin/site/coupons', '/admin/site/reviews', '/admin/orders'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/verify-otp', '/reset-password', '/admin/login', '/admin/dashboard', '/admin/users', '/admin/products', '/admin/add-product', '/admin/site', '/admin/site/home-category', '/admin/site/coupons', '/admin/site/reviews', '/admin/site/contact', '/admin/orders', '/admin/sales-report'];
   const hideLayout = authRoutes.includes(location.pathname);
 
   return (
@@ -78,6 +80,7 @@ function AppContent() {
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/wishlist" element={<WishList />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -146,10 +149,26 @@ function AppContent() {
           }
         />
         <Route
+          path="/admin/site/contact"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <ContactAdmin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/add-product"
           element={
             <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
               <AddProduct />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/sales-report"
+          element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login">
+              <SaleReport />
             </ProtectedRoute>
           }
         />

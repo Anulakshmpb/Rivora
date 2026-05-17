@@ -1,71 +1,57 @@
+import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
-import best from '../../Images/best.png';
-import women from '../../Images/womens.png';
-import men from '../../Images/men.png';
-import Season from '../../Images/season.png';
-import summer from '../../Images/summer.png';
-import trend from '../../Images/trending.png';
-import kids from '../../Images/kids.png';
+import axiosInstance from "../../api/axiosInstance";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const Banner = () => {
 	const navigate = useNavigate();
+	const [banners, setBanners] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-	const banners = [
-		{
-			img: summer,
-			title: "Summer Collection 2026",
-			desc: "Discover modern styles designed for ultimate comfort and breathability.",
-			btn: "Shop Now",
-			category: "Summer Collections"
-		},
-		{
-			img: trend,
-			title: "Trending Fashion",
-			desc: "Upgrade your wardrobe with the latest global trends and styles.",
-			btn: "Explore",
-			category: "Trending Collections"
-		},
-		{
-			img: Season,
-			title: "Premium Collection",
-			desc: "Style that defines your unique personality and elegance.",
-			btn: "View Collection",
-			category: "Ethnic Wear"
-		},
-		{
-			img: men,
-			title: "Men's Essentials",
-			desc: "Classic and contemporary pieces for every occasion.",
-			btn: "Shop Men",
-			category: "Men's Cllections"
-		},
-		{
-			img: women,
-			title: "Women's Elegance",
-			desc: "Sophisticated designs that celebrate modern femininity.",
-			btn: "Shop Women",
-			category: "Women's Collections"
-		},
-		{
-			img: best,
-			title: "Best Sellers",
-			desc: "Explore our most-loved pieces across all categories.",
-			btn: "Shop All",
-			category: ""
-		},
-		{
-			img: kids,
-			title: "Kids Collection",
-			desc: "Discover the latest trends and styles for your little ones.",
-			btn: "Shop Kids",
-			category: "Kid's Collections"
-		}
-	];
+
+	useEffect(() => {
+		const fetchBanners = async () => {
+			try {
+				const res = await axiosInstance.get('/api/home-categories');
+				const items = res.data?.items || [];
+				
+				if (items.length > 0) {
+					const mappedBanners = items.map(item => ({
+						img: `${API_URL}${item.image}`,
+						title: item.title,
+						desc: item.description,
+						btn: item.buttonText,
+						link: item.link
+					}));
+					setBanners(mappedBanners);
+				} else {
+					setBanners([]);
+				}
+			} catch (err) {
+				console.error('Error fetching banners:', err);
+				setBanners([]);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchBanners();
+	}, []);
+
+	if (isLoading) {
+		return (
+			<div className="w-full h-[400px] md:h-[500px] bg-slate-50 flex items-center justify-center">
+				<div className="flex flex-col items-center gap-4">
+					<div className="w-12 h-12 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin" />
+					<p className="text-xs font-black text-slate-400 uppercase tracking-widest">Initializing Rivora...</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="w-full h-[400px] md:h-[500px] bg-gray-100">
@@ -105,12 +91,7 @@ const Banner = () => {
 
 									<div className="pt-4">
 										<button 
-											onClick={() => {
-												const path = item.category 
-													? `/product-list?category=${encodeURIComponent(item.category)}` 
-													: '/product-list';
-												navigate(path);
-											}}
+											onClick={() => navigate(item.link || '/product-list')}
 											className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300"
 										>
 											<span className="relative z-10 transition-colors duration-300 group-hover:text-white">

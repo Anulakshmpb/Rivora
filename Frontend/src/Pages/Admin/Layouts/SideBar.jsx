@@ -11,6 +11,7 @@ export default function SideBar() {
         if (location.pathname === '/admin/users') return 'users';
         if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') return 'products';
         if (location.pathname.startsWith('/admin/site')) return 'site';
+        if (location.pathname === '/admin/sales-report') return 'sales';
         return 'overview';
     });
 
@@ -19,6 +20,7 @@ export default function SideBar() {
         else if (location.pathname === '/admin/users') setActiveTab('users');
         else if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') setActiveTab('products');
         else if (location.pathname.startsWith('/admin/site')) setActiveTab('site');
+        else if (location.pathname === '/admin/sales-report') setActiveTab('sales');
     }, [location.pathname]);
 
     const handleLogout = () => {
@@ -80,6 +82,7 @@ export default function SideBar() {
                 <SidebarItem
                     id="sales"
                     label="Sales Reports"
+                    path="/admin/sales-report"
                     icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>}
                 />
                 <SidebarItem

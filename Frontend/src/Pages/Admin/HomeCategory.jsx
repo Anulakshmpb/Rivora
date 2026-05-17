@@ -77,7 +77,13 @@ export default function HomeCategory() {
 
     const handleEdit = (item) => {
         setEditId(item._id);
-        setForm({ title: item.title, description: item.description, buttonText: item.buttonText, link: item.link, image: null });
+        setForm({ 
+            title: item.title || '', 
+            description: item.description || '', 
+            buttonText: item.buttonText || '', 
+            link: item.link || '', 
+            image: null 
+        });
         setPreview(item.image ? `${API_URL}${item.image}` : null);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -138,7 +144,7 @@ export default function HomeCategory() {
                                         className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Link URL</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Redirect Link</label>
                                     <input name="link" value={form.link} onChange={handleChange} placeholder="e.g. /product-list?category=summer"
                                         className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" />
                                 </div>

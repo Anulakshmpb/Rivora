@@ -5,7 +5,7 @@ const upload = require('../Middlewares/multer');
 
 const router = express.Router();
 
-router.get('/', authenticateAdmin, HomeCategoryController.getAll);
+router.get('/', HomeCategoryController.getAll);
 router.post('/', authenticateAdmin, upload.single('image'), HomeCategoryController.create);
 router.put('/:id', authenticateAdmin, upload.single('image'), HomeCategoryController.update);
 router.delete('/:id', authenticateAdmin, HomeCategoryController.delete);
