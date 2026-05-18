@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { motion } from "framer-motion";
+import { useToast } from "../../Toast/ToastContext";
 
 export default function Contact() {
     const [contact, setContact] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchContact = async () => {
@@ -21,6 +25,25 @@ export default function Contact() {
         };
         fetchContact();
     }, []);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await axiosInstance.post('/api/messages', formData);
+            showToast('Message sent successfully! We will get back to you soon.', 'success');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (err) {
+            console.error('Failed to send message', err);
+            showToast(err.response?.data?.message || 'Failed to send message. Please try again.', 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -125,27 +148,27 @@ export default function Contact() {
                         <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Send a Message</h2>
                         <p className="text-slate-500 font-medium mb-10">We'll get back to you within 24 hours.</p>
 
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                                    <input type="text" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="John Doe" />
+                                    <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="John Doe" />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                                    <input type="email" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="john@example.com" />
+                                    <input type="email" name="email" value={formData.email} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="john@example.com" />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Subject</label>
-                                <input type="text" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="How can we help?" />
+                                <input type="text" name="subject" value={formData.subject} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300" placeholder="How can we help?" />
                             </div>
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Message</label>
-                                <textarea rows="4" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 resize-none" placeholder="Your message here..."></textarea>
+                                <textarea rows="4" name="message" value={formData.message} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 resize-none" placeholder="Your message here..."></textarea>
                             </div>
-                            <button className="w-full py-5 bg-black text-white rounded-2xl text-sm font-black shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3">
-                                <span>Send Message</span>
+                            <button disabled={isSubmitting} className="w-full py-5 bg-black text-white rounded-2xl text-sm font-black shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                             </button>
                         </form>

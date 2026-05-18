@@ -23,14 +23,16 @@ class ContactController extends BaseController {
 
     static updateContact = BaseController.asyncHandler(async (req, res) => {
         const { email, phone, address, googleMapsUrl, socialLinks } = req.body;
+        
+        const validSocialLinks = socialLinks ? socialLinks.filter(s => s.url && s.url.trim() !== '') : [];
 
         let contact = await Contact.findOne();
         if (contact) {
             contact.email = email || contact.email;
             contact.phone = phone || contact.phone;
             contact.address = address || contact.address;
-            contact.googleMapsUrl = googleMapsUrl || contact.googleMapsUrl;
-            contact.socialLinks = socialLinks || contact.socialLinks;
+            contact.googleMapsUrl = googleMapsUrl !== undefined ? googleMapsUrl : contact.googleMapsUrl;
+            contact.socialLinks = validSocialLinks;
             contact.updatedBy = req.admin?._id;
             await contact.save();
         } else {
@@ -39,7 +41,7 @@ class ContactController extends BaseController {
                 phone,
                 address,
                 googleMapsUrl,
-                socialLinks,
+                socialLinks: validSocialLinks,
                 updatedBy: req.admin?._id
             });
         }

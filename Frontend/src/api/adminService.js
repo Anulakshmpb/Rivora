@@ -72,6 +72,30 @@ const adminService = {
         } catch (error) {
             throw error;
         }
+    },
+    getMessages: async () => {
+        try {
+            const response = await axiosInstance.get('/api/messages');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+    markMessageAsRead: async (messageId) => {
+        try {
+            const response = await axiosInstance.patch(`/api/messages/${messageId}/read`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+    replyMessage: async (messageId, replyText) => {
+        try {
+            const response = await axiosInstance.post(`/api/messages/${messageId}/reply`, { replyText });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 };
 
