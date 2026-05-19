@@ -9,7 +9,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isAddingAddress, setIsAddingAddress] = useState(false);
-    const [activeTab, setActiveTab] = useState('settings'); // 'settings', 'addresses', 'wallet'
+    const [activeTab, setActiveTab] = useState('settings');
     const [newAddress, setNewAddress] = useState({ street: '', apartment: '', city: '', state: '', pinCode: '', country: '', isDefault: false });
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
@@ -118,12 +118,12 @@ const Profile = () => {
             desc: "Manage balance and transactions",
             onClick: () => setActiveTab('wallet'),
             icon: <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-        },
-        {
-            title: "Login & Security",
-            desc: "Two factor & password updates",
-            icon: <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
         }
+        // {
+        //     title: "Login & Security",
+        //     desc: "Two factor & password updates",
+        //     icon: <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+        // }
     ];
 
     const safeAddresses = user.addresses || [];
