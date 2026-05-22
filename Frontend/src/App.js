@@ -38,6 +38,7 @@ import Order from './Pages/Admin/Order';
 import Contact from './Pages/User/Contact';
 import SaleReport from './Pages/Admin/SaleReport';
 import CustomerMessages from './Pages/Admin/CustomerMessages';
+import ChatBox from './Pages/User/Chatbox';
 
 function AppContent() {
   const location = useLocation();
@@ -48,6 +49,7 @@ function AppContent() {
   return (
     <div className="App">
       {!hideLayout && <NavBar />}
+      <ChatBox />
       <Routes>
         <Route path="/" element={<Home />} />
 

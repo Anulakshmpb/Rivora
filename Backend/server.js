@@ -7,6 +7,7 @@ const { setupRoutes } = require('./Routes/index');
 const { errorHandler, notFound } = require('./Middlewares/errorHandler');
 const logger = require('./utils/logger');
 const { runSeeders } = require('./utils/seeder');
+const chatboxRoutes = require('./Routes/chatbox');
 
 class Server {
     constructor() {
@@ -29,6 +30,9 @@ class Server {
 
             // 3. Setup Routes
             setupRoutes(this.app);
+            
+            // chatbox
+            this.app.use("/api/chatbox", chatboxRoutes);
 
             // 4. Handle 404 (Not Found)
             this.app.use(notFound);
