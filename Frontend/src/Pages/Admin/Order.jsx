@@ -187,7 +187,7 @@ export default function Order() {
         const isReturns = viewMode === 'returns';
         const doc = new jsPDF();
         doc.text(isReturns ? "Returns Report" : "Orders Report", 14, 15);
-        
+
         const headers = isReturns
             ? ['Return ID', 'Order ID', 'Date', 'User', 'Email', 'Product', 'Price', 'Reason', 'Status']
             : ['Order ID', 'Date', 'User', 'Email', 'Mobile', 'Items', 'Total Amount', 'Status'];
@@ -547,8 +547,8 @@ export default function Order() {
                                                                     <option value="Processing">Processing</option>
                                                                     <option value="Delivered">Delivered</option>
                                                                     <option value="Cancelled">Cancelled</option>
-                                                                    <option value="Returned">Returned</option>
-                                                                    <option value="Return Requested">Return Requested</option>
+                                                                    {/* <option value="Returned">Returned</option> */}
+                                                                    {/* <option value="Return Requested">Return Requested</option> */}
                                                                 </select>
                                                                 <button
                                                                     onClick={() => {

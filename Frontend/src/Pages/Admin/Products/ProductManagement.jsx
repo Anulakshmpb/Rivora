@@ -57,13 +57,11 @@ export default function ProductManagement() {
   }, []);
 
   const processedProducts = useMemo(() => {
-    const term = (searchTerm || '').toLowerCase();
-    let result = products.filter(p => {
-      const nameMatch = p.name ? String(p.name).toLowerCase().includes(term) : false;
-      const catMatch = p.displayCategory ? String(p.displayCategory).toLowerCase().includes(term) : false;
-      const codeMatch = p.code ? String(p.code).toLowerCase().includes(term) : false;
-      return nameMatch || catMatch || codeMatch;
-    });
+    let result = products.filter(p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.code && p.code.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
     if (stockSort === 'out-of-stock') {
       result.sort((a, b) => {
@@ -183,7 +181,6 @@ export default function ProductManagement() {
             </div>
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
               <ActionButton icon={<FilterIcon />}>Filter</ActionButton>
-              <ActionButton icon={<DownloadIcon />}>Export CSV</ActionButton>
               <div className="relative group">
                 <select
                   value={stockSort}
