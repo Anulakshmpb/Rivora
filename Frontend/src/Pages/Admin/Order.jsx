@@ -21,8 +21,11 @@ import {
     Mail,
     Phone,
     Package,
+    Printer,
 } from 'lucide-react';
 import SideBar from './Layouts/SideBar';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import Header from './Layouts/Header';
 
 export default function Order() {
@@ -41,6 +44,9 @@ export default function Order() {
     const [returnModal, setReturnModal] = useState(false);
     const [viewMode, setViewMode] = useState('orders');
     const [returnReason, setReturnReason] = useState('');
+    const [rejectModalOpen, setRejectModalOpen] = useState(false);
+    const [rejectReason, setRejectReason] = useState('');
+    const [selectedReturnId, setSelectedReturnId] = useState(null);
 
     const [stats, setStats] = useState({
         total: 0,
@@ -108,14 +114,23 @@ export default function Order() {
         }
     };
 
-    const handleRejectReturn = async (returnId) => {
-        const reason = window.prompt('Please enter a reason for rejection:');
-        if (reason === null) return; // User cancelled the prompt
+    const handleRejectReturn = (returnId) => {
+        setSelectedReturnId(returnId);
+        setRejectReason('');
+        setRejectModalOpen(true);
+    };
+
+    const submitRejectReturn = async () => {
+        if (!rejectReason.trim()) {
+            showToast('Please enter a reason for rejection', 'error');
+            return;
+        }
 
         try {
-            const res = await axiosInstance.post(`/api/admin/returns/${returnId}/reject-return`, { reason });
+            const res = await axiosInstance.post(`/api/admin/returns/${selectedReturnId}/reject-return`, { reason: rejectReason });
             if (res.success) {
                 showToast('Return request rejected', 'success');
+                setRejectModalOpen(false);
                 fetchOrders();
             }
         } catch (err) {
@@ -168,8 +183,11 @@ export default function Order() {
     const currentItems = filteredData.slice(indexOfFirstOrder, indexOfLastOrder);
     const totalPages = Math.ceil(filteredData.length / ordersPerPage);
 
-    const exportToCSV = () => {
+    const exportToPDF = () => {
         const isReturns = viewMode === 'returns';
+        const doc = new jsPDF();
+        doc.text(isReturns ? "Returns Report" : "Orders Report", 14, 15);
+        
         const headers = isReturns
             ? ['Return ID', 'Order ID', 'Date', 'User', 'Email', 'Product', 'Price', 'Reason', 'Status']
             : ['Order ID', 'Date', 'User', 'Email', 'Mobile', 'Items', 'Total Amount', 'Status'];
@@ -195,17 +213,17 @@ export default function Order() {
             o.orderStatus
         ]);
 
-        const csvContent = "data:text/csv;charset=utf-8,"
-            + headers.join(",") + "\n"
-            + rows.map(e => e.join(",")).join("\n");
+        doc.autoTable({
+            startY: 20,
+            head: [headers],
+            body: rows.map(row => row.map(cell => String(cell || ''))),
+        });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        doc.save(`${isReturns ? 'returns' : 'orders'}_export_${new Date().toISOString().split('T')[0]}.pdf`);
+    };
+
+    const handlePrint = () => {
+        window.print();
     };
     const handleReturnOrders = () => {
         setReturnModal(true);
@@ -341,11 +359,18 @@ export default function Order() {
                                     <RefreshCw className="w-5 h-5" />
                                 </button>
                                 <button
-                                    onClick={exportToCSV}
+                                    onClick={handlePrint}
+                                    className="flex items-center gap-2 bg-white text-slate-900 border border-slate-200 px-6 py-3 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all shadow-sm"
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    Print
+                                </button>
+                                <button
+                                    onClick={exportToPDF}
                                     className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-black transition-all shadow-lg shadow-slate-900/10"
                                 >
                                     <Download className="w-4 h-4" />
-                                    Export Data
+                                    Export PDF
                                 </button>
                             </div>
                         </div>
@@ -489,7 +514,7 @@ export default function Order() {
                                                     <div className="flex justify-center gap-2">
                                                         {viewMode === 'returns' ? (
                                                             <>
-                                                                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
+                                                                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(item.status)}`}>
                                                                     {item.status}
                                                                 </span>
                                                                 {item.status === 'Pending' && (
@@ -848,6 +873,44 @@ export default function Order() {
                                     className="flex-1 bg-amber-600 text-white px-4 py-3 rounded-xl text-sm font-bold hover:bg-amber-700 transition-all shadow-amber-600/20"
                                 >
                                     Return
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Reject Return Modal */}
+            {rejectModalOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 max-w-md w-full mx-4">
+                        <h2 className="text-xl font-serif italic text-slate-900 mb-6 flex items-center gap-2">
+                            <XCircle className="w-5 h-5 text-red-500" />
+                            Reject Return
+                        </h2>
+                        <form onSubmit={(e) => e.preventDefault()}>
+                            <div className="mb-6">
+                                <label className="block text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Reason for Rejection</label>
+                                <textarea
+                                    value={rejectReason}
+                                    onChange={(e) => setRejectReason(e.target.value)}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-red-500/20 outline-none transition-all resize-none h-32"
+                                    placeholder="Please provide a detailed reason..."
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setRejectModalOpen(false)}
+                                    className="flex-1 bg-slate-100 text-slate-700 px-4 py-3 rounded-xl text-sm font-bold hover:bg-slate-200 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={submitRejectReturn}
+                                    className="flex-1 bg-red-500 text-white px-4 py-3 rounded-xl text-sm font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+                                >
+                                    Reject Return
                                 </button>
                             </div>
                         </form>

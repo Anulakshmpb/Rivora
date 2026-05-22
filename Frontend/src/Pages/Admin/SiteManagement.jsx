@@ -132,7 +132,7 @@ export default function SiteManagement() {
             </main>
         </div>
     );
-} 
+}
 
 export const Coupons = () => {
     const [coupons, setCoupons] = useState([]);
@@ -485,7 +485,7 @@ export const Contact = () => {
                 const res = await axiosInstance.get('/api/contact');
                 if (res.data?.contact) {
                     const { email, phone, address, googleMapsUrl, socialLinks } = res.data.contact;
-                    
+
                     // Ensure all platforms exist in the form
                     const platforms = ['Instagram', 'Facebook', 'Twitter', 'LinkedIn'];
                     const mappedSocial = platforms.map(p => {

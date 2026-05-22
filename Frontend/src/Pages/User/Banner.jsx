@@ -19,7 +19,7 @@ const Banner = () => {
 			try {
 				const res = await axiosInstance.get('/api/home-categories');
 				const items = res.data?.items || [];
-				
+
 				if (items.length > 0) {
 					const mappedBanners = items.map(item => ({
 						img: `${API_URL}${item.image}`,
@@ -90,7 +90,7 @@ const Banner = () => {
 									</p>
 
 									<div className="pt-4">
-										<button 
+										<button
 											onClick={() => navigate(item.link || '/product-list')}
 											className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300"
 										>

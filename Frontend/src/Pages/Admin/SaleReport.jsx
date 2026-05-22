@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
 import adminService from '../../api/adminService';
-import { Download, Search, X, ArrowUpDown, DollarSign, Package, ShoppingCart, Users, Activity, Tag, TrendingUp, TrendingDown, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, Search, X, ArrowUpDown, DollarSign, Package, ShoppingCart, Users, Activity, Tag, TrendingUp, TrendingDown, AlertCircle, CheckCircle, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const StatCard = ({ title, value, icon: Icon, trend, colorClass }) => (
     <motion.div
@@ -246,30 +248,32 @@ export default function SaleReport() {
         setSortConfig({ key: null, direction: 'asc' });
     };
 
-    const handleExport = () => {
+    const exportToPDF = () => {
         if (tableData.length === 0) return;
         
-        const headers = columns.map(c => c.label).join(',');
+        const doc = new jsPDF();
+        doc.text(`Sales Report - ${activeTab.toUpperCase()}`, 14, 15);
+        
+        const headers = columns.map(c => c.label);
         const rows = tableData.map(row => {
             return columns.map(c => {
                 let val = row[c.key];
                 if (c.render) val = c.render(val, row);
-                // Escape commas
-                if (typeof val === 'string' && val.includes(',')) {
-                    val = `"${val}"`;
-                }
-                return val;
-            }).join(',');
+                return String(val || '');
+            });
         });
         
-        const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join('\n');
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `sales_report_${activeTab}_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        doc.autoTable({
+            startY: 20,
+            head: [headers],
+            body: rows,
+        });
+        
+        doc.save(`sales_report_${activeTab}_${new Date().toISOString().split('T')[0]}.pdf`);
+    };
+
+    const handlePrint = () => {
+        window.print();
     };
 
     // --- Tab Definitions ---
@@ -293,9 +297,13 @@ export default function SaleReport() {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <h2 className="text-2xl font-black text-slate-900 tracking-tight">Report Generator</h2>
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                            <button onClick={handleExport} className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
+                            <button onClick={handlePrint} className="flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 border border-slate-200 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm">
+                                <Printer size={16} />
+                                Print
+                            </button>
+                            <button onClick={exportToPDF} className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
                                 <Download size={16} />
-                                Export CSV
+                                Export PDF
                             </button>
                         </div>
                     </div>
