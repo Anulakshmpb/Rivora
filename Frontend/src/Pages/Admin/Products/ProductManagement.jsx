@@ -57,11 +57,13 @@ export default function ProductManagement() {
   }, []);
 
   const processedProducts = useMemo(() => {
-    let result = products.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (p.code && p.code.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const term = (searchTerm || '').toLowerCase();
+    let result = products.filter(p => {
+      const nameMatch = p.name ? String(p.name).toLowerCase().includes(term) : false;
+      const catMatch = p.displayCategory ? String(p.displayCategory).toLowerCase().includes(term) : false;
+      const codeMatch = p.code ? String(p.code).toLowerCase().includes(term) : false;
+      return nameMatch || catMatch || codeMatch;
+    });
 
     if (stockSort === 'out-of-stock') {
       result.sort((a, b) => {

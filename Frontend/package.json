@@ -11,6 +11,8 @@
     "axios": "^1.15.0",
     "framer-motion": "^12.38.0",
     "joi": "^18.1.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.14.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
