@@ -49,7 +49,7 @@ function AppContent() {
   return (
     <div className="App">
       {!hideLayout && <NavBar />}
-      <ChatBox />
+      {!location.pathname.startsWith('/admin') && <ChatBox />}
       <Routes>
         <Route path="/" element={<Home />} />
 

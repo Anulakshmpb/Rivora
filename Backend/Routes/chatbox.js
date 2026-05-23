@@ -16,12 +16,10 @@ router.post("/", async (req, res) => {
 
         const lastMessage = chatHistory[chatHistory.length - 1]?.content || "";
         const orderMatch = lastMessage.match(/(?:order|id|#).*?([a-fA-F0-9]{8}|[a-fA-F0-9]{24})\b/i);
-        
         let injectedContext = "";
 
         if (orderMatch) {
             const orderIdSuffix = orderMatch[1];
-            
             try {
                 let order;
                 if (orderIdSuffix.length === 24) {
