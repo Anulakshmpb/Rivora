@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import SideBar from './Layouts/SideBar';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import Header from './Layouts/Header';
 
 export default function Order() {
@@ -213,10 +213,10 @@ export default function Order() {
             o.orderStatus
         ]);
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: 20,
             head: [headers],
-            body: rows.map(row => row.map(cell => String(cell || ''))),
+            body: rows.map(row => row.map(cell => String(cell || '').replace(/₹/g, 'Rs. '))),
         });
 
         doc.save(`${isReturns ? 'returns' : 'orders'}_export_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -289,17 +289,17 @@ export default function Order() {
                     {/* Filters */}
                     <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 mb-8">
                         <div className="flex flex-wrap items-center justify-between">
-                            <div className="flex flex-wrap items-center gap-4 flex-1">
+                            <div className="flex flex-wrap items-center gap-2 flex-1">
                                 <div className="flex bg-slate-100 p-1.5 rounded-2xl">
                                     <button
                                         onClick={() => setViewMode('orders')}
-                                        className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'orders' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'orders' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         All Orders
                                     </button>
                                     <button
                                         onClick={() => setViewMode('returns')}
-                                        className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'returns' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'returns' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         Return Requests
                                     </button>

@@ -20,19 +20,19 @@ const managementPages = [
             </svg>
         ),
     },
-    {
-        title: 'About',
-        description: 'Edit company story, mission, team members, and values',
-        path: '/admin/site/about',
-        color: 'from-violet-500 to-purple-600',
-        bgLight: 'bg-violet-50',
-        textColor: 'text-violet-600',
-        icon: (
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        ),
-    },
+    // {
+    //     title: 'About',
+    //     description: 'Edit company story, mission, team members, and values',
+    //     path: '/admin/site/about',
+    //     color: 'from-violet-500 to-purple-600',
+    //     bgLight: 'bg-violet-50',
+    //     textColor: 'text-violet-600',
+    //     icon: (
+    //         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    //             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    //         </svg>
+    //     ),
+    // },
     {
         title: 'Contact',
         description: 'Update contact info, social links, and support channels',
@@ -442,20 +442,111 @@ export const Coupons = () => {
 }
 
 export const Reviews = () => {
+    const [activeTab, setActiveTab] = useState('site');
+    const [reviews, setReviews] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { showToast } = useToast();
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axiosInstance.get('/api/reviews', { params: { type: activeTab } });
+                if (response.success) {
+                    setReviews(response.reviews || []);
+                }
+            } catch (error) {
+                showToast(error.response?.data?.message || 'Failed to fetch reviews', 'error');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchReviews();
+    }, [activeTab, showToast]);
+
+    const renderStars = (rating) => {
+        return (
+            <div className="flex gap-1">
+                {[...Array(5)].map((_, i) => (
+                    <svg key={i} className={`w-4 h-4 ${i < rating ? 'text-yellow-400' : 'text-slate-200'}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 flex font-inter">
             <SideBar />
             <main className="flex-1 lg:ml-72 min-h-screen bg-slate-50">
                 <Header title="Review Management" subtitle="Moderate customer reviews, ratings, and testimonials" />
 
-                <div className="p-8 max-w-7xl mx-auto text-center py-20">
-                    <div className="w-24 h-24 bg-rose-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 text-rose-500">
-                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
+                <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <div className="flex justify-center mb-8">
+                        <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-200 flex">
+                            <button
+                                onClick={() => setActiveTab('site')}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'site' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Site Reviews
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('product')}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'product' ? 'bg-blue-50 text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                Product Reviews
+                            </button>
+                        </div>
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 mb-2">Review Moderation</h2>
-                    <p className="text-slate-500 font-medium max-w-md mx-auto">This module is currently being optimized to provide better insights into customer feedback.</p>
+
+                    {isLoading ? (
+                        <div className="flex justify-center items-center py-20">
+                            <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+                        </div>
+                    ) : reviews.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {reviews.map(review => (
+                                <div key={review._id} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden flex flex-col">
+                                    <div className="flex items-start justify-between mb-4">
+                                        <div className="flex items-center gap-3">
+                                            {review.img ? (
+                                                <img src={review.img.startsWith('http') || review.img.startsWith('/uploads') ? (review.img.startsWith('http') ? review.img : `http://localhost:5000${review.img}`) : review.img} alt={review.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100" />
+                                            ) : (
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+                                                    {review.name.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <div>
+                                                <h4 className="font-bold text-slate-900">{review.name}</h4>
+                                                <p className="text-xs text-slate-500">{review.email}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mb-3">
+                                        {renderStars(review.rating)}
+                                    </div>
+                                    <p className="text-slate-600 text-sm mb-4 italic flex-1">"{review.review}"</p>
+                                    <div className="flex justify-between items-center text-xs text-slate-400 font-medium pt-4 border-t border-slate-100 mt-auto">
+                                        <span>{new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                                        {review.productId && (
+                                            <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md max-w-[120px] truncate" title={review.productId}>Product ID: {review.productId}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 border-dashed">
+                            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-1">No Reviews Found</h3>
+                            <p className="text-slate-500 text-sm">There are no {activeTab} reviews available yet.</p>
+                        </div>
+                    )}
                 </div>
             </main>
         </div>
