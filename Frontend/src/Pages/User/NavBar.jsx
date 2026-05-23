@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useNotification } from '../../context/NotificationContext';
 import axiosInstance from '../../api/axiosInstance';
 
 export default function NavBar() {
@@ -13,6 +14,7 @@ export default function NavBar() {
     const { isAuthenticated, logout } = useAuth();
     const { cartTotalItems } = useCart();
     const { wishlisttotal } = useWishlist();
+    const { unreadCount } = useNotification();
     const [searchQuery, setSearchQuery] = useState('');
     const [allProducts, setAllProducts] = useState([]);
     const [filteredResults, setFilteredResults] = useState([]);
@@ -270,8 +272,14 @@ export default function NavBar() {
                         )}
                     </button>
 
-                    <button className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                    <button onClick={() => navigate('/notification')}
+                        className="relative p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <BellIcon />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1 right-1 bg-red-500 text-[8px] text-white w-4 h-4 flex items-center justify-center rounded-full border-2 border-white font-bold">
+                                {unreadCount}
+                            </span>
+                        )}
                     </button>
 
                     {isAuthenticated ? (

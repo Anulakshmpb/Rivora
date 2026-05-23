@@ -4,6 +4,7 @@ import { useToast } from '../../Toast/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReviewModal from './ReviewModal';
+import { useNotification } from '../../context/NotificationContext';
 
 const PackageIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
@@ -14,6 +15,7 @@ const CalendarIcon = () => (
 );
 
 export default function Orders() {
+    const { addNotification } = useNotification();
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [returnReason, setReturnReason] = useState('');
@@ -104,7 +106,7 @@ export default function Orders() {
 
             if (res.success) {
                 let successMessage = type === 'cancel' ? 'Item cancelled successfully' : 'Item returned successfully';
-                
+
                 // Add refund amount to message
                 if (res.data.refundAmount !== undefined) {
                     successMessage += `. $${res.data.refundAmount.toFixed(2)} has been added to your wallet.`;
@@ -225,14 +227,14 @@ export default function Orders() {
                                                 </div>
                                                 <div className="flex gap-4 items-center">
                                                     {item.status === 'Delivered' && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => setReviewModal({ isOpen: true, productId: item.product._id })}
                                                             className="text-[12px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-900 pb-1 hover:text-slate-500 hover:border-slate-300 transition-all"
                                                         >
                                                             Write Review
                                                         </button>
                                                     )}
-                                                    
+
                                                     {/* Item Specific Actions */}
                                                     {(!item.status || item.status === 'Ordered') && ['Processing', 'Pending'].includes(order.orderStatus) && (
                                                         (() => {
@@ -273,7 +275,7 @@ export default function Orders() {
                                             View Details
                                         </button>
                                     </div>
-                                   
+
                                 </motion.div>
                             ))}
                         </AnimatePresence>
@@ -419,17 +421,17 @@ export default function Orders() {
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
-                                                 <div className="flex-1">
-                                                     <div className="flex items-center gap-2">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
                                                         <h5 className="text-sm font-bold text-slate-900">{item.product?.name}</h5>
                                                         {item.status && item.status !== 'Ordered' && (
                                                             <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${getStatusColor(item.status)}`}>
                                                                 {item.status}
                                                             </span>
                                                         )}
-                                                     </div>
-                                                     <p className="text-[12px] text-slate-600 mt-0.5">{item.size} / {item.color} | Qty: {item.quantity}</p>
-                                                 </div>
+                                                    </div>
+                                                    <p className="text-[12px] text-slate-600 mt-0.5">{item.size} / {item.color} | Qty: {item.quantity}</p>
+                                                </div>
                                                 <div className="text-sm font-black text-slate-900">
                                                     ${(item.price * item.quantity).toFixed(2)}
                                                 </div>
@@ -438,46 +440,46 @@ export default function Orders() {
                                     </div>
                                 </div>
 
-                                 {/* Pricing Breakdown */}
-                                 <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
-                                     {(() => {
-                                         const activeItems = detailsModal.order.items.filter(item => !['Cancelled', 'Returned'].includes(item.status));
-                                         const subtotal = activeItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-                                         const shipping = detailsModal.order.shippingCost || 0;
-                                         const tax = detailsModal.order.taxAmount || 0;
-                                         const discount = detailsModal.order.discountAmount || 0;
-                                         const total = Math.max(0, subtotal + shipping + tax - discount);
-                                         
-                                         return (
-                                             <>
-                                                 <div className="space-y-3 mb-6 pb-6 border-b border-white/10">
-                                                     <div className="flex justify-between items-center text-sm">
-                                                         <span className="text-white/50 font-medium">Subtotal (Active Items)</span>
-                                                         <span className="font-bold">${subtotal.toFixed(2)}</span>
-                                                     </div>
-                                                     {discount > 0 && (
-                                                         <div className="flex justify-between items-center text-sm text-emerald-400">
-                                                             <span className="font-medium">Discount Applied</span>
-                                                             <span className="font-bold">-${discount.toFixed(2)}</span>
-                                                         </div>
-                                                     )}
-                                                     <div className="flex justify-between items-center text-sm">
-                                                         <span className="text-white/50 font-medium">Shipping</span>
-                                                         <span className="font-bold">${shipping.toFixed(2)}</span>
-                                                     </div>
-                                                     <div className="flex justify-between items-center text-sm">
-                                                         <span className="text-white/50 font-medium">Estimated Tax</span>
-                                                         <span className="font-bold">${tax.toFixed(2)}</span>
-                                                     </div>
-                                                 </div>
-                                                 <div className="flex justify-between items-center">
-                                                     <span className="text-xs font-black uppercase tracking-[0.3em] text-white/40">Total Amount</span>
-                                                     <span className="text-3xl font-serif tracking-tighter">${total.toFixed(2)}</span>
-                                                 </div>
-                                             </>
-                                         );
-                                     })()}
-                                 </div>
+                                {/* Pricing Breakdown */}
+                                <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
+                                    {(() => {
+                                        const activeItems = detailsModal.order.items.filter(item => !['Cancelled', 'Returned'].includes(item.status));
+                                        const subtotal = activeItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                                        const shipping = detailsModal.order.shippingCost || 0;
+                                        const tax = detailsModal.order.taxAmount || 0;
+                                        const discount = detailsModal.order.discountAmount || 0;
+                                        const total = Math.max(0, subtotal + shipping + tax - discount);
+
+                                        return (
+                                            <>
+                                                <div className="space-y-3 mb-6 pb-6 border-b border-white/10">
+                                                    <div className="flex justify-between items-center text-sm">
+                                                        <span className="text-white/50 font-medium">Subtotal (Active Items)</span>
+                                                        <span className="font-bold">${subtotal.toFixed(2)}</span>
+                                                    </div>
+                                                    {discount > 0 && (
+                                                        <div className="flex justify-between items-center text-sm text-emerald-400">
+                                                            <span className="font-medium">Discount Applied</span>
+                                                            <span className="font-bold">-${discount.toFixed(2)}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex justify-between items-center text-sm">
+                                                        <span className="text-white/50 font-medium">Shipping</span>
+                                                        <span className="font-bold">${shipping.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-sm">
+                                                        <span className="text-white/50 font-medium">Estimated Tax</span>
+                                                        <span className="font-bold">${tax.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xs font-black uppercase tracking-[0.3em] text-white/40">Total Amount</span>
+                                                    <span className="text-3xl font-serif tracking-tighter">${total.toFixed(2)}</span>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
 
                                 {detailsModal.order.returnReason && (
                                     <div className="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100">

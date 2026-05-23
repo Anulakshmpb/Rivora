@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../../Toast/ToastContext';
 import axiosInstance from '../../api/axiosInstance';
 import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../context/NotificationContext';
 
 export default function Checkout() {
     const { cartItems, cartTotalPrice, cartTotalItems, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
     const { showToast } = useToast();
+    const { addNotification } = useNotification();
 
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -120,6 +122,7 @@ export default function Checkout() {
 
                 if (res.success) {
                     showToast('Success', 'Order placed successfully (COD)!', 'success');
+                    addNotification(`Order placed successfully! Order #${res.data._id.slice(-8).toUpperCase()}`, 'success');
                     clearCart();
                     navigate('/order-success', { state: { order: res.data } });
                 } else {
@@ -211,6 +214,7 @@ export default function Checkout() {
 
                         if (verifyRes.success) {
                             showToast('Success', 'Order placed successfully!', 'success');
+                            addNotification(`Order placed successfully! Order #${verifyRes.data._id.slice(-8).toUpperCase()}`, 'success');
                             clearCart();
                             navigate('/order-success', { state: { order: verifyRes.data } });
                         } else {
