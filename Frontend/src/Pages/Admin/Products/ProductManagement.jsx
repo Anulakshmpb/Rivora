@@ -58,9 +58,9 @@ export default function ProductManagement() {
 
   const processedProducts = useMemo(() => {
     let result = products.filter(p =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (p.code && p.code.toLowerCase().includes(searchTerm.toLowerCase()))
+      (p.name && String(p.name).toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.displayCategory && String(p.displayCategory).toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.code && String(p.code).toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     if (stockSort === 'out-of-stock') {
