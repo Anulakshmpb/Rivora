@@ -39,6 +39,8 @@ import Contact from './Pages/User/Contact';
 import SaleReport from './Pages/Admin/SaleReport';
 import CustomerMessages from './Pages/Admin/CustomerMessages';
 import ChatBox from './Pages/User/Chatbox';
+import Notification from './Pages/User/Notification';
+import { NotificationProvider } from './context/NotificationContext';
 
 function AppContent() {
   const location = useLocation();
@@ -83,7 +85,7 @@ function AppContent() {
         <Route path="/payment-failed" element={<PaymentFailed />} />
         <Route path="/wishlist" element={<WishList />} />
         <Route path="/contact" element={<Contact />} />
-
+        <Route path="/notification" element={<Notification />} />
         {/* Admin */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
@@ -248,15 +250,17 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <AppContent />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
-      </ToastProvider>
+      <NotificationProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <AppContent />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
+import { useNotification } from '../../context/NotificationContext';
 import { motion } from 'framer-motion';
 import {
     Search,
@@ -41,6 +42,7 @@ export default function Order() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { showToast } = useToast();
+    const { addNotification } = useNotification();
     const [returnModal, setReturnModal] = useState(false);
     const [viewMode, setViewMode] = useState('orders');
     const [returnReason, setReturnReason] = useState('');
@@ -95,6 +97,7 @@ export default function Order() {
             const res = await axiosInstance.patch(`/api/admin/orders/${orderId}/status`, { status: newStatus });
             if (res.success) {
                 showToast(`Order status updated to ${newStatus}`, 'success');
+                addNotification(`Order #${orderId.slice(-8).toUpperCase()} status updated to ${newStatus}`, 'info');
                 fetchOrders();
             }
         } catch (err) {
@@ -107,6 +110,7 @@ export default function Order() {
             const res = await axiosInstance.post(`/api/admin/returns/${returnId}/approve-return`);
             if (res.success) {
                 showToast('Return request approved', 'success');
+                addNotification(`Return request approved`, 'success');
                 fetchOrders();
             }
         } catch (err) {
@@ -130,6 +134,7 @@ export default function Order() {
             const res = await axiosInstance.post(`/api/admin/returns/${selectedReturnId}/reject-return`, { reason: rejectReason });
             if (res.success) {
                 showToast('Return request rejected', 'success');
+                addNotification(`Return request rejected: ${rejectReason}`, 'error');
                 setRejectModalOpen(false);
                 fetchOrders();
             }
