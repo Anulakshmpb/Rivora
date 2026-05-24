@@ -4,13 +4,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export default function SideBar() {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     const [activeTab, setActiveTab] = useState(() => {
         if (location.pathname === '/admin/dashboard') return 'overview';
         if (location.pathname === '/admin/users') return 'users';
         if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') return 'products';
         if (location.pathname.startsWith('/admin/site')) return 'site';
         if (location.pathname === '/admin/sales-report') return 'sales';
+        if (location.pathname === '/admin/orders') return 'orders';
+        if (location.pathname === '/admin/messages') return 'messages';
         return 'overview';
     });
 
@@ -20,6 +22,8 @@ export default function SideBar() {
         else if (location.pathname === '/admin/products' || location.pathname === '/admin/add-product') setActiveTab('products');
         else if (location.pathname.startsWith('/admin/site')) setActiveTab('site');
         else if (location.pathname === '/admin/sales-report') setActiveTab('sales');
+        else if (location.pathname === '/admin/orders') setActiveTab('orders');
+        else if (location.pathname === '/admin/messages') setActiveTab('messages');
     }, [location.pathname]);
 
     const handleLogout = () => {

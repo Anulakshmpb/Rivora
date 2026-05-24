@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ShoppingCart, DollarSign, Activity, CheckCircle, Clock, AlertCircle, TrendingUp
+import {
+    Users, ShoppingCart, DollarSign, Activity, CheckCircle, Clock, AlertCircle, TrendingUp
 } from 'lucide-react';
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
@@ -22,52 +23,16 @@ const getSvgPath = (points) => {
     return path;
 };
 
-const generateMockOrders = (days) => {
-    const mockOrders = [];
-    const baseSales = [
-        25000, 29000, 22000, 31000, 39000, 34000, 48000, 52000, 44000, 56000, 
-        60000, 51000, 68000, 75000, 62000, 78000, 85000, 74000, 92000, 99000,
-        91000, 105000, 112000, 101000, 118000, 126000, 115000, 132000, 140000, 155000
-    ];
-    
-    for (let i = 0; i < days; i++) {
-        const date = new Date(Date.now() - (days - 1 - i) * 24 * 60 * 60 * 1000);
-        const orderCount = 2 + Math.floor(Math.random() * 3);
-        const dayBaseSales = baseSales[i % baseSales.length];
-        
-        for (let j = 0; j < orderCount; j++) {
-            const methods = ['razorpay', 'cod', 'wallet'];
-            const statuses = ['Delivered', 'Delivered', 'Shipped', 'Processing', 'Pending'];
-            const randomMethod = methods[Math.floor(Math.random() * methods.length)];
-            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-            
-            mockOrders.push({
-                _id: `mock_${i}_${j}`,
-                createdAt: date.toISOString(),
-                totalAmount: Math.round((dayBaseSales / orderCount) * (0.85 + Math.random() * 0.3)),
-                paymentStatus: randomStatus === 'Pending' && randomMethod === 'cod' ? 'Pending' : 'Paid',
-                paymentMethod: randomMethod,
-                orderStatus: randomStatus,
-                items: [
-                    { price: 1200, quantity: 1, product: { category: ['Fashion & Apparel'] } }
-                ]
-            });
-        }
-    }
-    return mockOrders;
-};
 
-const MOCK_USERS = Array.from({ length: 14284 }, (_, i) => ({ _id: i }));
 
 const AdminDashboard = () => {
     const [orders, setOrders] = useState([]);
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    
-    const [timeframe, setTimeframe] = useState(7); 
+
+    const [timeframe, setTimeframe] = useState(7);
     const [chartMetric, setChartMetric] = useState('revenue');
     const [hoveredIdx, setHoveredIdx] = useState(null);
-    const [isDemoData, setIsDemoData] = useState(false);
     const [channelTab, setChannelTab] = useState('payment');
 
     useEffect(() => {
@@ -88,20 +53,12 @@ const AdminDashboard = () => {
                 const fetchedOrders = ordersRes?.data || ordersRes || [];
                 const fetchedUsers = usersRes?.users || usersRes?.data?.users || usersRes || [];
 
-                if (fetchedOrders.length === 0 && fetchedUsers.length === 0) {
-                    setIsDemoData(true);
-                    setOrders(generateMockOrders(30));
-                    setUsers(MOCK_USERS);
-                } else {
-                    setIsDemoData(false);
-                    setOrders(fetchedOrders.length > 0 ? fetchedOrders : generateMockOrders(30));
-                    setUsers(fetchedUsers.length > 0 ? fetchedUsers : MOCK_USERS);
-                }
+                setOrders(fetchedOrders);
+                setUsers(fetchedUsers);
             } catch (error) {
                 console.error('Error loading dashboard stats:', error);
-                setIsDemoData(true);
-                setOrders(generateMockOrders(30));
-                setUsers(MOCK_USERS);
+                setOrders([]);
+                setUsers([]);
             } finally {
                 setLoading(false);
             }
@@ -113,12 +70,7 @@ const AdminDashboard = () => {
     // Total Net Revenue calculation
     const totalRevenue = useMemo(() => {
         return orders.reduce((acc, order) => {
-            const status = order.orderStatus?.toLowerCase();
-            const payStatus = order.paymentStatus?.toLowerCase();
-            if (status !== 'cancelled' && payStatus !== 'refunded') {
-                return acc + (order.totalAmount || 0);
-            }
-            return acc;
+            return acc + (order.totalAmount || 0);
         }, 0);
     }, [orders]);
 
@@ -126,46 +78,43 @@ const AdminDashboard = () => {
     const chartData = useMemo(() => {
         const dates = Array.from({ length: timeframe }, (_, i) => {
             const d = new Date();
+            d.setHours(0, 0, 0, 0); // Normalize to midnight
             d.setDate(d.getDate() - (timeframe - 1 - i));
             return d;
         });
 
-        const formattedDates = dates.map(d => 
-            timeframe === 7 
-                ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-                : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-        );
-
         const revenueMap = {};
         const countMap = {};
 
-        formattedDates.forEach(dateStr => {
-            revenueMap[dateStr] = 0;
-            countMap[dateStr] = 0;
+        dates.forEach(d => {
+            const dateKey = d.toISOString().split('T')[0];
+            revenueMap[dateKey] = 0;
+            countMap[dateKey] = 0;
         });
 
         orders.forEach(order => {
             if (!order.createdAt) return;
             const orderDate = new Date(order.createdAt);
-            const dateStr = timeframe === 7
-                ? orderDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-                : orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const dateKey = orderDate.toISOString().split('T')[0];
 
-            if (revenueMap[dateStr] !== undefined) {
-                const status = order.orderStatus?.toLowerCase();
-                const payStatus = order.paymentStatus?.toLowerCase();
-                if (status !== 'cancelled' && payStatus !== 'refunded') {
-                    revenueMap[dateStr] += (order.totalAmount || 0);
-                }
-                countMap[dateStr] += 1;
+            if (revenueMap[dateKey] !== undefined) {
+                revenueMap[dateKey] += (order.totalAmount || 0);
+                countMap[dateKey] += 1;
             }
         });
 
-        return formattedDates.map(dateStr => ({
-            date: dateStr,
-            revenue: Math.round(revenueMap[dateStr]),
-            orders: countMap[dateStr]
-        }));
+        return dates.map(d => {
+            const dateKey = d.toISOString().split('T')[0];
+            const displayDate = timeframe === 7
+                ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+                : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            return {
+                date: displayDate,
+                revenue: Math.round(revenueMap[dateKey] || 0),
+                orders: countMap[dateKey] || 0
+            };
+        });
     }, [orders, timeframe]);
 
     // Payment stats calculation
@@ -175,7 +124,7 @@ const AdminDashboard = () => {
             const method = order.paymentMethod?.toLowerCase();
             const status = order.orderStatus?.toLowerCase();
             const payStatus = order.paymentStatus?.toLowerCase();
-            
+
             if (method && stats[method] !== undefined && status !== 'cancelled' && payStatus !== 'refunded') {
                 stats[method] += (order.totalAmount || 0);
             }
@@ -199,73 +148,28 @@ const AdminDashboard = () => {
 
     // Order status calculations
     const orderStatusStats = useMemo(() => {
-        const counts = { delivered: 0, shipped: 0, processing: 0, pending: 0, cancelled: 0 };
+        const counts = { delivered: 0, processing: 0, pending: 0, canceled: 0, returned: 0 };
         orders.forEach(order => {
             const status = order.orderStatus?.toLowerCase();
-            if (status && counts[status] !== undefined) {
-                counts[status]++;
-            } else if (status === 'returned' || status === 'return requested') {
-                counts.cancelled++;
-            }
+            if (status === 'cancelled' || status === 'canceled') counts.canceled++;
+            else if (status === 'returned' || status === 'return requested') counts.returned++;
+            else if (status === 'delivered') counts.delivered++;
+            else if (status === 'processing' || status === 'shipped') counts.processing++;
+            else if (status === 'pending') counts.pending++;
         });
 
         const totalOrders = orders.length || 1;
-        
+
         return [
             { name: 'Delivered', count: counts.delivered, color: 'bg-emerald-500', pct: (counts.delivered / totalOrders) * 100 },
-            { name: 'Shipped', count: counts.shipped, color: 'bg-indigo-500', pct: (counts.shipped / totalOrders) * 100 },
             { name: 'Processing', count: counts.processing, color: 'bg-sky-500', pct: (counts.processing / totalOrders) * 100 },
             { name: 'Pending', count: counts.pending, color: 'bg-amber-500', pct: (counts.pending / totalOrders) * 100 },
-            { name: 'Cancelled / Returned', count: counts.cancelled, color: 'bg-rose-500', pct: (counts.cancelled / totalOrders) * 100 }
+            { name: 'Canceled', count: counts.canceled, color: 'bg-rose-500', pct: (counts.canceled / totalOrders) * 100 },
+            { name: 'Returned', count: counts.returned, color: 'bg-indigo-500', pct: (counts.returned / totalOrders) * 100 }
         ];
     }, [orders]);
 
-    // Category Sales Distribution calculation
-    const categoryStats = useMemo(() => {
-        const catMap = {};
-        orders.forEach(order => {
-            const status = order.orderStatus?.toLowerCase();
-            const payStatus = order.paymentStatus?.toLowerCase();
-            if (status === 'cancelled' || payStatus === 'refunded') return;
 
-            if (order.items) {
-                order.items.forEach(item => {
-                    let cat = 'Uncategorized';
-                    if (item.product) {
-                        if (Array.isArray(item.product.category)) {
-                            cat = item.product.category[0] || 'Uncategorized';
-                        } else if (item.product.category) {
-                            cat = item.product.category;
-                        }
-                    }
-                    catMap[cat] = (catMap[cat] || 0) + ((item.price || 0) * (item.quantity || 1));
-                });
-            }
-        });
-
-        const totalCatSales = Object.values(catMap).reduce((a, b) => a + b, 0);
-        
-        if (totalCatSales === 0) {
-            return [
-                { name: 'Electronics', sales: 45000, pct: 45, color: 'bg-indigo-500' },
-                { name: 'Fashion & Apparel', sales: 30000, pct: 30, color: 'bg-emerald-500' },
-                { name: 'Home & Kitchen', sales: 15000, pct: 15, color: 'bg-amber-500' },
-                { name: 'Beauty & Cosmetics', sales: 10000, pct: 10, color: 'bg-rose-500' }
-            ];
-        }
-
-        return Object.entries(catMap)
-            .map(([name, sales]) => ({
-                name,
-                sales,
-                pct: Math.round((sales / totalCatSales) * 100),
-                color: name.toLowerCase().includes('electron') ? 'bg-indigo-500' :
-                       name.toLowerCase().includes('fash') || name.toLowerCase().includes('appar') ? 'bg-emerald-500' :
-                       name.toLowerCase().includes('home') || name.toLowerCase().includes('kitch') ? 'bg-amber-500' : 'bg-rose-500'
-            }))
-            .sort((a, b) => b.sales - a.sales)
-            .slice(0, 4);
-    }, [orders]);
 
     // Sales Performance KPI calculations
     const performanceInsights = useMemo(() => {
@@ -276,9 +180,9 @@ const AdminDashboard = () => {
         });
         const activeCount = totalPaidOrders.length;
         const totalSales = totalPaidOrders.reduce((acc, o) => acc + (o.totalAmount || 0), 0);
-        
+
         const aov = activeCount > 0 ? Math.round(totalSales / activeCount) : 0;
-        
+
         const deliveredOrders = orders.filter(o => o.orderStatus?.toLowerCase() === 'delivered').length;
         const totalOrders = orders.length || 1;
         const completionRate = Math.round((deliveredOrders / totalOrders) * 100);
@@ -356,7 +260,7 @@ const AdminDashboard = () => {
         const rect = svgRef.current.getBoundingClientRect();
         const clientX = e.clientX - rect.left;
         const svgX = (clientX / rect.width) * width;
-        
+
         const relativeX = svgX - paddingLeft;
         if (relativeX < 0) {
             setHoveredIdx(0);
@@ -435,16 +339,7 @@ const AdminDashboard = () => {
                 <Header title="Dashboard Overview" subtitle="Monitoring your business performance" />
 
                 <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
-                    
-                    {/* Demo Alert if backend data is empty */}
-                    {isDemoData && (
-                        <div className="flex items-center gap-3 bg-amber-50 border border-amber-100 p-4 rounded-2xl text-amber-800 text-sm font-medium">
-                            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-                            <div>
-                                <span className="font-bold">Dashboard Demo View:</span> No orders found in the database. Generating interactive, high-fidelity sample business data to preview layouts.
-                            </div>
-                        </div>
-                    )}
+
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -473,10 +368,10 @@ const AdminDashboard = () => {
 
                     {/* Analytics Section */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        
+
                         {/* Area Line Chart Panel (Span 2) */}
                         <div className="lg:col-span-2 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-6 flex flex-col gap-6 relative overflow-hidden">
-                            
+
                             {/* Chart Controls Header */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-50 pb-5">
                                 <div>
@@ -488,7 +383,7 @@ const AdminDashboard = () => {
                                         Daily {chartMetric} trends
                                     </p>
                                 </div>
-                                
+
                                 {/* Action Pills */}
                                 <div className="flex flex-wrap items-center gap-2">
                                     {/* Metric Toggles */}
@@ -506,7 +401,7 @@ const AdminDashboard = () => {
                                             Orders
                                         </button>
                                     </div>
-                                    
+
                                     {/* Timeframe Toggles */}
                                     <div className="bg-slate-100/80 p-1 rounded-xl flex gap-1">
                                         <button
@@ -528,7 +423,7 @@ const AdminDashboard = () => {
                             {/* Aggregation Value Box */}
                             <div className="flex items-baseline gap-2">
                                 <span className="text-3xl font-black text-slate-900 tracking-tight">
-                                    {chartMetric === 'revenue' 
+                                    {chartMetric === 'revenue'
                                         ? `₹${chartData.reduce((sum, d) => sum + d.revenue, 0).toLocaleString()}`
                                         : `${chartData.reduce((sum, d) => sum + d.orders, 0)} orders`}
                                 </span>
@@ -557,19 +452,19 @@ const AdminDashboard = () => {
                                     {/* Y Gridlines */}
                                     {gridLines.map((line, idx) => (
                                         <g key={idx}>
-                                            <line 
-                                                x1={paddingLeft} 
-                                                y1={line.yPos} 
-                                                x2={width - paddingRight} 
-                                                y2={line.yPos} 
-                                                stroke="#f1f5f9" 
+                                            <line
+                                                x1={paddingLeft}
+                                                y1={line.yPos}
+                                                x2={width - paddingRight}
+                                                y2={line.yPos}
+                                                stroke="#f1f5f9"
                                                 strokeWidth="1.2"
-                                                strokeDasharray="4 4" 
+                                                strokeDasharray="4 4"
                                             />
-                                            <text 
-                                                x={paddingLeft - 10} 
-                                                y={line.yPos + 4} 
-                                                textAnchor="end" 
+                                            <text
+                                                x={paddingLeft - 10}
+                                                y={line.yPos + 4}
+                                                textAnchor="end"
                                                 className="text-[10px] fill-slate-400 font-bold font-mono"
                                             >
                                                 {formatYValue(line.value)}
@@ -617,13 +512,13 @@ const AdminDashboard = () => {
                                     )}
 
                                     {/* Axis Bottom Line */}
-                                    <line 
-                                        x1={paddingLeft} 
-                                        y1={height - paddingBottom} 
-                                        x2={width - paddingRight} 
-                                        y2={height - paddingBottom} 
-                                        stroke="#f1f5f9" 
-                                        strokeWidth="1.5" 
+                                    <line
+                                        x1={paddingLeft}
+                                        y1={height - paddingBottom}
+                                        x2={width - paddingRight}
+                                        y2={height - paddingBottom}
+                                        stroke="#f1f5f9"
+                                        strokeWidth="1.5"
                                     />
 
                                     {/* X labels */}
@@ -677,7 +572,7 @@ const AdminDashboard = () => {
 
                         {/* Breakdown Panel (Span 1) */}
                         <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-6 flex flex-col gap-6">
-                            
+
                             {/* Panel Tab Controls */}
                             <div className="flex border-b border-slate-100 pb-3 justify-between items-center">
                                 <h3 className="text-base font-black text-slate-900 tracking-tight">
@@ -788,33 +683,45 @@ const AdminDashboard = () => {
 
                     {/* Bottom Row - Categories & Sales Insights */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        
-                        {/* Category Sales Distribution */}
-                        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6">
+
+                        {/* Recent Orders Widget */}
+                        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] space-y-6 flex flex-col">
                             <div>
-                                <h3 className="text-base font-black text-slate-900 tracking-tight">Category Breakdown</h3>
-                                <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mt-0.5">Top performing divisions</p>
+                                <h3 className="text-base font-black text-slate-900 tracking-tight">Recent Orders</h3>
+                                <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mt-0.5">Latest transactions</p>
                             </div>
-                            
-                            <div className="space-y-4">
-                                {categoryStats.map((cat, idx) => (
-                                    <div key={idx} className="space-y-1.5">
-                                        <div className="flex justify-between items-center text-xs">
-                                            <span className="font-bold text-slate-800">{cat.name}</span>
-                                            <span className="font-bold font-mono text-slate-900">
-                                                ₹{cat.sales.toLocaleString()} ({cat.pct}%)
+
+                            <div className="space-y-3 flex-1">
+                                {orders.slice(0, 4).map((order, idx) => (
+                                    <div key={idx} className="flex justify-between items-center p-3 bg-slate-50 rounded-2xl border border-slate-100 transition-all hover:bg-slate-100/80">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-slate-800">
+                                                Order #{order._id?.slice(-6).toUpperCase()}
+                                            </span>
+                                            <span className="text-[10px] font-semibold text-slate-500">
+                                                {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
-                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                                            <motion.div
-                                                className={`h-full ${cat.color}`}
-                                                initial={{ width: 0 }}
-                                                animate={{ width: `${cat.pct}%` }}
-                                                transition={{ duration: 0.6, ease: "easeOut" }}
-                                            />
+                                        <div className="flex flex-col items-end gap-1">
+                                            <span className="text-xs font-black text-slate-900">
+                                                ₹{order.totalAmount?.toLocaleString()}
+                                            </span>
+                                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                                                order.orderStatus?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                                                order.orderStatus?.toLowerCase() === 'cancelled' || order.orderStatus?.toLowerCase() === 'canceled' ? 'bg-rose-100 text-rose-700' :
+                                                order.orderStatus?.toLowerCase() === 'returned' || order.orderStatus?.toLowerCase() === 'return requested' ? 'bg-indigo-100 text-indigo-700' :
+                                                'bg-amber-100 text-amber-700'
+                                            }`}>
+                                                {order.orderStatus || 'Pending'}
+                                            </span>
                                         </div>
                                     </div>
                                 ))}
+                                {(!orders || orders.length === 0) && (
+                                    <div className="h-full flex items-center justify-center">
+                                        <p className="text-xs text-slate-400 font-medium">No recent orders</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
