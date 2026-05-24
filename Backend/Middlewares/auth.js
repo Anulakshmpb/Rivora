@@ -3,16 +3,17 @@ const { verifyUserToken, verifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 const logger = require('../utils/logger');
 
-const extractToken = (req) => {
+const extractToken = (req, type) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
         return authHeader.split(" ")[1];
     }
 
-    // Try to extract from cookie if header is missing
-    if (req.cookies && req.cookies.token) {
-        return req.cookies.token;
+    if (req.cookies) {
+        if (type === 'admin' && req.cookies.admin_token) return req.cookies.admin_token;
+        if (type === 'user' && req.cookies.user_token) return req.cookies.user_token;
+        if (req.cookies.token) return req.cookies.token; // legacy fallback
     }
 
     return null;
@@ -25,7 +26,7 @@ const findUser = async (id) => {
 const authenticateUser = async (req, res, next) => {
     try {
 
-        const token = extractToken(req);
+        const token = extractToken(req, 'user');
 
         if (!token)
             return sendError(res, "Access token required", 401);
@@ -52,6 +53,7 @@ const authenticateUser = async (req, res, next) => {
             ip: req.ip
         });
         res.clearCookie('token');
+        res.clearCookie('user_token');
         return sendError(res, "Invalid or expired token", 401);
     }
 };
@@ -65,7 +67,7 @@ const findAdmin = async (id) => {
 const authenticateAdmin = async (req, res, next) => {
     try {
 
-        const token = extractToken(req);
+        const token = extractToken(req, 'admin');
 
         if (!token)
             return sendError(res, "Admin token required", 401);
@@ -111,40 +113,49 @@ const requireAdmin = (req, res, next) => {
 
 const authenticateUserOrAdmin = async (req, res, next) => {
     try {
-        const token = extractToken(req);
-        if (!token) return sendError(res, "Authentication token required", 401);
+        const adminToken = extractToken(req, 'admin');
+        const userToken = extractToken(req, 'user');
+        
+        if (!adminToken && !userToken) return sendError(res, "Authentication token required", 401);
 
         const fs = require('fs');
-        fs.appendFileSync('debug.log', `--- Auth Debug ---\nToken present: ${!!token}\n`);
+        fs.appendFileSync('debug.log', `--- Auth Debug ---\nAdmin Token present: ${!!adminToken}, User Token present: ${!!userToken}\n`);
 
-        try {
-            const decodedAdmin = verifyAdminToken(token);
-            fs.appendFileSync('debug.log', `Admin Token Decoded: ${JSON.stringify(decodedAdmin)}\n`);
-            const admin = await findAdmin(decodedAdmin.id);
-            if (admin && admin.status !== "banned") {
-                req.admin = admin;
-                fs.appendFileSync('debug.log', `Auth Success: Admin ${admin._id}\n`);
-                return next();
+        if (adminToken) {
+            try {
+                const decodedAdmin = verifyAdminToken(adminToken);
+                fs.appendFileSync('debug.log', `Admin Token Decoded: ${JSON.stringify(decodedAdmin)}\n`);
+                const admin = await findAdmin(decodedAdmin.id);
+                if (admin && admin.status !== "banned") {
+                    req.admin = admin;
+                    fs.appendFileSync('debug.log', `Auth Success: Admin ${admin._id}\n`);
+                    return next();
+                }
+                fs.appendFileSync('debug.log', `Admin not found or banned: ${decodedAdmin.id}\n`);
+            } catch (adminErr) {
+                fs.appendFileSync('debug.log', `Admin Verify Failed: ${adminErr.message}\n`);
             }
-            fs.appendFileSync('debug.log', `Admin not found or banned: ${decodedAdmin.id}\n`);
-        } catch (adminErr) {
-            fs.appendFileSync('debug.log', `Admin Verify Failed: ${adminErr.message}\n`);
         }
 
-        try {
-            const decodedUser = verifyUserToken(token);
-            fs.appendFileSync('debug.log', `User Token Decoded: ${JSON.stringify(decodedUser)}\n`);
-            const user = await findUser(decodedUser.id);
-            if (user && user.status !== "banned") {
-                req.user = user;
-                fs.appendFileSync('debug.log', `Auth Success: User ${user._id}\n`);
-                return next();
+        if (userToken) {
+            try {
+                const decodedUser = verifyUserToken(userToken);
+                fs.appendFileSync('debug.log', `User Token Decoded: ${JSON.stringify(decodedUser)}\n`);
+                const user = await findUser(decodedUser.id);
+                if (user && user.status !== "banned") {
+                    req.user = user;
+                    fs.appendFileSync('debug.log', `Auth Success: User ${user._id}\n`);
+                    return next();
+                }
+                fs.appendFileSync('debug.log', `User not found or banned: ${decodedUser.id}\n`);
+            } catch (userErr) {
+                fs.appendFileSync('debug.log', `User Verify Failed: ${userErr.message}\n`);
             }
-            fs.appendFileSync('debug.log', `User not found or banned: ${decodedUser.id}\n`);
-        } catch (userErr) {
-            fs.appendFileSync('debug.log', `User Verify Failed: ${userErr.message}\n`);
         }
+
         res.clearCookie('token');
+        res.clearCookie('user_token');
+        res.clearCookie('admin_token');
         return sendError(res, "Invalid or expired token", 401);
     } catch (error) {
         const fs = require('fs');

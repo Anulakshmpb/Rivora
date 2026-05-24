@@ -3,16 +3,17 @@ const Admin = require('../Modals/Admin');
 const { verifyUserToken , verifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 
-const extractToken = (req) => {
+const extractToken = (req, type) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
         return authHeader.split(" ")[1];
     }
 
-    // Try to extract from cookie if header is missing
-    if (req.cookies && req.cookies.token) {
-        return req.cookies.token;
+    if (req.cookies) {
+        if (type === 'admin' && req.cookies.admin_token) return req.cookies.admin_token;
+        if (type === 'user' && req.cookies.user_token) return req.cookies.user_token;
+        if (req.cookies.token) return req.cookies.token; // legacy
     }
 
     return null;
@@ -40,7 +41,10 @@ const checkUserStatus = async(req,res,next)=>{
 
     try{
 
-        const token = extractToken(req);
+        let token = extractToken(req, 'user');
+        if (!token) {
+            token = extractToken(req, 'admin');
+        }
 
         if(!token)
             return next();

@@ -108,7 +108,7 @@ const AdminDashboard = () => {
             const displayDate = timeframe === 7
                 ? d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
                 : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            
+
             return {
                 date: displayDate,
                 revenue: Math.round(revenueMap[dateKey] || 0),
@@ -606,7 +606,6 @@ const AdminDashboard = () => {
                                             transition={{ duration: 0.2 }}
                                             className="space-y-6"
                                         >
-                                            {/* Donut Graphic representation */}
                                             <div className="flex justify-center items-center relative py-2">
                                                 <svg width="150" height="150" viewBox="0 0 100 100" className="transform -rotate-90">
                                                     <circle cx="50" cy="50" r="40" stroke="#f8fafc" strokeWidth="12" fill="transparent" />
@@ -706,12 +705,11 @@ const AdminDashboard = () => {
                                             <span className="text-xs font-black text-slate-900">
                                                 ₹{order.totalAmount?.toLocaleString()}
                                             </span>
-                                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                                                order.orderStatus?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
-                                                order.orderStatus?.toLowerCase() === 'cancelled' || order.orderStatus?.toLowerCase() === 'canceled' ? 'bg-rose-100 text-rose-700' :
-                                                order.orderStatus?.toLowerCase() === 'returned' || order.orderStatus?.toLowerCase() === 'return requested' ? 'bg-indigo-100 text-indigo-700' :
-                                                'bg-amber-100 text-amber-700'
-                                            }`}>
+                                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${order.orderStatus?.toLowerCase() === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                                                    order.orderStatus?.toLowerCase() === 'cancelled' || order.orderStatus?.toLowerCase() === 'canceled' ? 'bg-rose-100 text-rose-700' :
+                                                        order.orderStatus?.toLowerCase() === 'returned' || order.orderStatus?.toLowerCase() === 'return requested' ? 'bg-indigo-100 text-indigo-700' :
+                                                            'bg-amber-100 text-amber-700'
+                                                }`}>
                                                 {order.orderStatus || 'Pending'}
                                             </span>
                                         </div>
