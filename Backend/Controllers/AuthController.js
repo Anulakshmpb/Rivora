@@ -90,7 +90,7 @@ class AuthController extends BaseController {
     );
 
     // Set HTTP-only cookie
-    this.setAuthCookie(res, result.token);
+    this.setAuthCookie(res, result.token, 'user_token');
 
     BaseController.sendSuccess(
       res,
@@ -235,14 +235,14 @@ class AuthController extends BaseController {
 
 
 
-  static setAuthCookie = (res, token) => {
+  static setAuthCookie = (res, token, cookieName = 'token') => {
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     };
-    res.cookie('token', token, cookieOptions);
+    res.cookie(cookieName, token, cookieOptions);
   };
 
   static login = BaseController.asyncHandler(async (req, res) => {
@@ -259,7 +259,7 @@ class AuthController extends BaseController {
     );
 
     // Set HTTP-only cookie
-    this.setAuthCookie(res, result.token);
+    this.setAuthCookie(res, result.token, 'user_token');
 
     BaseController.logAction(
 
@@ -386,6 +386,8 @@ class AuthController extends BaseController {
   static logout = BaseController.asyncHandler(async (req, res) => {
 
     res.clearCookie('token');
+    res.clearCookie('user_token');
+    res.clearCookie('admin_token');
 
     BaseController.logAction(
 
@@ -411,7 +413,7 @@ class AuthController extends BaseController {
     const result = await AdminService.login({ email, password });
 
     // Set HTTP-only cookie
-    this.setAuthCookie(res, result.token);
+    this.setAuthCookie(res, result.token, 'admin_token');
 
     BaseController.logAction('ADMIN_LOGIN', req, { adminId: result.admin._id });
 
