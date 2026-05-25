@@ -40,7 +40,7 @@ export default function Checkout() {
             } catch (err) {
                 console.error('Failed to fetch addresses:', err);
                 if (err.status !== 401) {
-                    showToast('Error', 'Failed to fetch addresses', 'error');
+                    showToast('Failed to fetch addresses', 'error');
                 }
             } finally {
                 setLoadingAddresses(false);
@@ -94,7 +94,7 @@ export default function Checkout() {
 
     const handleConfirmAndPay = async () => {
         if (!selectedAddress) {
-            showToast('Error', 'Please select a delivery address', 'error');
+            showToast('Please select a delivery address', 'error');
             return;
         }
 
@@ -161,7 +161,7 @@ export default function Checkout() {
             }
             const isLoaded = await loadRazorpayScript();
             if (!isLoaded) {
-                showToast('Error', 'Razorpay SDK failed to load. Check your internet connection.', 'error');
+                showToast('Razorpay SDK failed to load. Check your internet connection.', 'error');
                 setIsProcessing(false);
                 return;
             }
@@ -218,11 +218,11 @@ export default function Checkout() {
                             clearCart();
                             navigate('/order-success', { state: { order: verifyRes.data } });
                         } else {
-                            showToast('Error', 'Payment verification failed', 'error');
+                            showToast('Payment verification failed', 'error');
                             navigate('/payment-failed');
                         }
                     } catch (err) {
-                        showToast('Error', err.message || 'Verification failed', 'error');
+                        showToast(err.message || 'Verification failed', 'error');
                         navigate('/payment-failed');
                     }
                 },
@@ -249,7 +249,7 @@ export default function Checkout() {
 
         } catch (err) {
             console.error('Payment Error:', err);
-            showToast('Error', err.message || 'Something went wrong', 'error');
+            showToast(err.message || 'Something went wrong', 'error');
             setIsProcessing(false);
         }
     };

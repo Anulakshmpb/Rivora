@@ -13,7 +13,7 @@ const extractToken = (req, type) => {
     if (req.cookies) {
         if (type === 'admin' && req.cookies.admin_token) return req.cookies.admin_token;
         if (type === 'user' && req.cookies.user_token) return req.cookies.user_token;
-        if (req.cookies.token) return req.cookies.token; // legacy fallback
+        if (req.cookies.token) return req.cookies.token;
     }
 
     return null;
@@ -115,7 +115,7 @@ const authenticateUserOrAdmin = async (req, res, next) => {
     try {
         const adminToken = extractToken(req, 'admin');
         const userToken = extractToken(req, 'user');
-        
+
         if (!adminToken && !userToken) return sendError(res, "Authentication token required", 401);
 
         const fs = require('fs');

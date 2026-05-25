@@ -29,7 +29,7 @@ const Login = () => {
     const [apiError, setApiError] = useState('');
 
     const from = location.state?.from?.pathname || "/";
-const {showToast}=useToast();
+    const { showToast } = useToast();
     const {
         register,
         handleSubmit,
@@ -48,8 +48,8 @@ const {showToast}=useToast();
             // console.log('Login successful:', response);
             showToast("Login successful", "success");
             await login(response.data.user, response.data.token);
-            
             navigate(from, { replace: true });
+            // from is usually the page they were trying to access before being forced to log in, or a default dashboard.{ replace: true } replaces the current history entry, meaning if the user clicks the browser's "Back" button, they won't be sent back to the login page (since they are already logged in).
         } catch (err) {
             console.error('Login error:', err);
             const message = err.error?.message || err.message || 'Failed to sign in. Please check your credentials.';

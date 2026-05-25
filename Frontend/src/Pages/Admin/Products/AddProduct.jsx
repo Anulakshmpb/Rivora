@@ -232,7 +232,7 @@ export default function AddProduct() {
 			}
 		} catch (error) {
 			const errorMessage = error.message || error.response?.data?.error?.message || error.response?.data?.message || 'Failed to publish product';
-			showToast(errorMessage, 'error');
+			showToast(errorMessage || "Error while product updating", 'error');
 		} finally {
 			setIsLoading(false);
 		}
@@ -488,8 +488,8 @@ export default function AddProduct() {
 										className={`w-10 h-5 rounded-full transition-all duration-300 relative ${isVisible ? 'bg-indigo-600' : 'bg-slate-200'}`}
 									>
 										<div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 ${isVisible ? 'left-6' : 'left-1'}`} />
-									</button>                      
-						          </div>
+									</button>
+								</div>
 							</div>
 
 							{/* Attributes Card */}

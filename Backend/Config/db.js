@@ -31,8 +31,6 @@ class DbConnection {
 			console.log("db connected");
 			this.registerEvents();
 
-
-
 		} catch (error) {
 			console.log("Database connection error:", error);
 			process.exit(1);
@@ -109,9 +107,7 @@ process.on("unhandledRejection", (error) => {
 });
 
 process.on("uncaughtException", (error) => {
-
 	console.error("Uncaught exception", error);
-
 	process.exit(1);
 
 });

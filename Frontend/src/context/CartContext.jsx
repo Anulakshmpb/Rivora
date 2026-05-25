@@ -47,7 +47,7 @@ export function CartProvider({ children }) {
                         if (savedCart) {
                             try {
                                 setCartItems(JSON.parse(savedCart));
-                            } catch (e) {}
+                            } catch (e) { }
                         }
                     }
                 } finally {
@@ -83,19 +83,19 @@ export function CartProvider({ children }) {
     }, [cartItems, appliedCoupon, user, isInitialized]);
 
     const addToGuestCart = (product, quantity, size, itemColor) => {
-        const newItem = { 
-            id: `${product._id}-${size}-${itemColor}`, 
-            product, 
-            quantity, 
-            size, 
-            color: itemColor 
+        const newItem = {
+            id: `${product._id}-${size}-${itemColor}`,
+            product,
+            quantity,
+            size,
+            color: itemColor
         };
 
         setCartItems(prevItems => {
             const existingItemIndex = prevItems.findIndex(
-                item => item.product._id === product._id && 
-                        item.size === size && 
-                        (item.color || 'default') === itemColor
+                item => item.product._id === product._id &&
+                    item.size === size &&
+                    (item.color || 'default') === itemColor
             );
 
             if (existingItemIndex >= 0) {
@@ -138,11 +138,10 @@ export function CartProvider({ children }) {
                 }
             } catch (error) {
                 const isAuthError = error.error?.statusCode === 401 || error.statusCode === 401 || error.message?.includes('token') || error.message?.toLowerCase().includes('authorized');
-                
+
                 if (!isAuthError) {
-                    showToast(error.message, "error");  
+                    showToast(error.message, "error");
                 } else {
-                    // Fallback to guest cart if token expired
                     addToGuestCart(product, quantity, size, itemColor);
                 }
             }
@@ -176,7 +175,7 @@ export function CartProvider({ children }) {
                     showToast("Product removed from cart successfully", "success");
                 }
             } catch (error) {
-                showToast(error.message, "error");
+                showToast(error.message || "Error while removing product from cart", "error");
             }
         } else {
             setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
@@ -207,11 +206,11 @@ export function CartProvider({ children }) {
                     setCartItems(items);
                 }
             } catch (error) {
-                showToast(error.message, "error");
+                showToast(error.message || "Error while saving product to cart", "error");
             }
         } else {
-            setCartItems(prevItems => 
-                prevItems.map(item => 
+            setCartItems(prevItems =>
+                prevItems.map(item =>
                     item.id === itemId ? { ...item, quantity: newQuantity } : item
                 )
             );
@@ -224,7 +223,7 @@ export function CartProvider({ children }) {
                 await axiosInstance.delete('/api/cart/clear');
                 setCartItems([]);
             } catch (error) {
-                showToast(error.message, "error");
+                showToast(error.message || "Error while deleting from cart", "error");
             }
         } else {
             setCartItems([]);

@@ -3,13 +3,10 @@ const {
 	adminLogin,
 	getAllUsers,
 	getUserById,
-	updateUserStatus,
 	banUser,
 	unbanUser,
-	forceLogoutUser,
 	updateUser,
-	deleteUser,
-	getDashboardStats
+	deleteUser
 } = require('../Controllers/AuthController');
 const { getAllOrders, updateOrderStatus, approveReturn, rejectReturn, getReturnRequests } = require('../Controllers/orderController');
 const { authenticateAdmin } = require('../Middlewares/auth');
@@ -23,9 +20,6 @@ router.put('/users/:id', authenticateAdmin, updateUser);
 router.delete('/users/:id', authenticateAdmin, deleteUser);
 router.post('/users/:id/ban', authenticateAdmin, banUser);
 router.post('/users/:id/unban', authenticateAdmin, unbanUser);
-router.post('/users/:id/force-logout', authenticateAdmin, forceLogoutUser);
-router.patch('/user/:id/status', authenticateAdmin, updateUserStatus);
-router.get('/stats', authenticateAdmin, getDashboardStats);
 
 // Order Management
 router.get('/orders', authenticateAdmin, getAllOrders);

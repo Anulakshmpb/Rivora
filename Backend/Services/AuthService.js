@@ -60,11 +60,7 @@ class AuthService {
 		try {
 
 			const { email, password } = credentials;
-
-			// Normalize email
 			const normalizedEmail = email.toLowerCase().trim();
-
-			// Get user with password
 			const user = await User
 				.findOne({ email: normalizedEmail })
 				.select("+password");
@@ -72,13 +68,13 @@ class AuthService {
 			if (!user) {
 				throw new AuthenticationError("Invalid credentials");
 			}
-
-			// Enforce OTP Registration Check
 			if (!user.isVerified) {
 				throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
 			}
+			if (user.isBanned) {
+				throw new AuthenticationError("Account is banned. Please contact the administrator");
 
-			// Check account lock
+			}
 			if (user.lockUntil && user.lockUntil > Date.now()) {
 
 				throw new AuthenticationError(
@@ -86,66 +82,40 @@ class AuthService {
 				);
 
 			}
-
-			// Compare password
 			const isValid = await user.comparePassword(password);
 
 			if (!isValid) {
-
-				// Increase failed attempts
 				user.failedLoginAttempts += 1;
-
-				// Lock account after 5 attempts
 				if (user.failedLoginAttempts >= 5) {
-
 					user.lockUntil =
 						Date.now() + 15 * 60 * 1000;
-
 				}
-
 				await user.save();
-
 				throw new AuthenticationError(
 					"Invalid credentials"
 				);
-
 			}
-
-			// Reset attempts on success
 			user.failedLoginAttempts = 0;
 			user.lockUntil = undefined;
 
-			// Update last login
-			user.lastLogin = new Date();
-
+			user.lastLogin = new Date(); // Update last login
 			await user.save();
-
-			// Generate token
 			const token = generateUserToken({
-
 				id: user._id,
 				role: user.role
-
 			});
-
 			logger.info(`User login: ${user.email}`);
 
 			return {
-
 				user: user.getPublicProfile(),
 				token
-
 			};
 
 		}
 		catch (error) {
-
 			logger.error("Login error", error);
-
 			throw error;
-
 		}
-
 	}
 
 	/* ================= VERIFY EMAIL ================= */

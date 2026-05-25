@@ -59,14 +59,14 @@ export default function Contact() {
             <section className="relative py-24 bg-slate-50">
                 <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
                 <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
-                    <motion.span 
+                    <motion.span
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-indigo-600 text-[12px] font-black uppercase tracking-[0.4em] block mb-4"
                     >
                         Connect With Us
                     </motion.span>
-                    <motion.h1 
+                    <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
@@ -74,7 +74,7 @@ export default function Contact() {
                     >
                         We're Here to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500 shadow-sm">Help.</span>
                     </motion.h1>
-                    <motion.p 
+                    <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -91,7 +91,7 @@ export default function Contact() {
                     {/* Contact Info Cards */}
                     <div className="space-y-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <motion.div 
+                            <motion.div
                                 whileHover={{ y: -5 }}
                                 className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
                             >
@@ -103,7 +103,7 @@ export default function Contact() {
                                 <a href={`mailto:${contact?.email}`} className="text-indigo-600 font-bold hover:underline">{contact?.email}</a>
                             </motion.div>
 
-                            <motion.div 
+                            <motion.div
                                 whileHover={{ y: -5 }}
                                 className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
                             >
@@ -128,10 +128,10 @@ export default function Contact() {
                                 </p>
                                 <div className="flex gap-4">
                                     {contact?.socialLinks?.filter(s => s.url).map(social => (
-                                        <a 
-                                            key={social.platform} 
-                                            href={social.url} 
-                                            target="_blank" 
+                                        <a
+                                            key={social.platform}
+                                            href={social.url}
+                                            target="_blank"
                                             rel="noopener noreferrer"
                                             className="w-12 h-12 rounded-xl bg-white/5 hover:bg-white/20 flex items-center justify-center transition-colors"
                                         >
@@ -180,13 +180,13 @@ export default function Contact() {
             {contact?.googleMapsUrl && (
                 <section className="py-24 px-6 max-w-7xl mx-auto">
                     <div className="rounded-[3rem] overflow-hidden shadow-2xl h-[500px] border-8 border-white">
-                        <iframe 
+                        <iframe
                             src={contact.googleMapsUrl}
-                            width="100%" 
-                            height="100%" 
-                            style={{ border: 0 }} 
-                            allowFullScreen="" 
-                            loading="lazy" 
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen=""
+                            loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
                             title="Rivora Boutique Location"
                         ></iframe>

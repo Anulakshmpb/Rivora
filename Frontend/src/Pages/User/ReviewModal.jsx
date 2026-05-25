@@ -93,7 +93,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 			setImagePreview(null);
 			onClose();
 		} catch (err) {
-			showToast('Error', err.response?.data?.message || 'Failed to submit review', 'error');
+			showToast(err.response?.data?.message || 'Failed to submit review', 'error');
 		} finally {
 			setIsSubmitting(false);
 		}

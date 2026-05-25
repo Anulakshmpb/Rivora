@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
             const adminToken = localStorage.getItem('admin_token');
             const userToken = localStorage.getItem('user_token');
             const legacyToken = localStorage.getItem('token');
-            
+
             const token = adminToken || userToken || legacyToken;
 
             if (!token) {
@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }) => {
         if (token) {
             const key = userData.role === 'admin' ? 'admin_token' : 'user_token';
             localStorage.setItem(key, token);
-            // Clear legacy token to force migration
             localStorage.removeItem('token');
         }
     };

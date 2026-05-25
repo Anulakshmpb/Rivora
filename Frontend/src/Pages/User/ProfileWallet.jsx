@@ -4,19 +4,19 @@ import { useToast } from '../../Toast/ToastContext';
 import { motion } from 'framer-motion';
 
 const CreditCardIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>
 );
 
 const WalletIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" /><path d="M4 6v12c0 1.1.9 2 2 2h14v-4" /><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" /></svg>
 );
 
 const ArrowUpRightIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
 );
 
 const ArrowDownLeftIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="7" x2="7" y2="17"/><polyline points="17 17 7 17 7 7"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="7" x2="7" y2="17" /><polyline points="17 17 7 17 7 7" /></svg>
 );
 
 export default function ProfileWallet() {
@@ -33,7 +33,7 @@ export default function ProfileWallet() {
                 }
             } catch (err) {
                 console.error('Error fetching wallet:', err);
-                showToast('Error', 'Failed to load wallet data', 'error');
+                showToast('Failed to load wallet data', 'error');
             } finally {
                 setIsLoading(false);
             }
@@ -57,7 +57,7 @@ export default function ProfileWallet() {
                 {/* Background Patterns */}
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
-                
+
                 <div className="relative z-10">
                     <div className="flex justify-between items-start mb-12">
                         <div className="p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10">
@@ -68,12 +68,12 @@ export default function ProfileWallet() {
                             <p className="text-xs font-medium text-slate-500 mt-1 italic">Exclusive Rewards Program</p>
                         </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                         <span className="text-sm font-medium text-slate-500">Available Balance</span>
                         <h2 className="text-6xl font-serif tracking-tighter">${wallet?.balance.toFixed(2)}</h2>
                     </div>
-                    
+
                     <div className="mt-12 flex items-center gap-6">
                         <button className="bg-white text-slate-900 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10">
                             Top Up Wallet
@@ -105,11 +105,11 @@ export default function ProfileWallet() {
                 ) : (
                     <div className="space-y-6">
                         {wallet.transactions.slice().reverse().map((tx, idx) => (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                key={idx} 
+                                key={idx}
                                 className="flex items-center justify-between p-6 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 border border-transparent hover:border-slate-100 rounded-3xl transition-all duration-500 group"
                             >
                                 <div className="flex items-center gap-6">

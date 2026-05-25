@@ -28,7 +28,7 @@ export default function WalletPayment() {
                 const res = await axiosInstance.get('/api/wallet');
                 setWallet(res.data);
             } catch (err) {
-                showToast('Error', 'Failed to fetch wallet details', 'error');
+                showToast('Failed to fetch wallet details', 'error');
             } finally {
                 setLoading(false);
             }
@@ -39,7 +39,10 @@ export default function WalletPayment() {
 
     const handlePayNow = async () => {
         if (!wallet || wallet.balance < orderDetails.totalAmount) {
-            showToast('Error', 'Insufficient wallet balance', 'error');
+            showToast('Insufficient wallet balance', 'error');
+            setTimeout(() => {
+                navigate('/checkout');
+            }, 2000);
             return;
         }
 
@@ -57,7 +60,7 @@ export default function WalletPayment() {
                 throw new Error(res.message || 'Payment failed');
             }
         } catch (err) {
-            showToast('Error', err.response?.data?.message || err.message || 'Something went wrong', 'error');
+            showToast(err.response?.data?.message || err.message || 'Something went wrong', 'error');
         } finally {
             setIsProcessing(false);
         }

@@ -19,8 +19,6 @@ export const ToastProvider = ({ children }) => {
 		const newToast = { id, message, type };
 
 		setToasts((prev) => [...prev, newToast]);
-
-		// Auto-dismiss after 3 seconds
 		setTimeout(() => {
 			setToasts((prev) => prev.filter((toast) => toast.id !== id));
 		}, 3000);

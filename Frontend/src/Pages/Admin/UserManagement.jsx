@@ -236,17 +236,17 @@ export default function UserManagement() {
 									<div className="flex items-center gap-2 mt-0.5">
 										<span className="text-white/60 text-xs font-medium">{selectedUser.role?.toUpperCase()}</span>
 										{selectedUser.isVerified && (
-										<span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] font-bold uppercase tracking-wider bg-white text-indigo-600">
-											<svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-											Verified
-										</span>
-									)}
-									{selectedUser.isBanned && (
-										<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[12px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600">
-											<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-											Banned
-										</span>
-									)}
+											<span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[12px] font-bold uppercase tracking-wider bg-white text-indigo-600">
+												<svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+												Verified
+											</span>
+										)}
+										{selectedUser.isBanned && (
+											<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[12px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600">
+												<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+												Banned
+											</span>
+										)}
 										{/* {selectedUser.isBanned && <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-white/20 text-white uppercase">Banned</span>} */}
 									</div>
 								</div>
