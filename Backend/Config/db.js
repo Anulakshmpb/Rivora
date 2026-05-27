@@ -69,6 +69,7 @@ class DbConnection {
 	async healthCheck() {
 		try {
 			await mongoose.connection.db.admin().ping();
+			// This executes the actual ping command on the admin database. MongoDB admin database.
 			return {
 				healthy: "healthy",
 				connect: this.isConnected

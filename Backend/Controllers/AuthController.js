@@ -10,143 +10,52 @@ const {
 } = require('../utils/validation');
 
 class AuthController extends BaseController {
+
   static register = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData =
-    BaseController.validateRequest(
-      registerValidation,
-      req.body
-    );
+    const validatedData = BaseController.validateRequest(registerValidation, req.body);
+    const result = await AuthService.register(validatedData);
+    //  Creates the user in the database.
+    await OTPService.createOTP(result.user);
 
-    const result =
-    await AuthService.register(
-      validatedData
-    );
-    await OTPService.createOTP(
-      result.user
-    );
-
-    BaseController.logAction(
-      'USER_REGISTER',
-      req,
-      { userId: result.user._id }
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      'User registered. OTP sent to email',
-
-      {
-        userId: result.user._id,
-        email: result.user.email
-      },
-
-      201
-
-    );
+    BaseController.logAction('USER_REGISTER', req, { userId: result.user._id });
+    BaseController.sendSuccess(res, 'User registered. OTP sent to email', { userId: result.user._id, email: result.user.email }, 201);
 
   });
 
 
   // VERIFY EMAIL OTP
-  static verifyEmail = BaseController.asyncHandler(async (req,res)=>{
+  static verifyEmail = BaseController.asyncHandler(async (req, res) => {
 
-    const {userId, otp} =
-    req.body;
+    const { userId, otp } = req.body;
 
-    if(!userId || !otp){
-
-      return BaseController.sendError(
-
-        res,
-
-        "UserId and OTP required",
-
-        400
-
-      );
-
+    if (!userId || !otp) {
+      return BaseController.sendError(res, "UserId and OTP required", 400);
     }
+    await OTPService.verifyOTP(userId, otp);
+    const result = await AuthService.markUserVerified(userId);
 
-    await OTPService.verifyOTP(
-
-      userId,
-
-      otp
-
-    );
-
-    const result =
-    await AuthService.markUserVerified(
-      userId
-    );
-
-    BaseController.logAction(
-      'EMAIL_VERIFIED',
-      req,
-      {userId}
-    );
-
-    // Set HTTP-only cookie
+    BaseController.logAction('EMAIL_VERIFIED', req, { userId });
     this.setAuthCookie(res, result.token, 'user_token');
-
-    BaseController.sendSuccess(
-      res,
-      "Email verified successfully",
-      result
-    );
+    //  Attaches their login token to their browser cookies so they are automatically logged in after verifying.
+    BaseController.sendSuccess(res, "Email verified successfully", result);
 
   });
 
 
   // RESEND OTP
-  static resendOTP = BaseController.asyncHandler(async(req,res)=>{
+  static resendOTP = BaseController.asyncHandler(async (req, res) => {
 
-    const {userId} =
-    req.body;
+    const { userId } = req.body;
+    const user = await AuthService.getUserById(userId);
 
-    const user =
-    await AuthService.getUserById(
-      userId
-    );
-
-    if(!user){
-
-      return BaseController.sendError(
-
-        res,
-
-        "User not found",
-
-        404
-
-      );
-
+    if (!user) {
+      return BaseController.sendError(res, "User not found", 404);
     }
 
-    await OTPService.resendOTP(
-      user
-    );
-
-    BaseController.logAction(
-
-      'OTP_RESENT',
-
-      req,
-
-      {userId}
-
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      "OTP resent successfully"
-
-    );
+    await OTPService.resendOTP(user);
+    BaseController.logAction('OTP_RESENT', req, { userId });
+    BaseController.sendSuccess(res, "OTP resent successfully");
 
   });
 
@@ -156,26 +65,17 @@ class AuthController extends BaseController {
     if (!email) {
       return BaseController.sendError(res, "Email is required", 400);
     }
-
     const User = require('../Modals/User');
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
       return BaseController.sendError(res, "User not found with that email", 404);
     }
-
     await OTPService.createOTP(user, "passwordReset");
 
     BaseController.logAction('FORGOT_PASSWORD_OTP_SENT', req, { userId: user._id });
+    BaseController.sendSuccess(res, 'OTP sent to email', { userId: user._id, email: user.email });
 
-    BaseController.sendSuccess(
-      res,
-      'OTP sent to email',
-      {
-        userId: user._id,
-        email: user.email
-      }
-    );
   });
 
   // VERIFY FORGOT PASSWORD OTP
@@ -184,13 +84,13 @@ class AuthController extends BaseController {
     if (!userId || !otp) {
       return BaseController.sendError(res, "UserId and OTP required", 400);
     }
-    
+
     await OTPService.verifyOTP(userId, otp, "passwordReset");
 
     const User = require('../Modals/User');
     const user = await User.findById(userId);
     if (!user) return BaseController.sendError(res, "User not found", 404);
-
+    // hashes the token
     const crypto = require('crypto');
     const resetToken = crypto.randomBytes(32).toString('hex');
     user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
@@ -214,13 +114,13 @@ class AuthController extends BaseController {
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
     const user = await User.findOne({
-        _id: userId,
-        resetPasswordToken: hashedToken,
-        resetPasswordExpires: { $gt: Date.now() }
+      _id: userId,
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
     }).select("+password");
 
     if (!user) {
-        return BaseController.sendError(res, "Token is invalid or has expired", 400);
+      return BaseController.sendError(res, "Token is invalid or has expired", 400);
     }
 
     user.password = newPassword;
@@ -233,7 +133,7 @@ class AuthController extends BaseController {
     BaseController.sendSuccess(res, "Password has been successfully reset");
   });
 
-
+  // Managing Cookies
 
   static setAuthCookie = (res, token, cookieName = 'token') => {
     const cookieOptions = {
@@ -245,42 +145,15 @@ class AuthController extends BaseController {
     res.cookie(cookieName, token, cookieOptions);
   };
 
+  // LOGIN
   static login = BaseController.asyncHandler(async (req, res) => {
-
-    const validatedData =
-    BaseController.validateRequest(
-      loginValidation,
-      req.body
-    );
-
-    const result =
-    await AuthService.login(
-      validatedData
-    );
+    const validatedData = BaseController.validateRequest(loginValidation, req.body);
+    const result = await AuthService.login(validatedData);
 
     // Set HTTP-only cookie
     this.setAuthCookie(res, result.token, 'user_token');
-
-    BaseController.logAction(
-
-      'USER_LOGIN',
-
-      req,
-
-      { userId: result.user._id }
-
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      'Login successful',
-
-      result
-
-    );
-
+    BaseController.logAction('USER_LOGIN', req, { userId: result.user._id });
+    BaseController.sendSuccess(res, 'Login successful', result);
   });
 
 
@@ -288,97 +161,50 @@ class AuthController extends BaseController {
     const profile = req.user || req.admin;
     const user = BaseController.sanitizeUser(profile);
 
-    BaseController.sendSuccess(
-      res,
-      'Profile retrieved successfully',
-      { user }
-    );
+    BaseController.sendSuccess(res, 'Profile retrieved successfully', { user });
   });
 
-
+  // UPDATE PROFILE
   static updateProfile = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData =
-    BaseController.validateRequest(
-
-      profileUpdateValidation,
-
-      req.body
-
-    );
-
+    const validatedData = BaseController.validateRequest(profileUpdateValidation, req.body);
     let user;
     if (req.user) {
-        user = await AuthService.updateProfile(req.user._id, validatedData);
+      user = await AuthService.updateProfile(req.user._id, validatedData);
     } else if (req.admin) {
-        const Admin = require('../Modals/Admin');
-        user = await Admin.findByIdAndUpdate(
-            req.admin._id,
-            { $set: validatedData },
-            { new: true, runValidators: true }
-        );
-        user = BaseController.sanitizeUser(user);
+      const Admin = require('../Modals/Admin');
+      user = await Admin.findByIdAndUpdate(
+        req.admin._id,
+        { $set: validatedData },
+        { new: true, runValidators: true }
+      );
+      user = BaseController.sanitizeUser(user);
     }
 
-    BaseController.logAction(
-
-      'PROFILE_UPDATE',
-
-      req
-
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      'Profile updated successfully',
-
-      { user }
-
-    );
+    BaseController.logAction('PROFILE_UPDATE', req);
+    BaseController.sendSuccess(res, 'Profile updated successfully', { user });
 
   });
 
-
+  // CHANGE PASSWORD
   static changePassword = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData =
-    BaseController.validateRequest(
-
-      passwordChangeValidation,
-
-      req.body
-
-    );
+    const validatedData = BaseController.validateRequest(passwordChangeValidation, req.body);
 
     if (req.user) {
-        await AuthService.changePassword(req.user._id, validatedData);
+      await AuthService.changePassword(req.user._id, validatedData);
     } else if (req.admin) {
-        const Admin = require('../Modals/Admin');
-        const admin = await Admin.findById(req.admin._id).select("+password");
-        if (!admin) return BaseController.sendNotFound(res, "Admin");
-        const isValid = await admin.comparePassword(validatedData.currentPassword);
-        if (!isValid) return BaseController.sendError(res, "Invalid current password", 401);
-        admin.password = validatedData.newPassword;
-        await admin.save();
+      const Admin = require('../Modals/Admin');
+      const admin = await Admin.findById(req.admin._id).select("+password");
+      if (!admin) return BaseController.sendNotFound(res, "Admin");
+      const isValid = await admin.comparePassword(validatedData.currentPassword);
+      if (!isValid) return BaseController.sendError(res, "Invalid current password", 401);
+      admin.password = validatedData.newPassword;
+      await admin.save();
     }
 
-    BaseController.logAction(
-
-      'PASSWORD_CHANGE',
-
-      req
-
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      'Password changed successfully'
-
-    );
+    BaseController.logAction('PASSWORD_CHANGE', req);
+    BaseController.sendSuccess(res, 'Password changed successfully');
 
   });
 
@@ -389,30 +215,14 @@ class AuthController extends BaseController {
     res.clearCookie('user_token');
     res.clearCookie('admin_token');
 
-    BaseController.logAction(
-
-      'USER_LOGOUT',
-
-      req
-
-    );
-
-    BaseController.sendSuccess(
-
-      res,
-
-      'Logged out successfully'
-
-    );
-
+    BaseController.logAction('USER_LOGOUT', req);
+    BaseController.sendSuccess(res, 'Logged out successfully');
   });
 
   static adminLogin = BaseController.asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const result = await AdminService.login({ email, password });
-
-    // Set HTTP-only cookie
     this.setAuthCookie(res, result.token, 'admin_token');
 
     BaseController.logAction('ADMIN_LOGIN', req, { adminId: result.admin._id });
@@ -422,7 +232,6 @@ class AuthController extends BaseController {
 
   // ADMIN: Get all users
   static getAllUsers = BaseController.asyncHandler(async (req, res) => {
-    // This is a placeholder; usually you'd have an AdminService method for this
     const User = require('../Modals/User');
     const users = await User.find({});
     BaseController.sendSuccess(res, 'Users retrieved successfully', { users });
@@ -486,7 +295,6 @@ class AuthController extends BaseController {
     BaseController.sendSuccess(res, 'User unbanned successfully', { user: BaseController.sanitizeUser(user) });
   });
 
-  // Placeholder methods for other admin routes
   static updateUserStatus = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
   static forceLogoutUser = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });
   static getDashboardStats = BaseController.asyncHandler(async (req, res) => { /* Placeholder */ });

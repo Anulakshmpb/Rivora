@@ -165,13 +165,15 @@ export function CartProvider({ children }) {
                     }
                 });
                 if (res.success) {
-                    const items = res.data.items.map(item => ({
-                        id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
-                        product: item.product,
-                        quantity: item.quantity,
-                        size: item.size,
-                        color: item.color
-                    }));
+                    const items = res.data.items
+                        .filter(item => item.product)
+                        .map(item => ({
+                            id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
+                            product: item.product,
+                            quantity: item.quantity,
+                            size: item.size,
+                            color: item.color
+                        }));
                     setCartItems(items);
                     showToast("Product removed from cart successfully", "success");
                 }
@@ -197,13 +199,15 @@ export function CartProvider({ children }) {
                     color: itemToUpdate.color
                 });
                 if (res.success) {
-                    const items = res.data.items.map(item => ({
-                        id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
-                        product: item.product,
-                        quantity: item.quantity,
-                        size: item.size,
-                        color: item.color
-                    }));
+                    const items = res.data.items
+                        .filter(item => item.product)
+                        .map(item => ({
+                            id: `${item.product._id}-${item.size}-${item.color || 'default'}`,
+                            product: item.product,
+                            quantity: item.quantity,
+                            size: item.size,
+                            color: item.color
+                        }));
                     setCartItems(items);
                 }
             } catch (error) {

@@ -252,7 +252,7 @@ export default function ProductManagement() {
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = 'https://via.placeholder.com/150?text=Error';
+                                  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f1f5f9'/%3E%3C/svg%3E";
                                 }}
                               />
                             ) : (

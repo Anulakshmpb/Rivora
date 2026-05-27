@@ -5,6 +5,8 @@ const cartItemSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true
+        // ref stands for "reference".
+        // It is used to create a relationship between two different collections (tables) in your database.
     },
     quantity: {
         type: Number,

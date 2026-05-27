@@ -23,8 +23,6 @@ class ProductController extends BaseController {
 		if (req.files && req.files.length > 0) {
 			req.body.image = req.files.map(file => `/uploads/${file.filename}`);
 		}
-
-		// Parse JSON strings for array fields if they come from FormData
 		['category', 'size', 'color'].forEach(field => {
 			if (typeof req.body[field] === 'string') {
 				try {

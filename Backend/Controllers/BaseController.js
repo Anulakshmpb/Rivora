@@ -40,6 +40,7 @@ class BaseController {
         const {error,value} = schema.validate(data,{
             abortEarly:false,
             stripUnknown:true,
+            //  Automatically deletes any fields the user sent that aren't explicitly defined in the schema
             convert:true
         });
         if(error){

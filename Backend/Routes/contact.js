@@ -4,10 +4,9 @@ const { authenticateAdmin } = require('../Middlewares/auth');
 
 const router = express.Router();
 
-// Public route to get contact info
+// Public route
 router.get('/', ContactController.getContact);
-
-// Admin route to update contact info
+// admin auth
 router.put('/', authenticateAdmin, ContactController.updateContact);
 
 module.exports = router;

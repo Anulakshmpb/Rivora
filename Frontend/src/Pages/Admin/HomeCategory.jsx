@@ -238,7 +238,7 @@ export default function HomeCategory() {
                                                 <td className="px-4 py-4">
                                                     <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
                                                         <img src={`${API_URL}${item.image}`} alt={item.title} className="w-full h-full object-cover"
-                                                            onError={e => { e.target.src = 'https://via.placeholder.com/56?text=No+Img'; }} />
+                                                            onError={e => { e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f1f5f9'/%3E%3C/svg%3E"; }} />
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-4">

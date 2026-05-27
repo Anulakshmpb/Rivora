@@ -1,27 +1,22 @@
 const logger = require('../utils/logger');
 
-const requestLogger = (req,res,next)=>{
+const requestLogger = (req, res, next) => {
 
     const start = Date.now();
+    logger.info("Incoming request", {
 
-    logger.info("Incoming request",{
-
-        method:req.method,
-        url:req.originalUrl,
-        ip:req.ip
-
+        method: req.method,
+        url: req.originalUrl,
+        ip: req.ip
     });
-
-    res.on("finish",()=>{
-
+    res.on("finish", () => {
         const duration = Date.now() - start;
+        logger.info("Request completed", {
 
-        logger.info("Request completed",{
-
-            method:req.method,
-            url:req.originalUrl,
-            status:res.statusCode,
-            duration:`${duration}ms`
+            method: req.method,
+            url: req.originalUrl,
+            status: res.statusCode,
+            duration: `${duration}ms`
 
         });
 
@@ -30,4 +25,4 @@ const requestLogger = (req,res,next)=>{
     next();
 };
 
-module.exports=requestLogger;
+module.exports = requestLogger;

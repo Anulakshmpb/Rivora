@@ -55,7 +55,6 @@ export default function Checkout() {
     const taxes = (cartTotalPrice - discountAmount) * 0.08;
     const total = cartTotalPrice - discountAmount + shippingCost + taxes;
 
-    // Monitor cart total and remove coupon if it doesn't meet minAmount
     useEffect(() => {
         if (appliedCoupon && cartTotalPrice < appliedCoupon.minAmount) {
             setAppliedCoupon(null);
@@ -94,7 +93,7 @@ export default function Checkout() {
 
     const handleConfirmAndPay = async () => {
         if (!selectedAddress) {
-            showToast('Error', 'Please select a delivery address', 'error');
+            showToast('Please select a delivery address', 'error');
             return;
         }
 
@@ -121,7 +120,7 @@ export default function Checkout() {
                 });
 
                 if (res.success) {
-                    showToast('Success', 'Order placed successfully (COD)!', 'success');
+                    showToast('Order placed successfully (COD)!', 'success');
                     addNotification(`Order placed successfully! Order #${res.data._id.slice(-8).toUpperCase()}`, 'success');
                     clearCart();
                     navigate('/order-success', { state: { order: res.data } });
@@ -149,7 +148,7 @@ export default function Checkout() {
                 };
 
                 await axiosInstance.post('/api/orders/send-wallet-otp');
-                showToast('OTP Sent', 'A verification code has been sent to your email.', 'success');
+                showToast('A verification code has been sent to your email.', 'success');
                 navigate('/verify-otp', {
                     state: {
                         userId: user?._id,
@@ -161,7 +160,7 @@ export default function Checkout() {
             }
             const isLoaded = await loadRazorpayScript();
             if (!isLoaded) {
-                showToast('Error', 'Razorpay SDK failed to load. Check your internet connection.', 'error');
+                showToast('Razorpay SDK failed to load. Check your internet connection.', 'error');
                 setIsProcessing(false);
                 return;
             }
@@ -186,7 +185,7 @@ export default function Checkout() {
                 currency: currency,
                 name: 'Rivora Boutique',
                 description: 'Luxury Curated Selection',
-                image: '/logo.png', // Add your logo path
+                image: '/logo.png', 
                 order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
@@ -421,7 +420,7 @@ export default function Checkout() {
                                         <img
                                             src={(() => {
                                                 const imgPath = Array.isArray(item.product.image) ? item.product.image[0] : (item.product.image || '');
-                                                if (!imgPath) return 'https://via.placeholder.com/600x800';
+                                                if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
                                                 return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
                                             })()}
                                             alt={item.product.name}

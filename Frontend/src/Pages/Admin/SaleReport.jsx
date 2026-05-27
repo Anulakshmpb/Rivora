@@ -169,7 +169,8 @@ export default function SaleReport() {
                     { key: 'date', label: 'Date', render: (val) => new Date(val).toLocaleDateString() },
                     { key: 'customer', label: 'Customer', render: (_, row) => row.user?.name || 'Guest' },
                     { key: 'orderStatus', label: 'Status' },
-                    { key: 'itemsCount', label: 'Items', render: (_, row) => row.items?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0 },
+                    { key: 'itemsCount', label: 'Items', render: (_, row) => row.items?.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned')?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0 },
+                    { key: 'discountAmount', label: 'Discount', render: (val) => `₹${(val || 0).toFixed(2)}` },
                     { key: 'totalAmount', label: 'Total', render: (val) => `₹${(val || 0).toFixed(2)}` }
                 ];
                 rawData = filteredOrders.map(o => ({ ...o, date: o.createdAt }));
@@ -220,8 +221,8 @@ export default function SaleReport() {
                     aVal = a.user?.name || '';
                     bVal = b.user?.name || '';
                 } else if (sortConfig.key === 'itemsCount') {
-                    aVal = a.items?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0;
-                    bVal = b.items?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0;
+                    aVal = a.items?.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned')?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0;
+                    bVal = b.items?.filter(i => i.status !== 'Cancelled' && i.status !== 'Returned')?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 0;
                 }
 
                 if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;

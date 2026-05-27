@@ -5,10 +5,9 @@ class ContactController extends BaseController {
     static getContact = BaseController.asyncHandler(async (req, res) => {
         let contact = await Contact.findOne();
         if (!contact) {
-            // Create default contact if none exists
             contact = await Contact.create({
                 email: 'support@rivora.com',
-                phone: '+1 (555) 000-0000',
+                phone: '+19 0000000000',
                 address: '123 Luxury Lane, Fashion District, NY 10001',
                 googleMapsUrl: '',
                 socialLinks: [
@@ -23,7 +22,7 @@ class ContactController extends BaseController {
 
     static updateContact = BaseController.asyncHandler(async (req, res) => {
         const { email, phone, address, googleMapsUrl, socialLinks } = req.body;
-        
+
         const validSocialLinks = socialLinks ? socialLinks.filter(s => s.url && s.url.trim() !== '') : [];
 
         let contact = await Contact.findOne();
