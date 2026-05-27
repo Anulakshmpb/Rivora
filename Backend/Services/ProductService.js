@@ -55,7 +55,17 @@ class ProductService {
     }
 
     await product.deleteOne();
-    logger.info(`Product deleted: ${productId}`);
+    try {
+      const Cart = require('../Modals/Cart');
+      await Cart.updateMany(
+        { "items.product": productId },
+        { $pull: { items: { product: productId } } }
+      );
+      logger.info(`Product deleted and pulled from all carts: ${productId}`);
+    } catch (cartErr) {
+      logger.error(`Failed to pull deleted product ${productId} from carts:`, cartErr);
+    }
+
     return true;
   }
 }

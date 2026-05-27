@@ -134,7 +134,7 @@ export default function Cart() {
                                         <img
                                             src={(() => {
                                                 const imgPath = Array.isArray(item.product.image) ? item.product.image[0] : (item.product.image || '');
-                                                if (!imgPath) return 'https://via.placeholder.com/600x800';
+                                                if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
                                                 return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
                                             })()}
                                             alt={item.product.name}

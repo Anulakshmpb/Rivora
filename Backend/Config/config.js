@@ -39,22 +39,22 @@ module.exports = {
       MAX_REQUESTS: 1000,
       AUTH_MAX_REQUESTS: 100
    },
-   
+
    SOCKET: {
       CORS_ORIGIN: process.env.FRONTEND_URL || 'http://localhost:3000',
       METHODS: ['GET', 'POST'],
       CREDENTIALS: true
-    },
-    
-    PAGINATION: {
+   },
+
+   PAGINATION: {
       DEFAULT_LIMIT: 10,
       MAX_LIMIT: 100
-    },
-    
-    LOGGING: {
+   },
+
+   LOGGING: {
       LEVEL: process.env.LOG_LEVEL || 'info',
       MAX_FILES: 5,
       MAX_SIZE: '20m'
-    }
+   }
 
 }

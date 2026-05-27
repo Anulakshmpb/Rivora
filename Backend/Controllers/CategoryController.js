@@ -2,6 +2,7 @@ const BaseController = require('./BaseController');
 const Category = require('../Modals/Category');
 
 class CategoryController extends BaseController {
+
     static getAll = BaseController.asyncHandler(async (req, res) => {
         const categories = await Category.find().sort({ name: 1 });
         BaseController.sendSuccess(res, 'Categories retrieved successfully', { categories });
@@ -14,8 +15,8 @@ class CategoryController extends BaseController {
             return BaseController.sendError(res, 'Category name is required', 400);
         }
 
-        const existing = await Category.findOne({ 
-            name: name.trim() 
+        const existing = await Category.findOne({
+            name: name.trim()
         }).collation({ locale: 'en', strength: 2 });
 
         if (existing) {
@@ -37,7 +38,7 @@ class CategoryController extends BaseController {
     static update = BaseController.asyncHandler(async (req, res) => {
         const { name, description, main, images } = req.body;
         if (name) {
-            const existing = await Category.findOne({ 
+            const existing = await Category.findOne({
                 name: name.trim(),
                 _id: { $ne: req.params.id }
             }).collation({ locale: 'en', strength: 2 });

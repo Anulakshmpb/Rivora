@@ -16,4 +16,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
-// handle the initial connection between your Node.js application and your MongoDB database.
+// handle the initial connection between Node.js application and your MongoDB database.

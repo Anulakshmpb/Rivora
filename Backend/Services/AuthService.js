@@ -10,9 +10,7 @@ class AuthService {
 	static async register(userData) {
 
 		try {
-			// Normalize email
 			userData.email = userData.email.toLowerCase().trim();
-			// Check existing user
 			const existingUser = await User.findOne({ email: userData.email });
 			if (existingUser) {
 				throw new ConflictError("User already exists", {
@@ -20,9 +18,7 @@ class AuthService {
 					isVerified: existingUser.isVerified
 				});
 			}
-			// Create user
 			const user = await User.create(userData);
-			// Generate token
 			const token = generateUserToken({
 				id: user._id,
 				email: user.email,
@@ -31,26 +27,18 @@ class AuthService {
 			logger.info(`User registered: ${user.email}`);
 
 			return {
-
 				user: user.getPublicProfile(),
 				token
-
 			};
 
 		}
 		catch (error) {
-
-			// Mongo duplicate key protection
 			if (error.code === 11000) {
 				throw new ConflictError("Email already exists");
 			}
-
 			logger.error("Register error", error);
-
 			throw error;
-
 		}
-
 	}
 
 	/* ================= LOGIN ================= */
@@ -58,13 +46,8 @@ class AuthService {
 	static async login(credentials) {
 
 		try {
-
 			const { email, password } = credentials;
-
-			// Normalize email
 			const normalizedEmail = email.toLowerCase().trim();
-
-			// Get user with password
 			const user = await User
 				.findOne({ email: normalizedEmail })
 				.select("+password");
@@ -72,60 +55,39 @@ class AuthService {
 			if (!user) {
 				throw new AuthenticationError("Invalid credentials");
 			}
-
-			// Enforce OTP Registration Check
 			if (!user.isVerified) {
 				throw new AuthenticationError("Account not verified. Please verify your OTP to login.");
 			}
-
-			// Check account lock
+			if (user.isBanned) {
+				throw new AuthenticationError("Account is banned.");
+			}
 			if (user.lockUntil && user.lockUntil > Date.now()) {
-
 				throw new AuthenticationError(
 					"Account locked. Try again later"
 				);
 
 			}
-
-			// Compare password
 			const isValid = await user.comparePassword(password);
-
 			if (!isValid) {
-
-				// Increase failed attempts
 				user.failedLoginAttempts += 1;
-
-				// Lock account after 5 attempts
 				if (user.failedLoginAttempts >= 5) {
-
 					user.lockUntil =
-						Date.now() + 15 * 60 * 1000;
-
+						Date.now() + 15 * 60 * 1000; // 15 min
 				}
-
 				await user.save();
-
 				throw new AuthenticationError(
 					"Invalid credentials"
 				);
 
 			}
-
-			// Reset attempts on success
 			user.failedLoginAttempts = 0;
 			user.lockUntil = undefined;
-
-			// Update last login
 			user.lastLogin = new Date();
 
 			await user.save();
-
-			// Generate token
 			const token = generateUserToken({
-
 				id: user._id,
 				role: user.role
-
 			});
 
 			logger.info(`User login: ${user.email}`);
@@ -155,13 +117,14 @@ class AuthService {
 				userId,
 				{ isVerified: true },
 				{ new: true }
+				//  { new: true } tells Mongoose to return the modified document after the update has been applied.
 			);
 
 			if (!user) {
 				throw new NotFoundError("User not found");
 			}
 
-			// Generate token for auto-login
+			// for auto-login
 			const token = generateUserToken({
 				id: user._id,
 				email: user.email,
@@ -189,7 +152,10 @@ class AuthService {
 			const user = await User.findByIdAndUpdate(
 				userId,
 				{ $set: updateData },
+				// Any other fields that already exist on the user document but aren't in updateData will be left untouched
 				{ new: true, runValidators: true }
+				// new: true: Just like before, this ensures the method returns the updated document rather than the original (pre-update) document.
+				// runValidators: true: By default, Mongoose only runs your schema validations (like required, minLength, enum, etc.) when you create or .save() a new document, but not during update operations. Setting this to true forces Mongoose to validate the updateData against your User schema rules before applying the update, preventing invalid data from being saved.
 			);
 
 			if (!user) {
@@ -230,14 +196,9 @@ class AuthService {
 			if (!isMatch) {
 				throw new AuthenticationError("Invalid current password");
 			}
-
-			// Update and save (this will trigger the pre-save hook for hashing)
 			user.password = newPassword;
-
 			await user.save();
-
 			logger.info(`Password changed for user: ${user.email}`);
-
 			return true;
 
 		} catch (error) {

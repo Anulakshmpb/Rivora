@@ -13,7 +13,7 @@ const extractToken = (req, type) => {
     if (req.cookies) {
         if (type === 'admin' && req.cookies.admin_token) return req.cookies.admin_token;
         if (type === 'user' && req.cookies.user_token) return req.cookies.user_token;
-        if (req.cookies.token) return req.cookies.token; // legacy fallback
+        if (req.cookies.token) return req.cookies.token;
     }
 
     return null;
@@ -121,6 +121,8 @@ const authenticateUserOrAdmin = async (req, res, next) => {
         const fs = require('fs');
         fs.appendFileSync('debug.log', `--- Auth Debug ---\nAdmin Token present: ${!!adminToken}, User Token present: ${!!userToken}\n`);
 
+        let authenticated = false;
+
         if (adminToken) {
             try {
                 const decodedAdmin = verifyAdminToken(adminToken);
@@ -128,10 +130,11 @@ const authenticateUserOrAdmin = async (req, res, next) => {
                 const admin = await findAdmin(decodedAdmin.id);
                 if (admin && admin.status !== "banned") {
                     req.admin = admin;
+                    authenticated = true;
                     fs.appendFileSync('debug.log', `Auth Success: Admin ${admin._id}\n`);
-                    return next();
+                } else {
+                    fs.appendFileSync('debug.log', `Admin not found or banned: ${decodedAdmin.id}\n`);
                 }
-                fs.appendFileSync('debug.log', `Admin not found or banned: ${decodedAdmin.id}\n`);
             } catch (adminErr) {
                 fs.appendFileSync('debug.log', `Admin Verify Failed: ${adminErr.message}\n`);
             }
@@ -144,13 +147,18 @@ const authenticateUserOrAdmin = async (req, res, next) => {
                 const user = await findUser(decodedUser.id);
                 if (user && user.status !== "banned") {
                     req.user = user;
+                    authenticated = true;
                     fs.appendFileSync('debug.log', `Auth Success: User ${user._id}\n`);
-                    return next();
+                } else {
+                    fs.appendFileSync('debug.log', `User not found or banned: ${decodedUser.id}\n`);
                 }
-                fs.appendFileSync('debug.log', `User not found or banned: ${decodedUser.id}\n`);
             } catch (userErr) {
                 fs.appendFileSync('debug.log', `User Verify Failed: ${userErr.message}\n`);
             }
+        }
+
+        if (authenticated) {
+            return next();
         }
 
         res.clearCookie('token');

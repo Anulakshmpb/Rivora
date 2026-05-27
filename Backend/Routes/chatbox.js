@@ -8,7 +8,6 @@ router.post("/", async (req, res) => {
     try {
         const { messages } = req.body;
 
-        // Fallback if 'messages' is not provided but 'message' is (for backwards compatibility)
         let chatHistory = messages || [];
         if (!messages && req.body.message) {
             chatHistory = [{ role: "user", content: req.body.message }];
@@ -16,8 +15,7 @@ router.post("/", async (req, res) => {
 
         const lastMessage = chatHistory[chatHistory.length - 1]?.content || "";
         const orderMatch = lastMessage.match(/(?:order|id|#).*?([a-fA-F0-9]{8}|[a-fA-F0-9]{24})\b/i);
-        let injectedContext = "";
-
+        let injectedContext = ""; // stores hidden instructions for AI.
         if (orderMatch) {
             const orderIdSuffix = orderMatch[1];
             try {
@@ -25,7 +23,7 @@ router.post("/", async (req, res) => {
                 if (orderIdSuffix.length === 24) {
                     order = await Order.findById(orderIdSuffix).populate('items.product');
                 } else {
-                    // Match partial IDs (like the 8-char ones shown in the UI)
+                    // Match partial IDs(8char)
                     const orders = await Order.find({}).populate('items.product');
                     order = orders.find(o => o._id.toString().toUpperCase().endsWith(orderIdSuffix.toUpperCase()));
                 }

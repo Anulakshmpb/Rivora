@@ -8,7 +8,7 @@ router.post('/', MessageController.sendMessage);
 router.get('/', authenticateAdmin, MessageController.getMessages);
 router.patch('/:id/read', authenticateAdmin, MessageController.markAsRead);
 
-// Admin route to reply to a message
+// Admin 
 router.post('/:id/reply', authenticateAdmin, MessageController.replyToMessage);
 
 module.exports = router;

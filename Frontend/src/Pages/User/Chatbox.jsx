@@ -11,7 +11,6 @@ const ChatBox = () => {
     ]);
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
-
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -26,13 +25,13 @@ const ChatBox = () => {
         const userInput = message;
         setMessage("");
 
-        // Add user message to history
+        // Add message to history
         const newMessages = [...messages, { role: "user", content: userInput }];
         setMessages(newMessages);
         setIsLoading(true);
 
         try {
-            // Send entire history (excluding initial greeting if needed, but it's fine to include)
+            // Send entire history
             const res = await axiosInstance.post("/api/chatbox", {
                 messages: newMessages.map(msg => ({ role: msg.role, content: msg.content }))
             });
@@ -61,7 +60,6 @@ const ChatBox = () => {
 
     return (
         <>
-            {/* Floating Button */}
             <motion.button
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -93,7 +91,7 @@ const ChatBox = () => {
                 </AnimatePresence>
             </motion.button>
 
-            {/* Chat Window */}
+            {/* Chat  */}
             <AnimatePresence>
                 {open && (
                     <motion.div
@@ -104,7 +102,6 @@ const ChatBox = () => {
                         className="fixed bottom-24 right-6 w-96 h-[32rem] bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden z-50 flex flex-col border border-neutral-200"
                     >
                         <div className="bg-neutral-900 text-white p-5 flex items-center gap-4 rounded-t-2xl relative overflow-hidden border-b border-neutral-800">
-                            {/* Decorative minimalist pattern */}
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-12 -translate-y-12"></div>
                             <div className="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
                                 <Sparkles size={20} className="text-white" />
@@ -118,7 +115,6 @@ const ChatBox = () => {
                             </button>
                         </div>
 
-                        {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto p-5 space-y-6 bg-neutral-50/80">
                             {messages.map((msg, i) => (
                                 <motion.div
@@ -127,11 +123,9 @@ const ChatBox = () => {
                                     key={i}
                                     className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                                 >
-                                    {/* Avatar */}
                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border ${msg.role === "user" ? "bg-neutral-900 border-neutral-800 text-white" : "bg-white border-neutral-200 text-neutral-900"}`}>
                                         {msg.role === "user" ? <CircleUserRound size={18} /> : <Sparkles size={16} />}
                                     </div>
-                                    {/* Message Bubble */}
                                     <div
                                         className={`p-4 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === "user"
                                             ? "bg-neutral-900 text-white rounded-tr-sm"

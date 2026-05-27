@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReviewModal from './ReviewModal';
 import { useNotification } from '../../context/NotificationContext';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const PackageIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" /></svg>
@@ -42,6 +44,153 @@ export default function Orders() {
     });
 
     const closeModal = () => setModalConfig(prev => ({ ...prev, isOpen: false }));
+
+    const downloadInvoice = (order) => {
+        if (!order) return;
+
+        const doc = new jsPDF();
+
+        // Check overall order status for color theme & title
+        let primaryColor = [15, 23, 42]; // Default Slate 900
+        let invoiceTitle = 'TAX INVOICE';
+        
+        if (order.orderStatus === 'Cancelled') {
+            primaryColor = [225, 29, 72]; // Rose 600
+            invoiceTitle = 'CANCELLED INVOICE';
+        } else if (order.orderStatus === 'Returned') {
+            primaryColor = [217, 119, 6]; // Amber 600
+            invoiceTitle = 'RETURNED INVOICE';
+        }
+        
+        doc.setFillColor(...primaryColor);
+        doc.rect(0, 0, 210, 35, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.text('RIVORA', 15, 22);
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Premium Fashion & Lifestyle', 15, 28);
+        
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text(invoiceTitle, 195, 22, { align: 'right' });
+
+        doc.setTextColor(51, 65, 85);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('INVOICE DETAILS', 15, 50);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Order ID: #${order._id.toUpperCase()}`, 15, 57);
+        doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 15, 64);
+        doc.text(`Order Status: ${order.orderStatus}`, 15, 71);
+        doc.text(`Payment Method: ${order.paymentMethod.toUpperCase()}`, 15, 78);
+        doc.text(`Payment Status: ${order.paymentStatus}`, 15, 85);
+
+        // Shipping 
+        doc.setFont('helvetica', 'bold');
+        doc.text('SHIPPING DESTINATION', 120, 50);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${order.shippingAddress.street}`, 120, 57);
+        let currentAddrY = 64;
+        if (order.shippingAddress.apartment) {
+            doc.text(`${order.shippingAddress.apartment}`, 120, currentAddrY);
+            currentAddrY += 7;
+        }
+        doc.text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`, 120, currentAddrY);
+        currentAddrY += 7;
+        doc.text(`${order.shippingAddress.pinCode}, ${order.shippingAddress.country}`, 120, currentAddrY);
+
+        // Items Table
+        const headers = [['Product', 'Variant (Size/Color)', 'Qty', 'Unit Price', 'Total']];
+        const rows = order.items.map(item => {
+            const isCancelled = item.status === 'Cancelled';
+            const isReturned = item.status === 'Returned';
+            const statusLabel = isCancelled ? ' (Cancelled)' : (isReturned ? ' (Returned)' : '');
+            
+            return [
+                `${item.product?.name || 'Product'}${statusLabel}`,
+                `${item.size || 'N/A'} / ${item.color || 'N/A'}`,
+                item.quantity || 1,
+                `$${item.price.toFixed(2)}`,
+                (isCancelled || isReturned) ? `$0.00` : `$${(item.price * item.quantity).toFixed(2)}`
+            ];
+        });
+
+        const tableStartY = 95;
+        
+        autoTable(doc, {
+            startY: tableStartY,
+            head: headers,
+            body: rows,
+            headStyles: {
+                fillColor: primaryColor,
+                textColor: [255, 255, 255],
+                fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+                fillColor: [248, 250, 252] // Slate 50
+            },
+            margin: { left: 15, right: 15 },
+            theme: 'striped'
+        });
+
+        // Pricing Summary
+        const finalY = doc.lastAutoTable.finalY + 15;
+        const activeItems = order.items.filter(item => !['Cancelled', 'Returned'].includes(item.status));
+        const subtotal = activeItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        const shipping = order.shippingCost || 0;
+        const tax = order.taxAmount || 0;
+        const discount = order.discountAmount || 0;
+        const total = Math.max(0, subtotal + shipping + tax - discount);
+
+        const summaryStartX = 120;
+        const lineSpacing = 7;
+        let currentSummaryY = finalY;
+
+        doc.setFont('helvetica', 'normal');
+        doc.text('Subtotal (Active Items):', summaryStartX, currentSummaryY);
+        doc.text(`$${subtotal.toFixed(2)}`, 195, currentSummaryY, { align: 'right' });
+
+        if (discount > 0) {
+            currentSummaryY += lineSpacing;
+            doc.setTextColor(16, 185, 129); 
+            doc.text('Discount Applied:', summaryStartX, currentSummaryY);
+            doc.text(`-$${discount.toFixed(2)}`, 195, currentSummaryY, { align: 'right' });
+            doc.setTextColor(51, 65, 85);
+        }
+
+        currentSummaryY += lineSpacing;
+        doc.text('Shipping:', summaryStartX, currentSummaryY);
+        doc.text(`$${shipping.toFixed(2)}`, 195, currentSummaryY, { align: 'right' });
+
+        currentSummaryY += lineSpacing;
+        doc.text('Estimated Tax:', summaryStartX, currentSummaryY);
+        doc.text(`$${tax.toFixed(2)}`, 195, currentSummaryY, { align: 'right' });
+
+        currentSummaryY += lineSpacing + 2;
+        doc.setDrawColor(226, 232, 240); 
+        doc.setLineWidth(0.5);
+        doc.line(summaryStartX, currentSummaryY - 4, 195, currentSummaryY - 4);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text('Total Amount:', summaryStartX, currentSummaryY);
+        doc.text(`$${total.toFixed(2)}`, 195, currentSummaryY, { align: 'right' });
+
+        // Footer 
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(10);
+        doc.setTextColor(148, 163, 184); 
+        doc.text('Thank you for shopping with RIVORA!', 105, currentSummaryY + 25, { align: 'center' });
+
+        doc.save(`invoice_${order._id.toUpperCase()}.pdf`);
+    };
 
     const fetchOrders = async () => {
         try {
@@ -208,7 +357,7 @@ export default function Orders() {
                                             <div key={i} className="flex gap-6 items-center">
                                                 <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
                                                     <img
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'}
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
                                                         alt={item.product?.name}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -368,12 +517,23 @@ export default function Orders() {
                                     <h3 className="text-2xl font-serif font-medium text-slate-900">Order Details</h3>
                                     <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mt-1">#{detailsModal.order._id.toUpperCase()}</p>
                                 </div>
-                                <button
-                                    onClick={() => setDetailsModal({ isOpen: false, order: null })}
-                                    className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm"
-                                >
-                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => downloadInvoice(detailsModal.order)}
+                                        className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-md active:scale-[0.98]"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Invoice
+                                    </button>
+                                    <button
+                                        onClick={() => setDetailsModal({ isOpen: false, order: null })}
+                                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors shadow-sm"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Modal Content */}
@@ -416,7 +576,7 @@ export default function Orders() {
                                             <div key={i} className="flex gap-4 items-center bg-slate-50/50 p-4 rounded-2xl border border-slate-50">
                                                 <div className="w-16 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
                                                     <img
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : 'https://via.placeholder.com/200x300'}
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
                                                         alt={item.product?.name}
                                                         className="w-full h-full object-cover"
                                                     />

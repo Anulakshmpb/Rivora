@@ -10,7 +10,6 @@ const ReviewController = {
 			if (req.file) {
 				imgPath = `/uploads/${req.file.filename}`;
 			}
-
 			const newReview = await Review.create({
 				name,
 				email,
@@ -36,10 +35,10 @@ const ReviewController = {
 		try {
 			const { type, productId } = req.query;
 			const filter = {};
-
+			// Similarly, if the user provided a productId, add a property called productId to my filter object and set it to that value."
+			// Result: If they provided a product ID, the object might look like { productId: "123" }. 
 			if (type) filter.type = type;
 			if (productId) filter.productId = productId;
-
 			const reviews = await Review.find(filter).sort({ createdAt: -1 });
 
 			res.status(200).json({

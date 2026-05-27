@@ -5,7 +5,6 @@ const emailService = require('../utils/email');
 class MessageController extends BaseController {
     static sendMessage = BaseController.asyncHandler(async (req, res) => {
         const { name, email, subject, message } = req.body;
-        
         const newMessage = await Message.create({
             name,
             email,
@@ -24,11 +23,9 @@ class MessageController extends BaseController {
     static markAsRead = BaseController.asyncHandler(async (req, res) => {
         const { id } = req.params;
         const message = await Message.findById(id);
-        
         if (!message) {
             return BaseController.sendError(res, 'Message not found', 404);
         }
-
         message.isRead = true;
         await message.save();
 
@@ -44,16 +41,12 @@ class MessageController extends BaseController {
         }
 
         const message = await Message.findById(id);
-        
+
         if (!message) {
             return BaseController.sendError(res, 'Message not found', 404);
         }
-
-        // Send email to customer
         const subject = `Re: ${message.subject}`;
         await emailService.sendGeneralMessage(message.email, subject, replyText);
-
-        // Mark as read if not already
         if (!message.isRead) {
             message.isRead = true;
             await message.save();
