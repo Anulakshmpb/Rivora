@@ -12,26 +12,28 @@ const {
 	getDashboardStats
 } = require('../Controllers/AuthController');
 const { getAllOrders, updateOrderStatus, approveReturn, rejectReturn, getReturnRequests } = require('../Controllers/orderController');
-const { authenticateAdmin } = require('../Middlewares/auth');
+const { verifyAdminToken } = require('../Middlewares/auth');
+const { loginLimiter } = require('../Middlewares/setup');
+const { validateLogin } = require('../Middlewares/validation');
 
 const router = express.Router();
 
-router.post('/login', adminLogin);
-router.get('/users', authenticateAdmin, getAllUsers);
-router.get('/users/:id', authenticateAdmin, getUserById);
-router.put('/users/:id', authenticateAdmin, updateUser);
-router.delete('/users/:id', authenticateAdmin, deleteUser);
-router.post('/users/:id/ban', authenticateAdmin, banUser);
-router.post('/users/:id/unban', authenticateAdmin, unbanUser);
-router.post('/users/:id/force-logout', authenticateAdmin, forceLogoutUser);
-router.patch('/user/:id/status', authenticateAdmin, updateUserStatus);
-router.get('/stats', authenticateAdmin, getDashboardStats);
+router.post('/login', loginLimiter, validateLogin, adminLogin);
+router.get('/users', verifyAdminToken, getAllUsers);
+router.get('/users/:id', verifyAdminToken, getUserById);
+router.put('/users/:id', verifyAdminToken, updateUser);
+router.delete('/users/:id', verifyAdminToken, deleteUser);
+router.post('/users/:id/ban', verifyAdminToken, banUser);
+router.post('/users/:id/unban', verifyAdminToken, unbanUser);
+router.post('/users/:id/force-logout', verifyAdminToken, forceLogoutUser);
+router.patch('/user/:id/status', verifyAdminToken, updateUserStatus);
+router.get('/stats', verifyAdminToken, getDashboardStats);
 
 // Order Management
-router.get('/orders', authenticateAdmin, getAllOrders);
-router.get('/returns', authenticateAdmin, getReturnRequests);
-router.patch('/orders/:orderId/status', authenticateAdmin, updateOrderStatus);
-router.post('/returns/:returnId/approve-return', authenticateAdmin, approveReturn);
-router.post('/returns/:returnId/reject-return', authenticateAdmin, rejectReturn);
+router.get('/orders', verifyAdminToken, getAllOrders);
+router.get('/returns', verifyAdminToken, getReturnRequests);
+router.patch('/orders/:orderId/status', verifyAdminToken, updateOrderStatus);
+router.post('/returns/:returnId/approve-return', verifyAdminToken, approveReturn);
+router.post('/returns/:returnId/reject-return', verifyAdminToken, rejectReturn);
 
 module.exports = router;

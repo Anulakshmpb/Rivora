@@ -11,11 +11,22 @@ const requestLogger = require('./requestLogger');
 
 const setupMiddleware = (app)=>{
 
+    const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+        .split(',')
+        .map(origin => origin.trim());
+
     app.use(cors({
-        origin:config.CORS.ORIGIN,
-        credentials:true,
-        methods:config.CORS.METHODS,
-        allowedHeaders:config.CORS.ALLOWED_HEADERS
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        credentials: true,
+        methods: config.CORS.METHODS,
+        allowedHeaders: config.CORS.ALLOWED_HEADERS
     }));
 
     app.use(helmet({
@@ -84,7 +95,23 @@ const createAuthLimiter = ()=>{
 
 };
 
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, 
+    max: 10, // Limit each IP to 10 login requests per 15 minutes
+    message: {
+        success: false,
+        error: {
+            message: "Too many login attempts from this IP, please try again after 15 minutes",
+            code: "RATE_LIMIT_EXCEEDED",
+            statusCode: 429
+        }
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 module.exports={
     setupMiddleware,
-    createAuthLimiter
+    createAuthLimiter,
+    loginLimiter
 };

@@ -91,7 +91,7 @@ export default function Cart() {
 
     return (
         <div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pt-[120px] pb-20">
-            <div className="max-w-[1200px] mx-auto px-8">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
                 <div className="mb-10">
                     <h1 className="text-4xl font-serif font-medium tracking-tight">Your Cart</h1>
                     <p className="text-slate-500 mt-2 text-sm font-medium tracking-wide">
@@ -122,7 +122,7 @@ export default function Cart() {
                         {/* Cart Items List */}
                         <div className="flex-1 w-full space-y-6">
                             {cartItems.map((item) => (
-                                <div key={item.id} className="flex gap-6 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative group">
+                                <div key={item.id} className="flex flex-col sm:flex-row gap-6 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm relative group">
                                     <button
                                         onClick={() => removeFromCart(item.id)}
                                         className="absolute top-6 right-6 p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-full transition-all opacity-100"
@@ -130,7 +130,7 @@ export default function Cart() {
                                         <TrashIcon />
                                     </button>
 
-                                    <div className="w-32 h-40 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer" onClick={() => navigate(`/product-list/${item.product._id}`)}>
+                                    <div className="w-32 h-40 mx-auto sm:mx-0 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer" onClick={() => navigate(`/product-list/${item.product._id}`)}>
                                         <img
                                             src={(() => {
                                                 const imgPath = Array.isArray(item.product.image) ? item.product.image[0] : (item.product.image || '');
@@ -142,16 +142,16 @@ export default function Cart() {
                                         />
                                     </div>
 
-                                    <div className="flex-1 flex flex-col justify-between py-1">
+                                    <div className="flex-1 flex flex-col justify-between py-1 w-full text-center sm:text-left">
                                         <div>
-                                            <div className="flex justify-between items-start pr-12">
+                                            <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-2 pr-0 sm:pr-12">
                                                 <h3 className="text-lg font-serif font-medium cursor-pointer hover:text-slate-600 transition-colors" onClick={() => navigate(`/product-list/${item.product._id}`)}>
                                                     {item.product.name}
                                                 </h3>
                                             </div>
                                             <p className="text-sm font-medium text-slate-900 mt-1">${Number(item.product.price).toFixed(2)}</p>
 
-                                            <div className="flex gap-4 mt-4 text-[11px] font-black uppercase tracking-widest text-slate-500">
+                                            <div className="flex justify-center sm:justify-start gap-4 mt-4 text-[11px] font-black uppercase tracking-widest text-slate-500">
                                                 {item.size && (
                                                     <span className="bg-slate-50 px-3 py-1 rounded-md">Size: {item.size}</span>
                                                 )}
@@ -167,7 +167,7 @@ export default function Cart() {
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center gap-4 mt-4">
+                                        <div className="flex justify-center sm:justify-start items-center gap-4 mt-4">
                                             <div className="flex items-center bg-slate-50 rounded-lg border border-slate-100 p-1">
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}

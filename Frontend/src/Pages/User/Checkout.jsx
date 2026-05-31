@@ -255,7 +255,7 @@ export default function Checkout() {
 
     return (
         <div className="bg-[#FDFDFB] min-h-screen pt-32 pb-20 font-inter">
-            <div className="max-w-[1200px] mx-auto px-8">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
                 {/* Header */}
                 <div className="mb-12">
                     <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-2 uppercase">Checkout</h1>

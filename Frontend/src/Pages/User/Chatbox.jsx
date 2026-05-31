@@ -99,7 +99,7 @@ const ChatBox = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="fixed bottom-24 right-6 w-96 h-[32rem] bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden z-50 flex flex-col border border-neutral-200"
+                        className="fixed bottom-24 right-4 sm:right-6 left-4 sm:left-auto w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[32rem] max-h-[32rem] bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden z-50 flex flex-col border border-neutral-200"
                     >
                         <div className="bg-neutral-900 text-white p-5 flex items-center gap-4 rounded-t-2xl relative overflow-hidden border-b border-neutral-800">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-12 -translate-y-12"></div>

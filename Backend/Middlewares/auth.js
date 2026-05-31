@@ -1,5 +1,5 @@
 const User = require('../Modals/User');
-const { verifyUserToken, verifyAdminToken } = require('../utils/jwt');
+const { verifyUserToken, verifyAdminToken: jwtVerifyAdminToken } = require('../utils/jwt');
 const { sendError } = require('../utils/response');
 const logger = require('../utils/logger');
 
@@ -72,7 +72,7 @@ const authenticateAdmin = async (req, res, next) => {
         if (!token)
             return sendError(res, "Admin token required", 401);
 
-        const decoded = verifyAdminToken(token);
+        const decoded = jwtVerifyAdminToken(token);
 
         const admin = await findAdmin(decoded.id);
 
@@ -125,7 +125,7 @@ const authenticateUserOrAdmin = async (req, res, next) => {
 
         if (adminToken) {
             try {
-                const decodedAdmin = verifyAdminToken(adminToken);
+                const decodedAdmin = jwtVerifyAdminToken(adminToken);
                 fs.appendFileSync('debug.log', `Admin Token Decoded: ${JSON.stringify(decodedAdmin)}\n`);
                 const admin = await findAdmin(decodedAdmin.id);
                 if (admin && admin.status !== "banned") {
@@ -173,9 +173,12 @@ const authenticateUserOrAdmin = async (req, res, next) => {
     }
 };
 
+const verifyAdminToken = authenticateAdmin;
+
 module.exports = {
     authenticateUser,
     authenticateAdmin,
+    verifyAdminToken,
     requireAdmin,
     authenticateUserOrAdmin
 };

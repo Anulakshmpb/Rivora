@@ -20,33 +20,28 @@ export default function ProductListing() {
 	const searchQuery = searchParams.get('search') || '';
 	const categoryParam = searchParams.get('category') || '';
 
-	
+	const [search, setSearch] = useState(searchQuery);
+	const [selectedRating, setSelectedRating] = useState(0);
+
+	// Fetch Categories on mount
 	useEffect(() => {
-		const fetchData = async () => {
+		const fetchCategories = async () => {
 			try {
-				const [prodRes, catRes] = await Promise.all([
-					axiosInstance.get('/api/products'),
-					axiosInstance.get('/api/categories')
-				]);
-				
-				if (prodRes.success) {
-					setProducts(prodRes.data.products);
-				}
+				const catRes = await axiosInstance.get('/api/categories');
 				if (catRes.success) {
 					setCategories(catRes.data.categories);
 				}
-
-				if (categoryParam) {
-					setSelectedCategories([categoryParam]);
-				}
 			} catch (error) {
-				console.error('Data fetch error:', error);
-			} finally {
-				setIsLoading(false);
+				console.error('Failed to fetch categories:', error);
 			}
 		};
-		fetchData();
+		fetchCategories();
 	}, []);
+
+	// Sync URL params to local state
+	useEffect(() => {
+		setSearch(searchQuery);
+	}, [searchQuery]);
 
 	useEffect(() => {
 		if (categoryParam) {
@@ -54,43 +49,66 @@ export default function ProductListing() {
 		}
 	}, [categoryParam]);
 
-	const filteredProducts = useMemo(() => {
-		const getCatName = (cat) => {
-			if (!cat) return null;
-			if (typeof cat === 'string') return cat;
-			if (typeof cat === 'object' && cat.name) return cat.name;
-			return null;
+	// Fetch filtered products from backend
+	useEffect(() => {
+		const fetchFilteredProducts = async () => {
+			setIsLoading(true);
+			try {
+				const params = {};
+				if (search) params.search = search;
+				if (selectedCategories.length > 0) params.category = selectedCategories[0];
+				if (priceRange[1] < 2500) params.maxPrice = priceRange[1];
+				if (selectedRating > 0) params.rating = selectedRating;
+
+				const response = await axiosInstance.get('/api/products', { params });
+				if (response.success) {
+					setProducts(response.data.products);
+				}
+			} catch (error) {
+				console.error('Failed to fetch products:', error);
+			} finally {
+				setIsLoading(false);
+			}
 		};
 
-		let result = products.filter(p => {
-			const productCats = Array.isArray(p.category) ? p.category.map(getCatName) : [getCatName(p.category)];
-			const matchesCat = selectedCategories.length === 0 || productCats.some(c => selectedCategories.includes(c));
-			const matchesPrice = p.price <= priceRange[1];
-			const matchesStock = !inStockOnly || p.quantity > 0;
-			const matchesSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase());
-			const matchesSize = selectedSizes.length === 0 || (Array.isArray(p.size) && p.size.some(s => selectedSizes.includes(s)));
-			return matchesCat && matchesPrice && matchesStock && matchesSearch && matchesSize;
-		});
+		const debounceTimer = setTimeout(() => {
+			fetchFilteredProducts();
+		}, 300);
 
+		return () => clearTimeout(debounceTimer);
+	}, [search, selectedCategories, priceRange, selectedRating]);
+
+	// Clientside filters and sorting
+	const filteredProducts = useMemo(() => {
+		let result = [...products];
+
+		if (selectedSizes.length > 0) {
+			result = result.filter(p => Array.isArray(p.size) && p.size.some(s => selectedSizes.includes(s)));
+		}
+
+		if (inStockOnly) {
+			result = result.filter(p => p.quantity > 0);
+		}
 
 		if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
 		if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
+
 		return result;
-	}, [products, selectedCategories, priceRange, selectedSizes, inStockOnly, sortBy, searchQuery]);
+	}, [products, selectedSizes, inStockOnly, sortBy]);
 
 	const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 	const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 	useEffect(() => {
 		setCurrentPage(1);
-	}, [selectedCategories, priceRange, selectedSizes, inStockOnly, sortBy, searchQuery]);
+	}, [selectedCategories, priceRange, selectedSizes, inStockOnly, sortBy, search, selectedRating]);
 
 	return (
 		<div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
 
 			{/* Banner */}
-			<div className="max-w-[1800px] mx-auto px-8 pt-10 mt-[50px]">
-				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
+			<div className="max-w-[1800px] mx-auto px-4 sm:px-8 pt-10 mt-[50px]">
+				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
 					<div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
 					<div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
 						<div className="space-y-4">
@@ -99,17 +117,17 @@ export default function ProductListing() {
 								<span className="w-1 h-1 rounded-full bg-slate-300" />
 								<span className="text-black">Collection 2025</span>
 							</nav>
-							<h1 className="text-7xl font-serif font-medium tracking-tight leading-[0.9]">
+							<h1 className="text-4xl sm:text-7xl font-serif font-medium tracking-tight leading-[0.9]">
 								The <span className="italic text-slate-600">Essential</span> Edit
 							</h1>
-							<p className="text-slate-600 max-w-lg text-lg font-light leading-relaxed">
+							<p className="text-slate-600 max-w-lg text-base sm:text-lg font-light leading-relaxed">
 								A meticulously curated selection of timeless pieces, designed for the discerning individual who appreciates subtle luxury.
 							</p>
 						</div>
-						<div className="flex items-center gap-4 bg-white/80 p-2 rounded-2xl shadow-sm border border-slate-100">
+						<div className="flex items-center gap-4 bg-white/80 p-2 rounded-2xl shadow-sm border border-slate-100 w-full md:w-auto justify-between md:justify-start">
 							<button
 								onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-								className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
+								className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
 							>
 								<AdjustmentsIcon className="w-4 h-4" />
 								{isSidebarOpen ? 'Hide Filters' : 'Show Filters'}
@@ -129,11 +147,51 @@ export default function ProductListing() {
 				</div>
 			</div>
 
-			<div className="max-w-[1800px] mx-auto px-8 py-16 flex gap-16 items-start">
+			<div className="max-w-[1800px] mx-auto px-4 sm:px-8 py-8 lg:py-16 flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
+
+				{/* Mobile Sidebar Backdrop */}
+				{isSidebarOpen && (
+					<div
+						onClick={() => setIsSidebarOpen(false)}
+						className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 lg:hidden transition-all duration-300"
+					/>
+				)}
 
 				{/* Sidebar */}
-				<aside className={`sticky top-10 transition-all duration-700 overflow-hidden ${isSidebarOpen ? 'w-80 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-10'}`}>
+				<aside className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[calc(100vw-3rem)] bg-white p-6 sm:p-8 shadow-2xl overflow-y-auto lg:p-0 lg:bg-transparent lg:shadow-none lg:z-0 lg:sticky lg:top-10 lg:h-auto transition-all duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 opacity-100 pointer-events-auto w-80' : '-translate-x-full lg:w-0 lg:opacity-0 lg:-translate-x-10 lg:pointer-events-none'}`}>
 					<div className="space-y-12">
+						{/* Mobile header close button */}
+						<div className="flex justify-between items-center lg:hidden pb-4 border-b border-slate-100">
+							<h3 className="text-sm font-black uppercase tracking-widest text-slate-900">Filters</h3>
+							<button
+								onClick={() => setIsSidebarOpen(false)}
+								className="p-2 hover:bg-slate-100 rounded-xl text-slate-500 hover:text-slate-900 transition-colors"
+								aria-label="Close filters"
+							>
+								<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
+						</div>
+
+						{/* Keyword Search */}
+						<div className="space-y-6">
+							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
+								Keyword Search
+								<div className="flex-1 h-px bg-slate-100" />
+							</h3>
+							<div className="flex items-center bg-slate-50 border border-slate-200 focus-within:border-slate-900 rounded-xl px-4 py-3 transition-all duration-300">
+								<input
+									type="text"
+									placeholder="Search products..."
+									value={search}
+									onChange={(e) => setSearch(e.target.value)}
+									className="bg-transparent border-none text-xs w-full outline-none font-bold text-slate-900 placeholder:text-slate-400"
+								/>
+								<SearchIcon className="w-4 h-4 text-slate-400" />
+							</div>
+						</div>
+
 						<div className="space-y-6">
 							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
 								Category
@@ -175,6 +233,40 @@ export default function ProductListing() {
 									<span className="text-[12px] font-black text-slate-600 uppercase tracking-widest">Limit</span>
 									<span className="text-xl font-serif italic">${priceRange[1]}</span>
 								</div>
+							</div>
+						</div>
+
+						{/* Rating Filter */}
+						<div className="space-y-6">
+							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
+								Minimum Rating
+								<div className="flex-1 h-px bg-slate-100" />
+							</h3>
+							<div className="flex flex-col gap-2">
+								{[4, 3, 2, 1].map((stars) => (
+									<button
+										key={stars}
+										onClick={() => setSelectedRating(selectedRating === stars ? 0 : stars)}
+										className={`flex items-center justify-between px-4 py-3 rounded-xl border text-[11px] font-bold transition-all duration-300 ${selectedRating === stars
+												? 'bg-slate-900 border-slate-900 text-white shadow-md'
+												: 'bg-white border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900'
+											}`}
+									>
+										<div className="flex items-center gap-1.5">
+											<div className="flex">
+												{[...Array(5)].map((_, i) => (
+													<StarIcon
+														key={i}
+														className={`w-3.5 h-3.5 ${i < stars ? 'text-yellow-500' : 'text-slate-200'
+															}`}
+													/>
+												))}
+											</div>
+											<span className="ml-1">& Up</span>
+										</div>
+										<span>{stars}.0+</span>
+									</button>
+								))}
 							</div>
 						</div>
 
@@ -237,7 +329,7 @@ export default function ProductListing() {
 									/>
 								))}
 							</div>
-							
+
 							{/* Pagination */}
 							{totalPages > 1 && (
 								<div className="mt-24 flex items-center justify-center gap-4">
@@ -253,7 +345,7 @@ export default function ProductListing() {
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
 										</svg>
 									</button>
-									
+
 									<div className="flex gap-2">
 										{[...Array(totalPages)].map((_, i) => (
 											<button
@@ -262,10 +354,10 @@ export default function ProductListing() {
 													setCurrentPage(i + 1);
 													window.scrollTo({ top: 0, behavior: 'smooth' });
 												}}
-												className={`w-12 h-12 rounded-full text-xs font-black transition-all ${currentPage === i + 1 
-													? 'bg-slate-900 text-white shadow-xl' 
+												className={`w-12 h-12 rounded-full text-xs font-black transition-all ${currentPage === i + 1
+													? 'bg-slate-900 text-white shadow-xl'
 													: 'bg-white border border-slate-100 text-slate-500 hover:border-slate-900 hover:text-slate-900'
-												}`}
+													}`}
 											>
 												{i + 1}
 											</button>
@@ -293,7 +385,7 @@ export default function ProductListing() {
 							<h2 className="text-3xl font-serif italic text-slate-600 mb-2">No matching pieces</h2>
 							<p className="text-slate-600 text-sm font-medium tracking-wide">Adjust your filters to discover our collection.</p>
 							<button
-								onClick={() => { setSelectedCategories([]); setPriceRange([0, 2500]); setSelectedSizes([]); setInStockOnly(false); }}
+								onClick={() => { setSelectedCategories([]); setPriceRange([0, 2500]); setSelectedSizes([]); setInStockOnly(false); setSearch(''); setSelectedRating(0); }}
 								className="mt-8 px-8 py-3 bg-white border border-slate-200 rounded-full text-[12px] font-black uppercase tracking-widest hover:border-slate-900 transition-all"
 							>
 								Clear all filters
@@ -303,7 +395,8 @@ export default function ProductListing() {
 				</main>
 			</div>
 		</div>
-	);}
+	);
+}
 
 // Sub-components
 function ProductCard({ product, onClick }) {
@@ -336,11 +429,10 @@ function ProductCard({ product, onClick }) {
 						if (isWishlisted) removeFromWishlist(product._id);
 						else addToWishlist(product);
 					}}
-					className={`absolute top-6 right-6 p-3 backdrop-blur-md rounded-full border transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:scale-110 active:scale-95 ${
-						isWishlisted
+					className={`absolute top-6 right-6 p-3 backdrop-blur-md rounded-full border transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:scale-110 active:scale-95 ${isWishlisted
 							? 'bg-red-50/80 border-red-200 opacity-100'
 							: 'bg-white/60 border-white/40 opacity-0 group-hover:opacity-100 hover:bg-white'
-					}`}
+						}`}
 				>
 					<HeartIcon className={`w-4 h-4 transition-colors duration-300 ${isWishlisted ? 'text-red-500 fill-red-500' : 'text-slate-900'}`} filled={isWishlisted} />
 				</button>
@@ -368,7 +460,9 @@ function ProductCard({ product, onClick }) {
 					</div>
 					<div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg">
 						<StarIcon className="w-2.5 h-2.5 text-yellow-500" />
-						<span className="text-[12px] font-black text-slate-600 italic">4.9</span>
+						<span className="text-[12px] font-black text-slate-600 italic">
+							{product.avgRating > 0 ? `${product.avgRating} (${product.reviewCount})` : 'New'}
+						</span>
 					</div>
 				</div>
 

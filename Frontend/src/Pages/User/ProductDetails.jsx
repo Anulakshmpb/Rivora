@@ -116,7 +116,7 @@ export default function ProductDetails() {
   return (
     <div className="py-24 bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white pb-20">
 
-      <div className="max-w-[1440px] mx-auto px-8 pt-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 pt-12">
         <nav className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-12">
           <a onClick={() => navigate('/')} className="hover:text-black cursor-pointer transition-colors">Atelier</a>
           <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
@@ -128,14 +128,14 @@ export default function ProductDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
           {/* Left */}
-          <div className="flex gap-6 h-fit">
+          <div className="flex flex-col md:flex-row gap-6 h-fit">
             {productImages.length > 1 && (
-              <div className="hidden md:flex flex-col gap-4 w-20">
+              <div className="flex flex-row md:flex-col gap-4 w-full md:w-20 overflow-x-auto md:overflow-x-visible py-2 md:py-0 order-2 md:order-1">
                 {productImages.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImage(i)}
-                    className={`aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all duration-300 ${activeImage === i
+                    className={`w-16 h-20 md:w-full md:h-auto flex-shrink-0 aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all duration-300 ${activeImage === i
                       ? 'border-slate-900 shadow-lg scale-105'
                       : 'border-transparent opacity-40 hover:opacity-100 hover:scale-105'
                       }`}
@@ -151,7 +151,7 @@ export default function ProductDetails() {
             )}
 
             <div
-              className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative cursor-zoom-in"
+              className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative cursor-zoom-in order-1 md:order-2"
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZooming(true)}
               onMouseLeave={() => setIsZooming(false)}
@@ -208,7 +208,7 @@ export default function ProductDetails() {
                   </span>
                 </div>
               </div>
-              <h1 className="text-6xl font-serif font-medium tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-6xl font-serif font-medium tracking-tight leading-tight">
                 {product.name}
               </h1>
               <div className="flex items-center gap-6">

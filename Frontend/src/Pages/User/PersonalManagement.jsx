@@ -31,7 +31,14 @@ export default function PersonalManagement() {
                     name: userData.name || '',
                     email: userData.email || '',
                     phone: userData.phone || userData.phoneNumber || '',
-                    dob: userData.dob ? new Date(userData.dob).toLocaleDateString('en-GB') : 'DD/MM/YYYY',
+                    dob: (() => {
+                        if (!userData.dob) return 'DD/MM/YYYY';
+                        const parts = userData.dob.split('T')[0].split('-');
+                        if (parts.length === 3) {
+                            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        }
+                        return userData.dob;
+                    })(),
                     gender: userData.gender || 'Select',
                     age: userData.age || '—',
                     languagePreference: userData.languagePreference || 'English (US)',

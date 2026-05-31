@@ -1,19 +1,13 @@
 const BaseController = require('./BaseController');
 const { AuthService, AdminService } = require('../Services');
 const OTPService = require('../Services/OtpService');
-
-const {
-  registerValidation,
-  loginValidation,
-  profileUpdateValidation,
-  passwordChangeValidation
-} = require('../utils/validation');
+const { matchedData } = require('express-validator');
 
 class AuthController extends BaseController {
 
   static register = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData = BaseController.validateRequest(registerValidation, req.body);
+    const validatedData = matchedData(req, { includeOptionals: true });
     const result = await AuthService.register(validatedData);
     //  Creates the user in the database.
     await OTPService.createOTP(result.user);
@@ -147,7 +141,7 @@ class AuthController extends BaseController {
 
   // LOGIN
   static login = BaseController.asyncHandler(async (req, res) => {
-    const validatedData = BaseController.validateRequest(loginValidation, req.body);
+    const validatedData = matchedData(req, { includeOptionals: true });
     const result = await AuthService.login(validatedData);
 
     // Set HTTP-only cookie
@@ -167,7 +161,7 @@ class AuthController extends BaseController {
   // UPDATE PROFILE
   static updateProfile = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData = BaseController.validateRequest(profileUpdateValidation, req.body);
+    const validatedData = matchedData(req, { includeOptionals: true });
     let user;
     if (req.user) {
       user = await AuthService.updateProfile(req.user._id, validatedData);
@@ -189,7 +183,7 @@ class AuthController extends BaseController {
   // CHANGE PASSWORD
   static changePassword = BaseController.asyncHandler(async (req, res) => {
 
-    const validatedData = BaseController.validateRequest(passwordChangeValidation, req.body);
+    const validatedData = matchedData(req, { includeOptionals: true });
 
     if (req.user) {
       await AuthService.changePassword(req.user._id, validatedData);
@@ -220,9 +214,9 @@ class AuthController extends BaseController {
   });
 
   static adminLogin = BaseController.asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const validatedData = matchedData(req, { includeOptionals: true });
 
-    const result = await AdminService.login({ email, password });
+    const result = await AdminService.login(validatedData);
     this.setAuthCookie(res, result.token, 'admin_token');
 
     BaseController.logAction('ADMIN_LOGIN', req, { adminId: result.admin._id });
