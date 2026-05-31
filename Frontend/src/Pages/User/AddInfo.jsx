@@ -33,7 +33,7 @@ export default function AddInfo() {
                     phone: userData.phone || userData.phoneNumber || '',
                     bio: userData.bio || '',
                     age: userData.age || '',
-                    dob: userData.dob ? new Date(userData.dob).toISOString().split('T')[0] : '',
+                    dob: userData.dob ? userData.dob.split('T')[0] : '',
                     gender: userData.gender || '',
                     isVerifiedBadge: userData.isVerifiedBadge || false
                 });

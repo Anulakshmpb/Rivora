@@ -17,9 +17,13 @@ const connectedUsers = new Map();
 // map() - (userId → socketId) Track online users Send messages to specific users
 
 const initializeSocket = (server) => {
+	const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+		.split(',')
+		.map(origin => origin.trim());
+
 	io = new Server(server, {
 	  cors: {
-		origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+		origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
 		methods: ['GET', 'POST'],
 		credentials: true
 	  }

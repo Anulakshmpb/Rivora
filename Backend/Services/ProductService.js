@@ -3,12 +3,69 @@ const logger = require('../utils/logger');
 const { NotFoundError, AuthorizationError } = require('../utils/errors');
 
 class ProductService {
-  static async getAll(userId = null, isAdmin = false, filters = {}) {
-    const filter = userId ? { user: userId, ...filters } : { ...filters };
+  static async getAll(userId = null, isAdmin = false, queryOptions = {}) {
+    const filter = {};
+    if (userId) {
+      filter.user = userId;
+    }
     if (!isAdmin) {
       filter.isVisible = true;
     }
-    return await Product.find(filter).sort({ createdAt: -1 });
+
+    // 1. Keyword-based search (name/description)
+    if (queryOptions.search) {
+      const searchRegex = new RegExp(queryOptions.search, 'i');
+      filter.$or = [
+        { name: { $regex: searchRegex } },
+        { description: { $regex: searchRegex } }
+      ];
+    }
+
+    // 2. Filter by category
+    if (queryOptions.category) {
+      filter.category = queryOptions.category;
+    }
+
+    // 3. Filter by price range
+    if (queryOptions.minPrice !== undefined || queryOptions.maxPrice !== undefined) {
+      filter.price = {};
+      if (queryOptions.minPrice !== undefined) filter.price.$gte = queryOptions.minPrice;
+      if (queryOptions.maxPrice !== undefined) filter.price.$lte = queryOptions.maxPrice;
+    }
+
+    // 4. Filter by rating
+    if (queryOptions.rating !== undefined) {
+      const Review = require('../Modals/Review');
+      const minRating = parseFloat(queryOptions.rating);
+      const ratings = await Review.aggregate([
+        { $match: { type: 'product' } },
+        { $group: { _id: '$productId', avgRating: { $avg: '$rating' } } },
+        { $match: { avgRating: { $gte: minRating } } }
+      ]);
+      const productIdsWithRating = ratings.map(r => r._id);
+      filter._id = { $in: productIdsWithRating };
+    }
+
+    const products = await Product.find(filter).sort({ createdAt: -1 });
+
+    // Enrich with dynamic review statistics
+    const Review = require('../Modals/Review');
+    const enrichedProducts = await Promise.all(products.map(async (product) => {
+      const reviews = await Review.find({ productId: product._id, type: 'product' });
+      const reviewCount = reviews.length;
+      const avgRating = reviewCount > 0 
+        ? parseFloat((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1))
+        : 0;
+      
+      const productObj = product.toObject();
+      return {
+        ...productObj,
+        avgRating,
+        reviewCount
+      };
+    }));
+
+    return enrichedProducts;
   }
 
   static async getOne(productId, userId = null, isAdmin = false) {

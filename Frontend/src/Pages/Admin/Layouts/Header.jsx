@@ -3,10 +3,21 @@ import React from 'react';
 export default function Header ({ title = "System Overview", subtitle = "Monitoring Rivora infrastructure in real-time" }){
 
 	return(
-		<header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 py-4 flex justify-between items-center">
-			<div>
-				<h1 className="text-xl font-black text-slate-900 tracking-tight">{title}</h1>
-				<p className="text-slate-500 text-xs font-medium">{subtitle}</p>
+		<header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 lg:px-8 py-4 flex justify-between items-center">
+			<div className="flex items-center gap-3">
+				<button
+					onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar'))}
+					className="lg:hidden p-2 hover:bg-slate-100 rounded-xl text-slate-500 hover:text-slate-900 transition-colors"
+					aria-label="Toggle Sidebar"
+				>
+					<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+					</svg>
+				</button>
+				<div>
+					<h1 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight">{title}</h1>
+					<p className="text-slate-500 text-[10px] lg:text-xs font-medium">{subtitle}</p>
+				</div>
 			</div>
 			<div className="flex items-center gap-4">
 				<div className="hidden sm:flex flex-col items-end">

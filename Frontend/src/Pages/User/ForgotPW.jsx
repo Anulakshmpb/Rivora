@@ -39,7 +39,7 @@ const ForgotPW = () => {
 		}
 	};
 	return (
-		<div className="flex h-[calc(100vh-2.5rem)] w-[calc(100vw-2.5rem)] overflow-hidden font-inter m-5 rounded-3xl bg-white shadow-2xl">
+		<div className="flex min-h-screen lg:h-[calc(100vh-2.5rem)] w-full lg:w-[calc(100vw-2.5rem)] overflow-y-auto lg:overflow-hidden font-inter my-0 mx-0 lg:m-5 rounded-none lg:rounded-3xl bg-white shadow-2xl flex-col lg:flex-row">
 			{/* Left Side */}
 			<div className="relative hidden w-1/2 lg:flex flex-col h-full bg-gray-50 p-8 shadow-inner">
 				<div className="relative flex-1 overflow-hidden rounded-2xl mb-6 shadow-lg">

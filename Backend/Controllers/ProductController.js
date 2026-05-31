@@ -1,15 +1,21 @@
 const BaseController = require('./BaseController');
 const ProductService = require('../Services/ProductService');
-const { createProductValidation, updateProductValidation } = require('../utils/validation');
+const { matchedData } = require('express-validator');
 
 class ProductController extends BaseController {
 	static getAll = BaseController.asyncHandler(async (req, res) => {
 		const ownerId = req.admin ? null : (req.user?._id || null);
-		const { category } = req.query;
-		const filters = {};
-		if (category) filters.category = category;
+		const { search, category, minPrice, maxPrice, rating } = req.query;
 
-		const products = await ProductService.getAll(ownerId, !!req.admin, filters);
+		const queryOptions = {
+			search,
+			category,
+			minPrice: minPrice !== undefined ? Number(minPrice) : undefined,
+			maxPrice: maxPrice !== undefined ? Number(maxPrice) : undefined,
+			rating: rating !== undefined ? Number(rating) : undefined
+		};
+
+		const products = await ProductService.getAll(ownerId, !!req.admin, queryOptions);
 		BaseController.sendSuccess(res, 'Products received successfully', { products });
 	});
 
@@ -20,24 +26,7 @@ class ProductController extends BaseController {
 	});
 
 	static create = BaseController.asyncHandler(async (req, res) => {
-		if (req.files && req.files.length > 0) {
-			req.body.image = req.files.map(file => `/uploads/${file.filename}`);
-		}
-		['category', 'size', 'color'].forEach(field => {
-			if (typeof req.body[field] === 'string') {
-				try {
-					req.body[field] = JSON.parse(req.body[field]);
-				} catch (e) {
-					if (req.body[field].includes(',')) {
-						req.body[field] = req.body[field].split(',').map(s => s.trim());
-					} else {
-						req.body[field] = [req.body[field]];
-					}
-				}
-			}
-		});
-
-		const validatedData = BaseController.validateRequest(createProductValidation, req.body);
+		const validatedData = matchedData(req, { includeOptionals: true });
 		const ownerId = req.user?._id || req.admin?._id;
 		const product = await ProductService.create(ownerId, validatedData);
 		BaseController.logAction('PRODUCT_CREATE', req);
@@ -45,40 +34,7 @@ class ProductController extends BaseController {
 	});
 
 	static update = BaseController.asyncHandler(async (req, res) => {
-		if (req.files && req.files.length > 0) {
-			const newImages = req.files.map(file => `/uploads/${file.filename}`);
-			let existingImages = [];
-			if (req.body.image) {
-				try {
-					existingImages = typeof req.body.image === 'string' ? JSON.parse(req.body.image) : req.body.image;
-				} catch (e) {
-					existingImages = Array.isArray(req.body.image) ? req.body.image : [req.body.image];
-				}
-			}
-			req.body.image = [...existingImages, ...newImages];
-		} else if (req.body.image && typeof req.body.image === 'string') {
-			try {
-				req.body.image = JSON.parse(req.body.image);
-			} catch (e) {
-				req.body.image = [req.body.image];
-			}
-		}
-
-		['category', 'size', 'color'].forEach(field => {
-			if (typeof req.body[field] === 'string') {
-				try {
-					req.body[field] = JSON.parse(req.body[field]);
-				} catch (e) {
-					if (req.body[field].includes(',')) {
-						req.body[field] = req.body[field].split(',').map(s => s.trim());
-					} else {
-						req.body[field] = [req.body[field]];
-					}
-				}
-			}
-		});
-
-		const validatedData = BaseController.validateRequest(updateProductValidation, req.body);
+		const validatedData = matchedData(req, { includeOptionals: true });
 		const ownerId = req.admin ? null : (req.user?._id || null);
 		let productId = req.params.id;
 		if (productId && productId.includes(':')) {
@@ -99,5 +55,4 @@ class ProductController extends BaseController {
 	});
 }
 
-
-module.exports = ProductController; 
+module.exports = ProductController;

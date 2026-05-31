@@ -345,7 +345,10 @@ export default function NavBar() {
                         ))}
                     </div>
                     <div className="mt-auto pt-8 border-t border-gray-100 space-y-6">
-                        <button className="flex items-center gap-4 text-gray-700 font-semibold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all">
+                        <button 
+                            onClick={() => { navigate('/profile'); setIsMobileMenuOpen(false); }}
+                            className="flex items-center gap-4 text-gray-700 font-semibold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all"
+                        >
                             <UserIcon /> Profile
                         </button>
                         {isAuthenticated ? (
