@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { motion } from 'framer-motion';
+import Loader from '../../Components/Loader';
 
 const CreditCardIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
@@ -42,12 +43,7 @@ export default function ProfileWallet() {
     }, []);
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-64">
-                <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
-                <p className="text-slate-500 mt-4 font-medium">Synchronizing Wallet...</p>
-            </div>
-        );
+        return <Loader size="md" variant="user" text="Fetching wallet balance..." />;
     }
 
     return (

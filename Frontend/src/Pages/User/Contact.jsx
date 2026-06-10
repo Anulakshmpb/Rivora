@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { motion } from "framer-motion";
 import { useToast } from "../../Toast/ToastContext";
+import Loader from '../../Components/Loader';
 
 export default function Contact() {
     const [contact, setContact] = useState(null);
@@ -48,7 +49,7 @@ export default function Contact() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <Loader size="md" variant="user" text="Connecting..." />
             </div>
         );
     }
@@ -168,8 +169,14 @@ export default function Contact() {
                                 <textarea rows="4" name="message" value={formData.message} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-all duration-300 resize-none" placeholder="Your message here..."></textarea>
                             </div>
                             <button disabled={isSubmitting} className="w-full py-5 bg-black text-white rounded-2xl text-sm font-black shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span>{isSubmitting ? 'Sending...' : 'Send Message'}</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                {isSubmitting ? (
+                                    <Loader size="xs" variant="white" inline text="Sending..." />
+                                ) : (
+                                    <>
+                                        <span>Send Message</span>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                    </>
+                                )}
                             </button>
                         </form>
                     </div>

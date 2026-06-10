@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import adminService from '../../api/adminService';
 import { useToast } from '../../Toast/ToastContext';
 import SideBar from './Layouts/SideBar';
+import Loader from '../../Components/Loader';
 
 export default function CustomerMessages() {
     const [messages, setMessages] = useState([]);
@@ -89,7 +90,7 @@ export default function CustomerMessages() {
                     <div className="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
                         {loading ? (
                             <div className="flex items-center justify-center py-12">
-                                <div className="w-8 h-8 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                                <Loader size="sm" variant="admin" text="Fetching messages..." />
                             </div>
                         ) : messages.length === 0 ? (
                             <div className="text-center py-12 text-slate-500">
@@ -195,7 +196,7 @@ export default function CustomerMessages() {
                                         disabled={isReplying}
                                         className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-sm font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
-                                        {isReplying ? 'Sending...' : 'Send Reply'}
+                                        {isReplying ? <Loader size="xs" variant="white" inline text="Sending..." /> : 'Send Reply'}
                                         {!isReplying && <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>}
                                     </button>
                                 </div>

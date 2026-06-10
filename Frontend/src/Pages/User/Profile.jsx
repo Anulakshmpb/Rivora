@@ -3,6 +3,7 @@ import authService from '../../api/authService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileWallet from './ProfileWallet';
+import Loader from '../../Components/Loader';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
@@ -77,11 +78,7 @@ const Profile = () => {
         }
     };
 
-    if (loading) return (
-        <div className="flex min-h-[60vh] items-center justify-center bg-transparent mt-[65px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-        </div>
-    );
+    if (loading) return <Loader fullPage variant="user" text="Loading profile details..." />;
 
     if (error) return (
         <div className="flex min-h-[60vh] items-center justify-center bg-transparent mt-[65px]">

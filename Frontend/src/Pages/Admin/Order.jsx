@@ -3,6 +3,7 @@ import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { useNotification } from '../../context/NotificationContext';
 import { motion } from 'framer-motion';
+import Loader from '../../Components/Loader';
 import {
     Search,
     Filter,
@@ -412,8 +413,7 @@ export default function Order() {
                                     {isLoading ? (
                                         <tr>
                                             <td colSpan="9" className="px-6 py-20 text-center">
-                                                <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-                                                <p className="text-slate-500 text-sm font-medium">Fetching data...</p>
+                                                <Loader size="md" variant="admin" text="Fetching data..." />
                                             </td>
                                         </tr>
                                     ) : currentItems.length === 0 ? (

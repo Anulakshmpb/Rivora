@@ -6,6 +6,7 @@ import axios from 'axios';
 import axiosInstance from '../../../api/axiosInstance';
 import Joi from 'joi';
 import { useToast } from '../../../Toast/ToastContext';
+import Loader from '../../../Components/Loader';
 
 const schema = Joi.object({
 	name: Joi.string().min(3).max(50).required().messages({
@@ -273,7 +274,7 @@ export default function AddProduct() {
 									className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-indigo-200 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
 								>
 									{isLoading || isProcessingImages ? (
-										<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+										<Loader size="xs" variant="white" inline />
 									) : (
 										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
 									)}

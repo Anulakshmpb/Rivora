@@ -1,18 +1,16 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children, allowedRoles, guestOnly = false, redirectTo = "/login" }) => {
     const { isAuthenticated, user, loading } = useAuth();
     const location = useLocation();
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent"></div>
-            </div>
-        );
+        return <Loader fullPage variant="user" text="Securing connection..." />;
     }
+
 
     if (guestOnly && isAuthenticated) {
         // Redirect authenticated users away from guest-only pages (like Login/Register)

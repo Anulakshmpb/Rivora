@@ -64,7 +64,7 @@ const {showToast}=useToast();
             navigate('/verify-otp', { state: { userId }, replace: true });
         } catch (err) {
 
-            showToast('Registration error'+err, "error");
+            console.error('Registration error:', err);
             
             const errorInfo = err.error || err;
             const { message, details, statusCode } = errorInfo;
