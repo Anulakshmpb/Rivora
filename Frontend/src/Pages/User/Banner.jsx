@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
+import Loader from '../../Components/Loader';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -45,10 +46,7 @@ const Banner = () => {
 	if (isLoading) {
 		return (
 			<div className="w-full h-[400px] md:h-[500px] bg-slate-50 flex items-center justify-center">
-				<div className="flex flex-col items-center gap-4">
-					<div className="w-12 h-12 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin" />
-					<p className="text-xs font-black text-slate-400 uppercase tracking-widest">Initializing Rivora...</p>
-				</div>
+				<Loader size="md" variant="user" text="Initializing Rivora..." />
 			</div>
 		);
 	}

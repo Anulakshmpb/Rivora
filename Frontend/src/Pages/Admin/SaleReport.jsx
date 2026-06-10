@@ -4,6 +4,7 @@ import Header from './Layouts/Header';
 import adminService from '../../api/adminService';
 import { Download, Search, X, ArrowUpDown, DollarSign, Package, ShoppingCart, Users, Activity, Tag, TrendingUp, TrendingDown, AlertCircle, CheckCircle, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Loader from '../../Components/Loader';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -419,7 +420,7 @@ export default function SaleReport() {
                         <div className="overflow-x-auto">
                             {loading ? (
                                 <div className="p-12 flex justify-center items-center">
-                                    <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                                    <Loader size="md" variant="admin" text="Generating sales report..." />
                                 </div>
                             ) : tableData.length > 0 ? (
                                 <table className="w-full text-left border-collapse">

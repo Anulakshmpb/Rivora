@@ -6,6 +6,7 @@ import { useToast } from '../../Toast/ToastContext';
 import axiosInstance from '../../api/axiosInstance';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
+import Loader from '../../Components/Loader';
 
 export default function Checkout() {
     const { cartItems, cartTotalPrice, cartTotalItems, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
@@ -278,7 +279,7 @@ export default function Checkout() {
 
                             {loadingAddresses ? (
                                 <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex items-center justify-center py-12">
-                                    <div className="w-8 h-8 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin" />
+                                    <Loader size="sm" variant="user" text="Loading addresses..." />
                                 </div>
                             ) : selectedAddress ? (
                                 <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex gap-6 items-start">
@@ -467,8 +468,14 @@ export default function Checkout() {
                             disabled={isProcessing || cartItems.length === 0}
                             className="w-full bg-blue-600 text-white h-16 rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 mb-6 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
-                            {isProcessing ? 'Processing...' : 'Confirm and Pay'}
-                            <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                            {isProcessing ? (
+                                <Loader size="xs" variant="white" inline text="Processing..." />
+                            ) : (
+                                <>
+                                    <span>Confirm and Pay</span>
+                                    <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                </>
+                            )}
                         </button>
 
                         <div className="text-center">

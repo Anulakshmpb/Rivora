@@ -5,6 +5,7 @@ import Header from './Layouts/Header';
 import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import Loader from '../../Components/Loader';
 
 const managementPages = [
     {
@@ -295,7 +296,7 @@ export const Coupons = () => {
                                     </div>
                                     <div className="flex gap-3 pt-4">
                                         <button type="submit" disabled={saving} className={`flex-1 py-4 text-white rounded-2xl text-sm font-black shadow-lg transition-all duration-300 transform active:scale-95 disabled:opacity-70 ${editId ? 'bg-gradient-to-r from-amber-500 to-orange-600 shadow-orange-100 hover:shadow-orange-200' : 'bg-gradient-to-r from-indigo-500 to-blue-600 shadow-indigo-100 hover:shadow-indigo-200'}`}>
-                                            {saving ? 'Saving...' : editId ? 'Update Coupon' : 'Create Coupon'}
+                                            {saving ? <Loader size="xs" variant="white" inline text="Saving..." /> : editId ? 'Update Coupon' : 'Create Coupon'}
                                         </button>
                                         {editId && (
                                             <button type="button" onClick={resetForm} className="px-6 py-4 bg-slate-100 text-slate-500 rounded-2xl text-sm font-black hover:bg-slate-200 transition-all duration-300">
@@ -329,8 +330,7 @@ export const Coupons = () => {
                                 <div className="overflow-x-auto">
                                     {loading ? (
                                         <div className="py-20 flex flex-col items-center">
-                                            <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                                            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading Coupons...</p>
+                                            <Loader size="sm" variant="admin" text="Loading Coupons..." />
                                         </div>
                                     ) : coupons.length === 0 ? (
                                         <div className="py-20 flex flex-col items-center text-center">
@@ -502,7 +502,7 @@ export const Reviews = () => {
 
                     {isLoading ? (
                         <div className="flex justify-center items-center py-20">
-                            <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+                            <Loader size="md" variant="admin" text="Loading Reviews..." />
                         </div>
                     ) : reviews.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -622,8 +622,8 @@ export const Contact = () => {
         return (
             <div className="min-h-screen bg-slate-50 flex font-inter">
                 <SideBar />
-                <main className="flex-1 lg:ml-72 min-h-screen bg-slate-50 flex items-center justify-center">
-                    <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin" />
+                <main className="flex-1 lg:ml-72 bg-slate-50 min-h-screen flex items-center justify-center">
+                    <Loader size="md" variant="admin" text="Loading contact info..." />
                 </main>
             </div>
         );
@@ -737,10 +737,7 @@ export const Contact = () => {
                                 className="w-full py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-3xl text-sm font-black shadow-[0_15px_30px_rgba(16,185,129,0.25)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.35)] hover:-translate-y-1 active:scale-95 transition-all duration-300 disabled:opacity-70 flex items-center justify-center gap-3"
                             >
                                 {saving ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>Saving Changes...</span>
-                                    </>
+                                    <Loader size="xs" variant="white" inline text="Saving Changes..." />
                                 ) : (
                                     <>
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

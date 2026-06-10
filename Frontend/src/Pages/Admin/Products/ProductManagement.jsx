@@ -4,6 +4,7 @@ import SideBar from '../Layouts/SideBar';
 import Header from '../Layouts/Header';
 import axiosInstance from '../../../api/axiosInstance';
 import { useToast } from '../../../Toast/ToastContext';
+import Loader from '../../../Components/Loader';
 
 export default function ProductManagement() {
   const navigate = useNavigate();
@@ -234,10 +235,7 @@ export default function ProductManagement() {
                   {isLoading ? (
                     <tr>
                       <td colSpan="6" className="px-6 py-20 text-center">
-                        <div className="flex flex-col items-center gap-3">
-                          <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                          <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading Catalog...</span>
-                        </div>
+                        <Loader size="md" variant="admin" text="Loading Catalog..." />
                       </td>
                     </tr>
                   ) : currentItems.length > 0 ? currentItems.map((product) => (

@@ -6,6 +6,7 @@ import {
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
 import adminService from '../../api/adminService';
+import Loader from '../../Components/Loader';
 
 const getSvgPath = (points) => {
     if (points.length === 0) return '';
@@ -320,10 +321,7 @@ const AdminDashboard = () => {
             <div className="min-h-screen bg-slate-50 flex font-inter">
                 <SideBar />
                 <main className="flex-1 lg:ml-72 bg-slate-50 min-h-screen flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading Analytics Dashboard...</p>
-                    </div>
+                    <Loader size="md" variant="admin" text="Loading Analytics Dashboard..." />
                 </main>
             </div>
         );

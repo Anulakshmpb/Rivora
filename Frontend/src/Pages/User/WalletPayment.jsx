@@ -4,6 +4,7 @@ import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { useCart } from '../../context/CartContext';
 import { motion } from 'framer-motion';
+import Loader from '../../Components/Loader';
 
 export default function WalletPayment() {
     const location = useLocation();
@@ -64,11 +65,7 @@ export default function WalletPayment() {
     };
 
     if (loading) {
-        return (
-            <div className="min-h-screen pt-32 flex items-center justify-center bg-[#FDFDFB]">
-                <div className="w-12 h-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin" />
-            </div>
-        );
+        return <Loader fullPage variant="user" text="Fetching wallet details..." />;
     }
 
     const canPay = wallet && wallet.balance >= orderDetails.totalAmount;
@@ -151,7 +148,7 @@ export default function WalletPayment() {
                             className="w-full bg-slate-900 text-white h-20 rounded-[2rem] font-black uppercase tracking-[0.25em] text-sm shadow-2xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
                         >
                             {isProcessing ? (
-                                <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+                                <Loader size="xs" variant="white" inline text="Processing..." />
                             ) : (
                                 <>
                                     Confirm & Pay with Wallet

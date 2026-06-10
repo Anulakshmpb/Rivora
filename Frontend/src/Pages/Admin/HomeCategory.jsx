@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
 import axiosInstance from '../../api/axiosInstance';
+import Loader from '../../Components/Loader';
 
 export default function HomeCategory() {
     const [items, setItems] = useState([]);
@@ -179,7 +180,7 @@ export default function HomeCategory() {
 
                             <div className="flex gap-3">
                                 <button type="submit" disabled={saving} className={`px-8 py-3.5 rounded-2xl text-sm font-black text-white shadow-lg transition-all duration-300 transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${editId ? 'bg-gradient-to-r from-amber-500 to-orange-600 shadow-orange-200' : 'bg-gradient-to-r from-indigo-500 to-blue-600 shadow-indigo-200'}`}>
-                                    {saving ? 'Saving...' : editId ? 'Update Item' : 'Add Item'}
+                                    {saving ? <Loader size="xs" variant="white" inline text="Saving..." /> : editId ? 'Update Item' : 'Add Item'}
                                 </button>
                                 {editId && (
                                     <button type="button" onClick={resetForm} className="px-8 py-3.5 bg-slate-100 text-slate-500 rounded-2xl text-sm font-black hover:bg-slate-200 transition-all duration-300">
@@ -210,8 +211,7 @@ export default function HomeCategory() {
 
                         {loading ? (
                             <div className="py-20 flex flex-col items-center">
-                                <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-500 rounded-full animate-spin mb-4" />
-                                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Loading...</p>
+                                <Loader size="md" variant="admin" text="Loading Categories..." />
                             </div>
                         ) : items.length === 0 ? (
                             <div className="py-20 flex flex-col items-center text-center">

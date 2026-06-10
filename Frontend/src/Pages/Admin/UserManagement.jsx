@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import SideBar from "./Layouts/SideBar";
 import Header from "./Layouts/Header";
+import Loader from "../../Components/Loader";
 
 export default function UserManagement() {
 	const [users, setUsers] = useState([]);
@@ -143,10 +144,7 @@ export default function UserManagement() {
 
 						{loading ? (
 							<div className="flex items-center justify-center py-20">
-								<div className="flex flex-col items-center gap-3">
-									<div className="w-10 h-10 border-4 border-indigo-100 border-t-indigo-500 rounded-full animate-spin" />
-									<p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Loading users...</p>
-								</div>
+								<Loader size="md" variant="admin" text="Loading users..." />
 							</div>
 						) : error ? (
 							<div className="flex items-center justify-center py-20">
@@ -363,7 +361,11 @@ export default function UserManagement() {
 								</button>
 								<button onClick={() => handleBanToggle()} disabled={actionLoading} className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 ${selectedUser.isBanned ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100" : "bg-amber-50 text-amber-700 hover:bg-amber-100"}`}>
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-									{actionLoading ? "..." : selectedUser.isBanned ? "Unban" : "Ban"}
+									{actionLoading ? (
+										<Loader size="xs" variant="admin" inline text={selectedUser.isBanned ? "Unbanning..." : "Banning..."} />
+									) : (
+										selectedUser.isBanned ? "Unban" : "Ban"
+									)}
 								</button>
 							</div>
 						</>
@@ -388,7 +390,7 @@ export default function UserManagement() {
 							<div className="p-6 border-t border-slate-50 flex gap-3">
 								<button onClick={() => setModalMode("view")} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition-all">Cancel</button>
 								<button onClick={handleEditSubmit} disabled={actionLoading} className="flex-1 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-all disabled:opacity-50">
-									{actionLoading ? "Saving..." : "Save Changes"}
+									{actionLoading ? <Loader size="xs" variant="white" inline text="Saving..." /> : "Save Changes"}
 								</button>
 							</div>
 						</>
@@ -403,7 +405,7 @@ export default function UserManagement() {
 							<div className="flex gap-3">
 								<button onClick={closeModal} className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition-all">Cancel</button>
 								<button onClick={handleDelete} disabled={actionLoading} className="flex-1 py-3 rounded-xl bg-rose-600 text-white text-sm font-bold hover:bg-rose-700 transition-all disabled:opacity-50">
-									{actionLoading ? "Deleting..." : "Delete User"}
+									{actionLoading ? <Loader size="xs" variant="white" inline text="Deleting..." /> : "Delete User"}
 								</button>
 							</div>
 						</div>

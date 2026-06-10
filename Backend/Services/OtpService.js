@@ -34,7 +34,16 @@ class OTPService {
 			expiresAt
 		});
 
-		await sendOTPEmail(user.email, otp);
+		try {
+			await sendOTPEmail(user.email, otp);
+		} catch (error) {
+			const logger = require('../utils/logger');
+			logger.error(`Failed to send OTP email to ${user.email}:`, error);
+			logger.info(`[DEVELOPMENT ONLY] OTP for ${user.email} is: ${otp}`);
+			if (process.env.NODE_ENV === 'production') {
+				throw error;
+			}
+		}
 	}
 
 	static async verifyOTP(userId, enteredOTP, type = "emailVerification") {

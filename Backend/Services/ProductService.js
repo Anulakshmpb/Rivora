@@ -1,6 +1,8 @@
 const Product = require('../Modals/Product');
 const logger = require('../utils/logger');
 const { NotFoundError, AuthorizationError } = require('../utils/errors');
+const s3Service = require('./s3Service');
+
 
 class ProductService {
   static async getAll(userId = null, isAdmin = false, queryOptions = {}) {
@@ -97,6 +99,20 @@ class ProductService {
       throw new NotFoundError('Product not found');
     }
 
+    // If new images are provided, check if any old images were removed and delete them from S3
+    if (data.image && Array.isArray(data.image)) {
+      const oldImages = product.image || [];
+      const newImages = data.image;
+      const removedImages = oldImages.filter(img => !newImages.includes(img));
+      
+      for (const imgUrl of removedImages) {
+        const key = s3Service.getS3KeyFromUrl(imgUrl);
+        if (key) {
+          await s3Service.deleteImage(key);
+        }
+      }
+    }
+
     Object.assign(product, data);
     await product.save();
 
@@ -109,6 +125,16 @@ class ProductService {
     const product = await Product.findOne(filter);
     if (!product) {
       throw new NotFoundError('Product not found');
+    }
+
+    // Delete all S3 images associated with the product
+    if (product.image && Array.isArray(product.image)) {
+      for (const imgUrl of product.image) {
+        const key = s3Service.getS3KeyFromUrl(imgUrl);
+        if (key) {
+          await s3Service.deleteImage(key);
+        }
+      }
     }
 
     await product.deleteOne();

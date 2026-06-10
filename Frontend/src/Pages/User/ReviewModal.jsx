@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Joi from 'joi';
 import { useToast } from '../../Toast/ToastContext';
 import axiosInstance from '../../api/axiosInstance';
+import Loader from '../../Components/Loader';
 
 const reviewSchema = Joi.object({
 	name: Joi.string().min(3).max(50).required().messages({
@@ -233,7 +234,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 									className="flex-[2] py-4 bg-slate-900 text-white rounded-2xl text-sm font-black shadow-xl shadow-slate-200 hover:bg-black hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
 								>
 									{isSubmitting ? (
-										<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+										<Loader size="xs" variant="white" inline text="Submitting..." />
 									) : (
 										'Submit Review'
 									)}
