@@ -63,19 +63,19 @@ function Home() {
 			<Category />
 
 			{/* Trending Collections */}
-			<section className="bg-white overflow-hidden ms-16 me-16">
+			<section className="bg-white overflow-hidden mx-4 sm:mx-8 md:mx-16">
 				<div className="max-w-9xl mx-auto">
-					<div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
+					<div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-4">
 						<div className="space-y-4">
-							<span className="text-blue-600 text-[12px] font-black uppercase tracking-[0.6em] block">
+							<span className="text-blue-600 text-[8px] md:text-[12px] font-black uppercase tracking-[0.6em] block">
 								Curated Selection
 							</span>
-							<h2 className="text-3xl md:text-4xl font-black text-gray-900 leading-[0.8] tracking-tighter">
+							<h2 className="text-xl md:text-4xl font-black text-gray-900 leading-tight md:leading-[0.8] tracking-tighter">
 								Trending <span className="text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-600 to-gray-400">Collections</span>
 							</h2>
 						</div>
 
-						<div className="flex gap-4">
+						<div className="hidden md:flex gap-4">
 							<button
 								onClick={() => {
 									if (scrollRef.current) scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
@@ -113,9 +113,9 @@ function Home() {
 								<div
 									key={product._id}
 									onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
-									className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
+									className="min-w-[180px] sm:min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
 								>
-									<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
+									<div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-gray-50 mb-4 sm:mb-8">
 										<img
 											src={(() => {
 												const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
@@ -128,20 +128,20 @@ function Home() {
 											className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
 										/>
 										<div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700"></div>
-										<div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
-											<button className="w-full py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
+										<div className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:left-8 sm:right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
+											<button className="w-full py-2 sm:py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-xl sm:rounded-2xl text-[8px] sm:text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
 												View Details — ${product.price}
 											</button>
 										</div>
 									</div>
-									<div className="space-y-2 px-4">
-										<div className="flex justify-between items-start">
-											<h3 className="text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
+									<div className="space-y-2 px-2 sm:px-4">
+										<div className="flex flex-col sm:flex-row justify-between items-start gap-1">
+											<h3 className="text-sm sm:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors line-clamp-1">
 												{product.name}
 											</h3>
-											<span className="text-xl font-medium text-gray-400">${product.price}</span>
+											<span className="text-xs sm:text-xl font-medium text-gray-400">${product.price}</span>
 										</div>
-										<p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.3em]">
+										<p className="text-gray-400 font-bold text-[8px] sm:text-[10px] uppercase tracking-[0.3em]">
 											{Array.isArray(product.category) ? product.category[0] : (product.category?.name || product.category)}
 										</p>
 									</div>
@@ -156,9 +156,9 @@ function Home() {
 							<div
 								key={product._id}
 								onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
-								className="min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
+								className="min-w-[180px] sm:min-w-[320px] md:min-w-[400px] snap-start group cursor-pointer"
 							>
-								<div className="relative aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-50 mb-8">
+								<div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-gray-50 mb-4 sm:mb-8">
 									<img
 										src={(() => {
 											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
@@ -171,20 +171,20 @@ function Home() {
 										className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
 									/>
 									<div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700"></div>
-									<div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
-										<button className="w-full py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
+									<div className="absolute bottom-4 left-4 right-4 sm:bottom-8 sm:left-8 sm:right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700">
+										<button className="w-full py-2 sm:py-4 bg-white/90 backdrop-blur-md text-gray-900 rounded-xl sm:rounded-2xl text-[8px] sm:text-[12px] font-black uppercase tracking-[0.2em] shadow-2xl">
 											View Details — ${product.price}
 										</button>
 									</div>
 								</div>
-								<div className="space-y-2 px-4">
-									<div className="flex justify-between items-start">
-										<h3 className="text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
+								<div className="space-y-2 px-2 sm:px-4">
+									<div className="flex flex-col sm:flex-row justify-between items-start gap-1">
+										<h3 className="text-sm sm:text-2xl font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors line-clamp-1">
 											{product.name}
 										</h3>
-										<span className="text-xl font-medium text-gray-400">${product.price}</span>
+										<span className="text-xs sm:text-xl font-medium text-gray-400">${product.price}</span>
 									</div>
-									<p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.3em]">
+									<p className="text-gray-400 font-bold text-[8px] sm:text-[10px] uppercase tracking-[0.3em]">
 										{Array.isArray(product.category) ? product.category[0] : (product.category?.name || product.category)}
 									</p>
 								</div>
@@ -200,68 +200,68 @@ function Home() {
 				{/* Left  */}
 				<div className="relative w-full lg:w-1/2 flex justify-center group/visual">
 					<div className="relative">
-						<div className="overflow-hidden rounded-[4.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] group-hover/visual:shadow-[0_80px_150px_-20px_rgba(0,0,0,0.25)] transition-all duration-1000 border border-gray-100/50">
+						<div className="overflow-hidden rounded-[2.5rem] sm:rounded-[4.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] group-hover/visual:shadow-[0_80px_150px_-20px_rgba(0,0,0,0.25)] transition-all duration-1000 border border-gray-100/50">
 							<img
 								src={best}
 								alt="Premium Collection"
-								className="h-[350px] md:h-[600px] w-full object-cover transition-transform duration-[3000ms] group-hover/visual:scale-110"
+								className="h-[240px] sm:h-[350px] md:h-[600px] w-full object-cover transition-transform duration-[3000ms] group-hover/visual:scale-110"
 							/>
 						</div>
 
 						{/* Badge */}
-						<div className="absolute -bottom-10 -right-10 glass p-10 rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-white/60 max-w-[300px] transform transition-all duration-[1500ms]">
-							<h3 className="text-4xl font-black text-gray-900 mb-4 tracking-tighter italic leading-none">Est. 2026</h3>
-							<p className="text-[12px] text-gray-500 font-black uppercase tracking-[0.25em] leading-relaxed">
+						<div className="absolute -bottom-4 -right-2 sm:-bottom-10 sm:-right-10 glass p-4 sm:p-10 rounded-[1.5rem] sm:rounded-[3rem] shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-white/60 max-w-[180px] sm:max-w-[300px] transform transition-all duration-[1500ms]">
+							<h3 className="text-2xl sm:text-4xl font-black text-gray-900 mb-2 sm:mb-4 tracking-tighter italic leading-none">Est. 2026</h3>
+							<p className="text-[9px] sm:text-[12px] text-gray-500 font-black uppercase tracking-[0.25em] leading-relaxed">
 								A decade of <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-900 to-blue-700 font-black">redefining</span> the silhouette of modern luxury.
 							</p>
 						</div>
-						<div className="absolute -top-6 -left-6 w-24 h-24 border-t-2 border-l-2 border-blue-600/20 rounded-tl-[3rem] group-hover/visual:translate-x-4 group-hover/visual:translate-y-4 transition-transform duration-1000"></div>
+						<div className="absolute -top-3 -left-3 sm:-top-6 sm:-left-6 w-12 h-12 sm:w-24 sm:h-24 border-t-2 border-l-2 border-blue-600/20 rounded-tl-[1.5rem] sm:rounded-tl-[3rem] group-hover/visual:translate-x-2 sm:group-hover/visual:translate-x-4 group-hover/visual:translate-y-2 sm:group-hover/visual:translate-y-4 transition-transform duration-1000"></div>
 					</div>
 				</div>
 
 				{/* Right  */}
-				<div className="w-full lg:w-1/2 space-y-10 relative z-10 ms-5">
+				<div className="w-full lg:w-1/2 space-y-10 relative z-10 lg:ms-5 ms-0">
 					<div className="space-y-6">
 						<span className="logo-font text-blue-600 text-[12px] font-black tracking-[0.7em] block mb-2 px-3 py-1 bg-blue-50/50 w-fit rounded-full">
 							THE RIVORA PHILOSOPHY
 						</span>
-						<h2 className="text-4xl md:text-7xl font-black text-gray-900 leading-[0.9] tracking-tighter">
+						<h2 className="text-xl md:text-7xl font-black text-gray-900 leading-none md:leading-[0.9] tracking-tighter">
 							Crafting <span className="text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-700 to-gray-400">Permanence</span> in a Transient World.
 						</h2>
 					</div>
 
-					<p className="text-gray-500 text-xl font-medium leading-relaxed max-w-xl group-hover:text-gray-600 transition-colors duration-700">
+					<p className="text-gray-500 text-md md:text-xl font-medium leading-relaxed max-w-xl group-hover:text-gray-600 transition-colors duration-700">
 						Rivora is more than a boutique—it is a sanctuary of style. We believe garments should tell a story of intentionality, utilizing sustainable fibers and timeless draping that reject the cycle of fast fashion.
 					</p>
 
 					<div className="space-y-6 pt-2">
-						<div className="flex items-center gap-10 group/feature cursor-default">
-							<div className="w-20 h-20 rounded-[2rem] glass flex items-center justify-center text-blue-600 transition-all duration-700 shadow-2xl shadow-blue-50/30 group-hover/feature:bg-blue-600 group-hover/feature:text-white group-hover/feature:rotate-12">
+						<div className="flex items-center gap-6 sm:gap-10 group/feature cursor-default">
+							<div className="w-20 h-20 rounded-[2rem] glass flex-shrink-0 flex items-center justify-center text-blue-600 transition-all duration-700 shadow-2xl shadow-blue-50/30 group-hover/feature:bg-blue-600 group-hover/feature:text-white group-hover/feature:rotate-12">
 								<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
 								</svg>
 							</div>
 							<div>
-								<span className="text-gray-900 font-black text-2xl tracking-tighter block mb-1">Naturally Sourced</span>
-								<span className="text-gray-400 text-sm font-bold uppercase tracking-widest block group-hover/feature:text-blue-600 transition-colors">Premium Fibers</span>
+								<span className="text-gray-900 font-black text-lg md:text-2xl tracking-tighter block mb-1">Naturally Sourced</span>
+								<span className="text-gray-400 text-xs md:text-sm font-bold uppercase tracking-widest block group-hover/feature:text-blue-600 transition-colors">Premium Fibers</span>
 							</div>
 						</div>
 
-						<div className="flex items-center gap-10 group/feature cursor-default">
-							<div className="w-20 h-20 rounded-[2rem] glass flex items-center justify-center text-blue-600 transition-all duration-700 shadow-2xl shadow-blue-50/30 group-hover/feature:bg-blue-600 group-hover/feature:text-white group-hover/feature:-rotate-12">
+						<div className="flex items-center gap-6 sm:gap-10 group/feature cursor-default">
+							<div className="w-20 h-20 rounded-[2rem] glass flex-shrink-0 flex items-center justify-center text-blue-600 transition-all duration-700 shadow-2xl shadow-blue-50/30 group-hover/feature:bg-blue-600 group-hover/feature:text-white group-hover/feature:-rotate-12">
 								<svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
 								</svg>
 							</div>
 							<div>
-								<span className="text-gray-900 font-black text-2xl tracking-tighter block mb-1">Lifetime Excellence</span>
-								<span className="text-gray-400 text-sm font-bold uppercase tracking-widest block group-hover/feature:text-blue-600 transition-colors">Bespoke Fit</span>
+								<span className="text-gray-900 font-black text-lg md:text-2xl tracking-tighter block mb-1">Lifetime Excellence</span>
+								<span className="text-gray-400 text-xs md:text-sm font-bold uppercase tracking-widest block group-hover/feature:text-blue-600 transition-colors">Bespoke Fit</span>
 							</div>
 						</div>
 					</div>
 
 					<div className="pt-8">
-						<button className="group relative flex items-center gap-8 text-gray-900 font-black text-xl uppercase tracking-[0.4em] transition-all duration-[800ms] overflow-hidden py-4">
+						<button className="group relative flex items-center gap-8 text-gray-900 font-black text-xs md:text-xl uppercase tracking-[0.4em] transition-all duration-[800ms] overflow-hidden py-4">
 							<span className="relative z-10 group-hover:text-blue-600 transition-colors">Discover Our Process</span>
 							<div className="relative flex items-center">
 								<span className="w-14 h-0.5 bg-gray-900 group-hover:w-28 group-hover:bg-blue-600 transition-all duration-[800ms] rounded-full"></span>
@@ -272,7 +272,7 @@ function Home() {
 				</div>
 			</div>
 
-			<section className="relative py-16 overflow-hidden bg-[#fafafa]">
+			<section className="relative md:py-16 overflow-hidden bg-[#fafafa]">
 				<div
 					className="absolute inset-0 opacity-[0.03] pointer-events-none"
 					style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}
@@ -283,59 +283,59 @@ function Home() {
 						<span className="text-blue-600 text-[10px] sm:text-[12px] font-black uppercase tracking-[0.5em] block mb-6 px-4 py-1.5 bg-blue-50/50 w-fit mx-auto rounded-full backdrop-blur-sm">
 							Global Standards
 						</span>
-						<h2 className="text-4xl md:text-6xl font-black text-gray-900 leading-none tracking-tighter mb-8 max-w-4xl mx-auto">
+						<h2 className="text-xl md:text-6xl font-black text-gray-900 leading-none tracking-tighter mb-8 max-w-4xl mx-auto">
 							We've Got You <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-700 via-blue-500 to-indigo-400">Covered.</span>
 						</h2>
-						<div className="w-24 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
+						<div className="w-12 md:w-24 h-1 md:h-1.5 bg-blue-600 mx-auto rounded-full"></div>
 					</div>
 
 					<div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-						<div className='group relative bg-white p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
+						<div className='group relative bg-white p-4 md:p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
 							<div className="absolute -top-12 -right-12 w-48 h-48 bg-blue-50/30 rounded-full group-hover:scale-150 transition-transform duration-[1000ms] blur-3xl"></div>
 
 							<div className='relative z-10'>
-								<div className='w-24 h-24 rounded-[2.5rem] bg-white border border-gray-100 flex items-center justify-center mb-12 shadow-[0_20px_40px_-5px_rgba(59,130,246,0.1)] group-hover:scale-110 group-hover:rotate-[10deg] transition-all duration-700 relative'>
+								<div className='w-12 md:w-24 h-12 md:h-24 rounded-[2.5rem] bg-white border border-gray-100 flex items-center justify-center md:mb-12 shadow-[0_20px_40px_-5px_rgba(59,130,246,0.1)] group-hover:scale-110 group-hover:rotate-[10deg] transition-all duration-700 relative'>
 									<div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-5 transition-opacity duration-700 rounded-[2.5rem]"></div>
-									<svg className="w-12 h-12 text-blue-600 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<svg className="w-8 md:w-12 h-8 md:h-12 text-blue-600 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 011 1v2a1 1 0 01-1 1h-1m-4-14l-2 2m2-2l2 2m7-2a2 2 0 11-4 0 2 2 0 014 0zM9 20a2 2 0 104 0 2 2 0 00-4 0z" />
 									</svg>
 								</div>
-								<h3 className='font-black text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>Fast & Free</h3>
-								<p className='text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
+								<h3 className='font-black text-sm md:text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>Fast & Free</h3>
+								<p className='text-gray-400 text-xs md:text-sm font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
 									Complimentary white-glove delivery on all boutique orders exceeding <span className="text-blue-600 font-black">$799.</span>
 								</p>
 							</div>
 						</div>
 
-						<div className='group relative bg-white p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
+						<div className='group relative bg-white p-4 md:p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
 							<div className="absolute -top-12 -right-12 w-48 h-48 bg-indigo-50/30 rounded-full group-hover:scale-150 transition-transform duration-[1000ms] blur-3xl"></div>
 
 							<div className='relative z-10'>
-								<div className='w-24 h-24 rounded-[2.5rem] bg-white border border-gray-100 flex items-center justify-center mb-12 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] group-hover:scale-110 group-hover:-rotate-[10deg] transition-all duration-700 relative'>
+								<div className='w-12 md:w-24 h-12 md:h-24 rounded-[2.5rem] bg-white border border-gray-100 flex items-center justify-center md:mb-12 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] group-hover:scale-110 group-hover:-rotate-[10deg] transition-all duration-700 relative'>
 									<div className="absolute inset-0 bg-gray-900 opacity-0 group-hover:opacity-5 transition-opacity duration-700 rounded-[2.5rem]"></div>
-									<svg className="w-12 h-12 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<svg className="w-8 md:w-12 h-8 md:h-12 text-gray-900 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
 									</svg>
 								</div>
-								<h3 className='font-black text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>The Flagship</h3>
-								<p className='text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
+								<h3 className='font-black text-sm md:text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>The Flagship</h3>
+								<p className='text-gray-400 text-xs md:text-sm font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
 									Explore an exclusive anthology of over <span className="text-gray-900 font-black">1000+</span> avant-garde styles in one iconic destination.
 								</p>
 							</div>
 						</div>
 
-						<div className='group relative bg-white p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
+						<div className='group relative bg-white p-4 md:p-8 rounded-[3rem] border border-gray-100/50 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] hover:shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] transition-all duration-700 hover:-translate-y-4 cursor-default overflow-hidden'>
 							<div className="absolute -top-12 -right-12 w-48 h-48 bg-emerald-50/30 rounded-full group-hover:scale-150 transition-transform duration-[1000ms] blur-3xl"></div>
 
 							<div className='relative z-10'>
-								<div className='w-20 h-20 rounded-[2rem] bg-white border border-gray-100 flex items-center justify-center mb-8 shadow-[0_20px_40px_-5px_rgba(52,211,153,0.1)] group-hover:scale-110 group-hover:rotate-[20deg] transition-all duration-700 relative'>
+								<div className='w-12 md:w-24 h-12 md:h-24 rounded-[2.5rem] bg-white border border-gray-100 flex items-center justify-center md:mb-12 shadow-[0_20px_40px_-5px_rgba(52,211,153,0.1)] group-hover:scale-110 group-hover:rotate-[20deg] transition-all duration-700 relative'>
 									<div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-5 transition-opacity duration-700 rounded-[2.5rem]"></div>
-									<svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<svg className="w-8 md:w-12 h-8 md:h-12 text-blue-400 transition-all duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3m9 14V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16l4-2 4 2 4-2 4 2z" />
 									</svg>
 								</div>
-								<h3 className='font-black text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>Seamless Return</h3>
-								<p className='text-gray-400 font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
+								<h3 className='font-black text-sm md:text-2xl text-gray-900 mb-5 tracking-tight uppercase italic'>Seamless Return</h3>
+								<p className='text-gray-400 text-xs md:text-sm font-medium leading-relaxed group-hover:text-gray-600 transition-colors duration-500'>
 									Sophisticated multi-channel logistics. Shop with confidence and return with <span className="text-blue-400 font-black">absolute ease.</span>
 								</p>
 							</div>
@@ -348,8 +348,8 @@ function Home() {
 			<div className="bg-[#fcfcfc] py-16 px-4 overflow-hidden">
 				<div className="max-w-7xl mx-auto">
 					<div className="text-center mb-12 animate-fade-in">
-						<span className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-4 block">Testimonials</span>
-						<h1 className="text-2xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">
+						<span className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4 block">Testimonials</span>
+						<h1 className="text-xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">
 							Customer Stories
 						</h1>
 						<div className="w-48 h-1 bg-gray-200 mx-auto rounded-full mb-8"></div>
@@ -366,7 +366,7 @@ function Home() {
 							<>
 								<button
 									onClick={() => scrollReviews('left')}
-									className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-20 w-14 h-14 bg-white rounded-full shadow-2xl flex items-center justify-center text-gray-900 border border-gray-100 opacity-0 group-hover/slider:opacity-100 group-hover/slider:translate-x-0 transition-all duration-500 hover:bg-gray-900 hover:text-white"
+									className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-20 w-14 h-14 bg-white rounded-full shadow-2xl hidden md:flex items-center justify-center text-gray-900 border border-gray-100 opacity-0 group-hover/slider:opacity-100 group-hover/slider:translate-x-0 transition-all duration-500 hover:bg-gray-900 hover:text-white"
 								>
 									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -374,7 +374,7 @@ function Home() {
 								</button>
 								<button
 									onClick={() => scrollReviews('right')}
-									className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-20 w-14 h-14 bg-white rounded-full shadow-2xl flex items-center justify-center text-gray-900 border border-gray-100 opacity-0 group-hover/slider:opacity-100 group-hover/slider:translate-x-0 transition-all duration-500 hover:bg-gray-900 hover:text-white"
+									className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-20 w-14 h-14 bg-white rounded-full shadow-2xl hidden md:flex items-center justify-center text-gray-900 border border-gray-100 opacity-0 group-hover/slider:opacity-100 group-hover/slider:translate-x-0 transition-all duration-500 hover:bg-gray-900 hover:text-white"
 								>
 									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -383,7 +383,7 @@ function Home() {
 							</>
 						)}
 
-						<div 
+						<div
 							ref={reviewScrollRef}
 							className="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-10 px-4"
 							style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -402,17 +402,17 @@ function Home() {
 											))}
 										</div>
 
-										<p className="text-gray-600 text-lg leading-relaxed mb-6 italic font-medium relative z-10">
+										<p className="text-gray-600 text-sm md:text-lg leading-relaxed mb-6 italic font-medium relative z-10">
 											"{item.review}"
 										</p>
 
 										<div className="mt-auto flex items-center gap-5">
-											<div className="w-14 h-14 rounded-full bg-black flex items-center justify-center text-white font-black text-xl uppercase shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+											<div className="w-8 md:w-14 h-8 md:h-14 rounded-full bg-black flex items-center justify-center text-white font-black text-xl uppercase shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
 												{item.img ? (
-													<img 
-														src={item.img.startsWith('http') ? item.img : `http://localhost:5000${item.img}`} 
-														alt={item.name} 
-														className="w-full h-full object-cover" 
+													<img
+														src={item.img.startsWith('http') ? item.img : `http://localhost:5000${item.img}`}
+														alt={item.name}
+														className="w-full h-full object-cover"
 													/>
 												) : (
 													item.name.charAt(0)

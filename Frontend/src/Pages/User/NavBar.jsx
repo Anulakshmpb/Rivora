@@ -133,8 +133,8 @@ export default function NavBar() {
         <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-inter mb-[50px] ${isScrolled ? 'py-0' : 'py-3'
             }`}>
             <div className={`mx-auto transition-all duration-500 ${isScrolled
-                ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-10 py-3'
-                : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl mx-6 px-8 py-4'
+                ? 'max-w-full bg-white/80 backdrop-blur-2xl border-b border-gray-200/50 shadow-md px-4 md:px-10 py-3'
+                : 'max-w-[2000px] bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl mx-2 sm:mx-6 px-4 sm:px-8 py-3 sm:py-4'
                 } flex justify-between items-center`}>
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -166,7 +166,7 @@ export default function NavBar() {
                     ))}
                 </div>
 
-                <div className="flex items-center gap-4 lg:gap-7">
+                <div className="flex items-center gap-2 sm:gap-4 lg:gap-7">
                     {/* Search Bar */}
                     <div className="hidden md:flex relative items-center group" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center bg-gray-100/50 hover:bg-gray-100 border border-transparent focus-within:border-black/5 focus-within:bg-white rounded-full transition-all duration-300 w-48 lg:w-64 px-4 py-1.5 shadow-sm">

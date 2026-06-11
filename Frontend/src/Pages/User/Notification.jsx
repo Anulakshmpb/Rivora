@@ -11,7 +11,7 @@ export default function Notification() {
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
                     {/* Header */}
-                    <div className="p-6 border-b border-neutral-200 bg-white flex items-center justify-between">
+                    <div className="p-6 border-b border-neutral-200 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="bg-blue-50 p-2.5 rounded-xl text-blue-600">
                                 <Bell size={24} />
@@ -19,7 +19,7 @@ export default function Notification() {
                             <h1 className="text-2xl font-semibold text-neutral-900">Notifications</h1>
                         </div>
                         {notifications.length > 0 && (
-                            <div className="flex gap-3">
+                            <div className="flex gap-3 self-end sm:self-auto">
                                 <button
                                     onClick={markAllAsRead}
                                     className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
@@ -56,7 +56,7 @@ export default function Notification() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, x: -10 }}
-                                        className={`p-6 transition-colors hover:bg-neutral-50 flex items-start gap-4 ${!notif.read ? 'bg-blue-50/30' : ''}`}
+                                        className={`p-4 sm:p-6 transition-colors hover:bg-neutral-50 flex items-start gap-3 sm:gap-4 ${!notif.read ? 'bg-blue-50/30' : ''}`}
                                     >
                                         <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${!notif.read ? 'bg-blue-600' : 'bg-transparent'}`}></div>
                                         <div className="flex-1 min-w-0">

@@ -9,29 +9,29 @@ export default function WishList() {
     return (
         <div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
             {/* Banner */}
-            <div className="max-w-[1600px] mx-auto px-8 pt-10 mt-[50px]">
-                <div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-8 pt-10 mt-[50px]">
+                <div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-rose-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
                     <div className="relative z-10 flex flex-col justify-center items-start gap-4">
-                        <nav className="flex items-center gap-3 text-[12px] font-black uppercase tracking-[0.2em] text-slate-600">
+                        <nav className="flex items-center gap-3 text-[8px] md:text-[12px] font-black uppercase tracking-[0.2em] text-slate-600">
                             <a href="/" className="hover:text-black transition-colors">Atelier</a>
                             <span className="w-1 h-1 rounded-full bg-slate-300" />
                             <span className="text-black">Your Wishlist</span>
                         </nav>
-                        <h1 className="text-7xl font-serif font-medium tracking-tight leading-[0.9]">
+                        <h1 className="text-lg md:text-4xl sm:text-7xl font-serif font-medium tracking-tight leading-none sm:leading-[0.9]">
                             Curated <span className="italic text-slate-600">Desires</span>
                         </h1>
-                        <p className="text-slate-600 max-w-lg text-lg font-light leading-relaxed">
+                        <p className="text-slate-600 text-xs md:text-lg font-light leading-relaxed">
                             A personal collection of your favorite pieces, waiting to be yours.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-[1600px] mx-auto px-8 py-16">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-8 py-16">
                 <main className="flex-1">
                     {wishlistItems.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-20 transition-all duration-700 ease-in-out">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-10 gap-y-10 sm:gap-y-20 transition-all duration-700 ease-in-out">
                             {wishlistItems.map(product => (
                                 <ProductCard
                                     key={product._id}
@@ -41,13 +41,13 @@ export default function WishList() {
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-40 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
+                        <div className="flex flex-col items-center justify-center py-20 sm:py-40 bg-slate-50 rounded-3xl sm:rounded-[3rem] border border-dashed border-slate-200">
                             <HeartOutlineIcon className="w-16 h-16 text-slate-200 mb-6" />
-                            <h2 className="text-3xl font-serif italic text-slate-600 mb-2">Your wishlist is empty</h2>
-                            <p className="text-slate-600 text-sm font-medium tracking-wide">Explore our collection and find pieces you love.</p>
+                            <h2 className="text-lg md:text-3xl font-serif italic text-slate-600 mb-2">Your wishlist is empty</h2>
+                            <p className="text-slate-600 text-xs md:text-sm font-medium tracking-wide">Explore our collection and find pieces you love.</p>
                             <button
                                 onClick={() => navigate('/product-list')}
-                                className="mt-8 px-8 py-3 bg-white border border-slate-200 rounded-full text-[12px] font-black uppercase tracking-widest hover:border-slate-900 transition-all"
+                                className="mt-8 px-8 py-3 bg-white border border-slate-200 rounded-full text-xs md:text-sm font-black uppercase tracking-widest hover:border-slate-900 transition-all"
                             >
                                 Continue Shopping
                             </button>
@@ -71,7 +71,7 @@ function ProductCard({ product, onRemove }) {
             onMouseLeave={() => setIsHovered(false)}
             onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
         >
-            <div className="relative aspect-[4/5] overflow-hidden bg-[#F3F3F1] rounded-[2rem] transition-all duration-700 group-hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.12)]">
+            <div className="relative aspect-[4/5] overflow-hidden bg-[#F3F3F1] rounded-2xl sm:rounded-[2rem] transition-all duration-700 group-hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.12)]">
                 <img
                     src={(() => {
                         const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
@@ -85,42 +85,42 @@ function ProductCard({ product, onRemove }) {
                 {/* Remove from Wishlist Button */}
                 <button
                     onClick={(e) => { e.stopPropagation(); onRemove(); }}
-                    className="absolute top-6 right-6 p-3 bg-white/60 backdrop-blur-md rounded-full border border-white/40 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:bg-white"
+                    className="absolute top-3 right-3 sm:top-6 sm:right-6 p-2 sm:p-3 bg-white/60 backdrop-blur-md rounded-full border border-white/40 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 md:translate-y-2 md:group-hover:translate-y-0 hover:bg-white"
                 >
-                    <CloseIcon className="w-4 h-4 text-slate-900" />
+                    <CloseIcon className="w-3 h-3 sm:w-4 sm:h-4 text-slate-900" />
                 </button>
 
                 {/* Quick Add Overlay */}
-                <div className={`absolute inset-x-6 bottom-6 transition-all duration-700 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-                    <button className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-black active:scale-95 transition-all">
+                <div className={`absolute inset-x-2 sm:inset-x-6 bottom-2 sm:bottom-6 transition-all duration-700 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                    <button className="w-full py-2 sm:py-4 bg-slate-900 text-white rounded-2xl text-[9px] sm:text-[12px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-black active:scale-95 transition-all">
                         View Details
                     </button>
                 </div>
 
                 {/* Badges */}
                 {product.quantity < 10 && product.quantity > 0 && (
-                    <div className="absolute top-6 left-6 px-3 py-1 bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-full">
-                        <span className="text-[9px] font-black text-red-600 uppercase tracking-widest italic">Rare Find</span>
+                    <div className="absolute top-3 left-3 sm:top-6 sm:left-6 px-2 py-0.5 sm:px-3 sm:py-1 bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-full">
+                        <span className="text-[7px] sm:text-[9px] font-black text-red-600 uppercase tracking-widest italic">Rare Find</span>
                     </div>
                 )}
             </div>
 
-            <div className="mt-8 space-y-3 px-2">
+            <div className="mt-4 sm:mt-8 space-y-2 sm:space-y-3 px-1 sm:px-2">
                 <div className="flex justify-between items-start">
                     <div className="space-y-1">
-                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">
+                        <span className="text-[7px] sm:text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">
                             {Array.isArray(product.category) ? product.category[0] : (product.category || 'Atelier Collection')}
                         </span>
-                        <h3 className="text-lg font-serif font-medium leading-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
+                        <h3 className="text-xs sm:text-base md:text-lg font-serif font-medium leading-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg">
-                        <StarIcon className="w-2.5 h-2.5 text-yellow-500" />
-                        <span className="text-[12px] font-black text-slate-600 italic">4.9</span>
+                    <div className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
+                        <StarIcon className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-yellow-500" />
+                        <span className="text-[9px] sm:text-[12px] font-black text-slate-600 italic">4.9</span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <span className="text-xl font-light tracking-tight text-slate-900">${product.price}</span>
+                    <span className="text-sm sm:text-lg md:text-xl font-light tracking-tight text-slate-900">${product.price}</span>
                 </div>
             </div>
         </div>

@@ -49,7 +49,7 @@ export default function ProfileWallet() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Wallet Balance Card */}
-            <div className="relative overflow-hidden bg-slate-900 rounded-[2.5rem] p-10 text-white shadow-2xl">
+            <div className="relative overflow-hidden bg-slate-900 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 text-white shadow-2xl">
                 {/* Background Patterns */}
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
                 <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
@@ -67,14 +67,14 @@ export default function ProfileWallet() {
                     
                     <div className="space-y-2">
                         <span className="text-sm font-medium text-slate-500">Available Balance</span>
-                        <h2 className="text-6xl font-serif tracking-tighter">${wallet?.balance.toFixed(2)}</h2>
+                        <h2 className="text-4xl sm:text-6xl font-serif tracking-tighter">${wallet?.balance.toFixed(2)}</h2>
                     </div>
                     
-                    <div className="mt-12 flex items-center gap-6">
-                        <button className="bg-white text-slate-900 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10">
+                    <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                        <button className="w-full sm:w-auto bg-white text-slate-900 px-8 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10">
                             Top Up Wallet
                         </button>
-                        <button className="text-white/60 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2">
+                        <button className="w-full sm:w-auto text-white/60 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center sm:justify-start gap-2">
                             Redeem Vouchers <ArrowUpRightIcon />
                         </button>
                     </div>
@@ -82,7 +82,7 @@ export default function ProfileWallet() {
             </div>
 
             {/* Transaction History */}
-            <div className="bg-white rounded-[2.5rem] border border-slate-100 p-10 shadow-sm">
+            <div className="bg-white rounded-3xl sm:rounded-[2.5rem] border border-slate-100 p-6 sm:p-10 shadow-sm">
                 <div className="flex justify-between items-center mb-10">
                     <div>
                         <h3 className="text-2xl font-serif font-medium">Transaction History</h3>
@@ -106,10 +106,10 @@ export default function ProfileWallet() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: idx * 0.1 }}
                                 key={idx} 
-                                className="flex items-center justify-between p-6 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 border border-transparent hover:border-slate-100 rounded-3xl transition-all duration-500 group"
+                                className="flex items-center justify-between p-4 sm:p-6 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 border border-transparent hover:border-slate-100 rounded-3xl transition-all duration-500 group"
                             >
-                                <div className="flex items-center gap-6">
-                                    <div className={`p-4 rounded-2xl ${tx.type === 'Credit' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} group-hover:scale-110 transition-transform duration-500`}>
+                                <div className="flex items-center gap-3 sm:gap-6">
+                                    <div className={`flex-shrink-0 p-3 sm:p-4 rounded-2xl ${tx.type === 'Credit' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} group-hover:scale-110 transition-transform duration-500`}>
                                         {tx.type === 'Credit' ? <ArrowDownLeftIcon /> : <ArrowUpRightIcon />}
                                     </div>
                                     <div>
@@ -120,7 +120,7 @@ export default function ProfileWallet() {
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <span className={`text-xl font-light tracking-tighter ${tx.type === 'Credit' ? 'text-emerald-600' : 'text-slate-900'}`}>
+                                    <span className={`text-lg sm:text-xl font-light tracking-tighter ${tx.type === 'Credit' ? 'text-emerald-600' : 'text-slate-900'}`}>
                                         {tx.type === 'Credit' ? '+' : '-'}${tx.amount.toFixed(2)}
                                     </span>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mt-1">Completed</p>

@@ -77,9 +77,9 @@ const ChangePW = () => {
     );
 
     return (
-        <div className="max-h-vh bg-white flex items-center justify-center p-4 mt-[65px]">
+        <div className="min-h-screen bg-white flex items-center justify-center p-4 mt-[65px]">
             <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 mb-10">
-                <div className="bg-white p-8 text-gray-700 relative overflow-hidden">
+                <div className="bg-white p-6 sm:p-8 text-gray-700 relative overflow-hidden">
                     {/* Decorative Background */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -mr-10 -mt-10"></div>
                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full blur-xl -ml-5 -mb-5"></div>
@@ -90,14 +90,14 @@ const ChangePW = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight mb-2">Change Password</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Change Password</h1>
                         <p className="text-slate-500 text-sm max-w-md leading-relaxed">
                             To protect your account, ensure your new password is unique, strong, and uses a combination of characters.
                         </p>
                     </div>
                 </div>
 
-                <div className="p-8">
+                <div className="p-6 sm:p-8">
                     {error && (
                         <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
                             <svg className="w-5 h-5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" /></svg>

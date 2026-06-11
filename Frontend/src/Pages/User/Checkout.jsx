@@ -259,11 +259,11 @@ export default function Checkout() {
             <div className="max-w-[1200px] mx-auto px-4 sm:px-8">
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-2 uppercase">Checkout</h1>
+                    <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-2 uppercase">Checkout</h1>
                     <p className="text-xs font-black text-slate-500 tracking-[0.3em] uppercase">Finalize your curated selection</p>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-16 items-start">
+                <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
                     {/* Left   */}
                     <div className="flex-1 space-y-12">
                         <section>
@@ -278,12 +278,12 @@ export default function Checkout() {
                             </div>
 
                             {loadingAddresses ? (
-                                <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex items-center justify-center py-12">
+                                <div className="bg-white p-5 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex items-center justify-center py-12">
                                     <Loader size="sm" variant="user" text="Loading addresses..." />
                                 </div>
                             ) : selectedAddress ? (
-                                <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex gap-6 items-start">
-                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-500">
+                                <div className="bg-white p-5 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-500 shrink-0">
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                     </div>
                                     <div>
@@ -296,7 +296,7 @@ export default function Checkout() {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] text-center py-12">
+                                <div className="bg-white p-5 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.03)] text-center py-12">
                                     <p className="text-slate-500 font-medium mb-4">No addresses found</p>
                                     <button
                                         onClick={() => navigate('/address')}
@@ -314,10 +314,10 @@ export default function Checkout() {
                             <div className="space-y-4">
                                 <button
                                     onClick={() => setShippingMethod('express')}
-                                    className={`w-full p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${shippingMethod === 'express' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
+                                    className={`w-full p-4 sm:p-6 rounded-[2rem] border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${shippingMethod === 'express' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
                                 >
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${shippingMethod === 'express' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${shippingMethod === 'express' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -325,15 +325,15 @@ export default function Checkout() {
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Next Day Delivery • Insured</p>
                                         </div>
                                     </div>
-                                    <span className="font-black text-slate-900">$25.00</span>
+                                    <span className="font-black text-slate-900 text-left sm:text-right">$25.00</span>
                                 </button>
 
                                 <button
                                     onClick={() => setShippingMethod('standard')}
-                                    className={`w-full p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${shippingMethod === 'standard' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
+                                    className={`w-full p-4 sm:p-6 rounded-[2rem] border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${shippingMethod === 'standard' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
                                 >
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${shippingMethod === 'standard' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${shippingMethod === 'standard' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -341,7 +341,7 @@ export default function Checkout() {
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">3-5 Business Days</p>
                                         </div>
                                     </div>
-                                    <span className="font-black text-slate-500 uppercase text-[10px] tracking-widest">Free</span>
+                                    <span className="font-black text-slate-500 uppercase text-[10px] tracking-widest text-left sm:text-right">Free</span>
                                 </button>
                             </div>
                         </section>
@@ -353,10 +353,10 @@ export default function Checkout() {
                                 {/* Razorpay */}
                                 <button
                                     onClick={() => setPaymentMethod('razorpay')}
-                                    className={`w-full p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${paymentMethod === 'razorpay' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
+                                    className={`w-full p-4 sm:p-6 rounded-[2rem] border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${paymentMethod === 'razorpay' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
                                 >
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${paymentMethod === 'razorpay' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${paymentMethod === 'razorpay' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -364,18 +364,21 @@ export default function Checkout() {
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Cards, UPI, Netbanking</p>
                                         </div>
                                     </div>
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentMethod === 'razorpay' ? 'border-blue-600' : 'border-slate-200'}`}>
-                                        {paymentMethod === 'razorpay' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                    <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto">
+                                        <span className="sm:hidden text-xs font-bold text-slate-400">Select</span>
+                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${paymentMethod === 'razorpay' ? 'border-blue-600' : 'border-slate-200'}`}>
+                                            {paymentMethod === 'razorpay' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                        </div>
                                     </div>
                                 </button>
 
                                 {/* Cash on Delivery */}
                                 <button
                                     onClick={() => setPaymentMethod('cod')}
-                                    className={`w-full p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${paymentMethod === 'cod' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
+                                    className={`w-full p-4 sm:p-6 rounded-[2rem] border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${paymentMethod === 'cod' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
                                 >
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${paymentMethod === 'cod' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${paymentMethod === 'cod' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -383,18 +386,21 @@ export default function Checkout() {
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Pay when you receive</p>
                                         </div>
                                     </div>
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentMethod === 'cod' ? 'border-blue-600' : 'border-slate-200'}`}>
-                                        {paymentMethod === 'cod' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                    <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto">
+                                        <span className="sm:hidden text-xs font-bold text-slate-400">Select</span>
+                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${paymentMethod === 'cod' ? 'border-blue-600' : 'border-slate-200'}`}>
+                                            {paymentMethod === 'cod' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                        </div>
                                     </div>
                                 </button>
 
                                 {/* Wallet */}
                                 <button
                                     onClick={() => setPaymentMethod('wallet')}
-                                    className={`w-full p-6 rounded-[2rem] border-2 transition-all flex items-center justify-between group ${paymentMethod === 'wallet' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
+                                    className={`w-full p-4 sm:p-6 rounded-[2rem] border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group ${paymentMethod === 'wallet' ? 'border-blue-600 bg-white shadow-xl shadow-blue-900/5' : 'border-slate-100 bg-slate-50/50 hover:bg-white'}`}
                                 >
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${paymentMethod === 'wallet' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shrink-0 ${paymentMethod === 'wallet' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
                                             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
                                         </div>
                                         <div className="text-left">
@@ -402,8 +408,11 @@ export default function Checkout() {
                                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Pay using your wallet</p>
                                         </div>
                                     </div>
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${paymentMethod === 'wallet' ? 'border-blue-600' : 'border-slate-200'}`}>
-                                        {paymentMethod === 'wallet' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                    <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto">
+                                        <span className="sm:hidden text-xs font-bold text-slate-400">Select</span>
+                                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${paymentMethod === 'wallet' ? 'border-blue-600' : 'border-slate-200'}`}>
+                                            {paymentMethod === 'wallet' && <div className="w-3 h-3 rounded-full bg-blue-600" />}
+                                        </div>
                                     </div>
                                 </button>
                             </div>
@@ -411,7 +420,7 @@ export default function Checkout() {
                     </div>
 
                     {/* Right Column: Order Summary */}
-                    <div className="w-full lg:w-[420px] bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] sticky top-32">
+                    <div className="w-full lg:w-[420px] bg-white p-6 sm:p-10 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.05)] sticky top-32">
                         <h2 className="text-xl font-black text-slate-900 mb-8 uppercase tracking-tight">Order Summary</h2>
 
                         <div className="space-y-6 mb-10 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">

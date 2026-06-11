@@ -101,7 +101,7 @@ const {showToast}=useToast();
             </div>
 
             {/* Right Side */}
-            <div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-1/2 mt-5">
+            <div className="flex w-full flex-col items-center justify-center bg-white p-4 sm:p-8 lg:w-1/2 mt-5">
                 <div className="w-full max-w-lg space-y-6">
                     <div className="text-center lg:text-left">
                         <p className="text-md font-bold uppercase tracking-widest text-gray-700 mb-2">Create Account</p>
@@ -198,7 +198,7 @@ const {showToast}=useToast();
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-4">
-                        <button className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all active:scale-[0.98]">
+                        <button className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all active:scale-[0.98]">
                             <svg className="h-5 w-5" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -207,7 +207,7 @@ const {showToast}=useToast();
                             </svg>
                             <span>Google</span>
                         </button>
-                        <button className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all active:scale-[0.98]">
+                        <button className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-2 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all active:scale-[0.98]">
                             <svg className="h-5 w-5 fill-[#1877F2]" viewBox="0 0 24 24">
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                             </svg>

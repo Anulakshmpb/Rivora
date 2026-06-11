@@ -72,29 +72,29 @@ export default function WalletPayment() {
 
     return (
         <div className="bg-[#FDFDFB] min-h-screen pt-32 pb-20 font-inter">
-            <div className="max-w-[800px] mx-auto px-8">
+            <div className="max-w-[800px] mx-auto px-4 sm:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-[3rem] border border-slate-100 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] overflow-hidden"
+                    className="bg-white rounded-3xl sm:rounded-[3rem] border border-slate-100 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] overflow-hidden"
                 >
-                    <div className="p-12">
+                    <div className="p-6 sm:p-12">
                         <div className="flex items-center gap-4 mb-10">
                             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
                                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                             </div>
                             <div>
-                                <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">Wallet Payment</h1>
+                                <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase">Wallet Payment</h1>
                                 <p className="text-xs font-black text-slate-500 tracking-[0.3em] uppercase">Authorize your transaction</p>
                             </div>
                         </div>
 
                         {/* Balance Card */}
-                        <div className="bg-slate-900 rounded-[2rem] p-8 text-white mb-10 relative overflow-hidden group">
+                        <div className="bg-slate-900 rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 text-white mb-10 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
                             <div className="relative z-10">
                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-2">Available Balance</p>
-                                <h2 className="text-5xl font-black tracking-tighter">
+                                <h2 className="text-3xl sm:text-5xl font-black tracking-tighter">
                                     ${wallet ? wallet.balance.toFixed(2) : '0.00'}
                                 </h2>
                                 <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center">
@@ -129,7 +129,7 @@ export default function WalletPayment() {
                                 <div className="pt-6 border-t border-slate-50 flex justify-between items-end">
                                     <div>
                                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Total Payable</p>
-                                        <p className="text-4xl font-black text-blue-600 tracking-tighter">${orderDetails.totalAmount.toFixed(2)}</p>
+                                        <p className="text-3xl sm:text-4xl font-black text-blue-600 tracking-tighter">${orderDetails.totalAmount.toFixed(2)}</p>
                                     </div>
                                     {!canPay && (
                                         <p className="text-xs font-black text-red-500 uppercase tracking-widest mb-2 flex items-center gap-2">
@@ -145,7 +145,7 @@ export default function WalletPayment() {
                         <button
                             onClick={handlePayNow}
                             disabled={isProcessing || !canPay}
-                            className="w-full bg-slate-900 text-white h-20 rounded-[2rem] font-black uppercase tracking-[0.25em] text-sm shadow-2xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
+                            className="w-full bg-slate-900 text-white h-16 sm:h-20 rounded-2xl sm:rounded-[2rem] font-black uppercase tracking-[0.25em] text-sm shadow-2xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none group"
                         >
                             {isProcessing ? (
                                 <Loader size="xs" variant="white" inline text="Processing..." />

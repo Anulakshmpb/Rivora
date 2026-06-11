@@ -99,7 +99,7 @@ export default function PersonalManagement() {
                 {/* Header Section */}
                 <div className="mb-16">
                     <p className="text-[#3B82F6] font-bold text-xs uppercase tracking-[0.2em] mb-3">Profile Management</p>
-                    <h1 className="text-[44px] font-extrabold text-[#111827] leading-tight">Personal Information</h1>
+                    <h1 className="text-3xl sm:text-[44px] font-extrabold text-[#111827] leading-tight">Personal Information</h1>
                     <p className="text-[#6B7280] text-lg mt-5 max-w-2xl leading-relaxed">
                         Manage your digital identity and preferences. These details are used to personalize your shopping experience.
                     </p>
@@ -109,7 +109,7 @@ export default function PersonalManagement() {
                     
                     {/* Left Column: Profile Card & Main Actions */}
                     <div className="lg:col-span-4 flex flex-col items-center">
-                        <div className="w-full bg-white rounded-[32px] p-10 shadow-sm border border-[#F3F4F6] flex flex-col items-center text-center">
+                        <div className="w-full bg-white rounded-[32px] p-6 sm:p-10 shadow-sm border border-[#F3F4F6] flex flex-col items-center text-center">
                             <div className="relative mb-8">
                                 <div className="w-32 h-32 rounded-3xl overflow-hidden bg-[#FED7AA]">
                                     <img 
@@ -164,33 +164,33 @@ export default function PersonalManagement() {
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Legal Name */}
-                            <div className="bg-white p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
+                            <div className="bg-white p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
                                 <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2">Legal Name</p>
                                 <p className="text-[#111827] font-bold text-base">{formData.name}</p>
                             </div>
                             
                             {/* Mobile Number */}
-                            <div className="bg-white p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
+                            <div className="bg-white p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
                                 <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2">Mobile Number</p>
                                 <p className="text-[#111827] font-bold text-base">{formData.phone || '+ (555) 000-0000'}</p>
                             </div>
 
                             {/* Date of Birth */}
-                            <div className="bg-white p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
+                            <div className="bg-white p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm">
                                 <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2">Date of Birth</p>
                                 <p className="text-[#111827] font-bold text-base">{formData.dob}</p>
                             </div>
 
                             {/* Gender, Age Small Cards */}
                             <div className="grid grid-cols-2 gap-6">
-                                <div className="bg-[#F9FAFB] p-7 rounded-[24px] border border-[#F3F4F6] flex flex-col justify-between">
+                                <div className="bg-[#F9FAFB] p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] flex flex-col justify-between">
                                     <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2">Gender</p>
                                     <div className="flex items-center justify-between text-[#111827] font-bold">
                                         <span>{formData.gender}</span>
                                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
                                     </div>
                                 </div>
-                                <div className="bg-[#F9FAFB] p-7 rounded-[24px] border border-[#F3F4F6] text-center">
+                                <div className="bg-[#F9FAFB] p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] text-center">
                                     <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-2 text-left">Age</p>
                                     <p className="text-[#2563EB] font-bold text-2xl mt-1">{formData.age}</p>
                                 </div>
@@ -198,7 +198,7 @@ export default function PersonalManagement() {
                         </div>
 
                         {/* Language Preference */}
-                        <div className="bg-white p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm flex items-center justify-between">
+                        <div className="bg-white p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm flex items-center justify-between">
                             <div>
                                 <p className="text-[10px] font-extrabold text-[#9CA3AF] uppercase tracking-widest mb-1.5">Language Preference</p>
                                 <p className="text-[#111827] font-bold text-base">{formData.languagePreference}</p>
@@ -207,7 +207,7 @@ export default function PersonalManagement() {
                         </div>
 
                         {/* Newsletter Subscription */}
-                        <div className="bg-white p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm flex items-center justify-between">
+                        <div className="bg-white p-5 sm:p-7 rounded-[24px] border border-[#F3F4F6] shadow-sm flex items-center justify-between">
                             <div>
                                 <p className="text-[#111827] font-bold text-base mb-0.5">Newsletter Subscription</p>
                                 <p className="text-[#6B7280] text-xs">Early access to new collections and exclusive offers</p>

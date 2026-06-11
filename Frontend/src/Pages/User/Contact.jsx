@@ -57,7 +57,7 @@ export default function Contact() {
     return (
         <div className="min-h-screen bg-white font-inter overflow-hidden pt-20">
             {/* Hero Section */}
-            <section className="relative py-24 bg-slate-50">
+            <section className="relative py-12 sm:py-24 bg-slate-50">
                 <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
                 <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
                     <motion.span 
@@ -71,7 +71,7 @@ export default function Contact() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8"
+                        className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tighter mb-8"
                     >
                         We're Here to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500 shadow-sm">Help.</span>
                     </motion.h1>
@@ -79,7 +79,7 @@ export default function Contact() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed"
+                        className="text-slate-500 text-base sm:text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed"
                     >
                         Have a question about our collections or need assistance with an order? Our team is dedicated to providing you with a seamless experience.
                     </motion.p>
@@ -87,14 +87,14 @@ export default function Contact() {
             </section>
 
             {/* Contact Grid */}
-            <section className="py-24 max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+            <section className="py-10 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
                     {/* Contact Info Cards */}
-                    <div className="space-y-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-8 sm:space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                             <motion.div 
                                 whileHover={{ y: -5 }}
-                                className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
+                                className="p-6 sm:p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
                             >
                                 <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -106,7 +106,7 @@ export default function Contact() {
 
                             <motion.div 
                                 whileHover={{ y: -5 }}
-                                className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
+                                className="p-6 sm:p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 group transition-all duration-500"
                             >
                                 <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-indigo-600 mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
@@ -117,7 +117,7 @@ export default function Contact() {
                             </motion.div>
                         </div>
 
-                        <div className="p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
+                        <div className="p-6 sm:p-10 rounded-[3rem] bg-slate-900 text-white relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32 group-hover:scale-110 transition-transform duration-700"></div>
                             <div className="relative z-10">
                                 <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-8">
@@ -145,7 +145,7 @@ export default function Contact() {
                     </div>
 
                     {/* Contact Form */}
-                    <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-[0_30px_70px_rgba(0,0,0,0.06)] border border-slate-50 relative">
+                    <div className="bg-white rounded-[3rem] p-6 sm:p-10 md:p-12 shadow-[0_30px_70px_rgba(0,0,0,0.06)] border border-slate-50 relative">
                         <h2 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Send a Message</h2>
                         <p className="text-slate-500 font-medium mb-10">We'll get back to you within 24 hours.</p>
 
@@ -185,8 +185,8 @@ export default function Contact() {
 
             {/* Google Maps Embed */}
             {contact?.googleMapsUrl && (
-                <section className="py-24 px-6 max-w-7xl mx-auto">
-                    <div className="rounded-[3rem] overflow-hidden shadow-2xl h-[500px] border-8 border-white">
+                <section className="py-10 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+                    <div className="rounded-[3rem] overflow-hidden shadow-2xl h-[320px] sm:h-[500px] border-4 sm:border-8 border-white">
                         <iframe 
                             src={contact.googleMapsUrl}
                             width="100%" 

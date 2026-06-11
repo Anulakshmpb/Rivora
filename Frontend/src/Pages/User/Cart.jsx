@@ -151,7 +151,7 @@ export default function Cart() {
                                             </div>
                                             <p className="text-sm font-medium text-slate-900 mt-1">${Number(item.product.price).toFixed(2)}</p>
 
-                                            <div className="flex justify-center sm:justify-start gap-4 mt-4 text-[11px] font-black uppercase tracking-widest text-slate-500">
+                                            <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-4 mt-4 text-[11px] font-black uppercase tracking-widest text-slate-500">
                                                 {item.size && (
                                                     <span className="bg-slate-50 px-3 py-1 rounded-md">Size: {item.size}</span>
                                                 )}
@@ -190,9 +190,9 @@ export default function Cart() {
                             ))}
 
                             {/* Moved Coupon Section */}
-                            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-8">
+                            <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm mt-8">
                                 <div className="flex flex-col md:flex-row md:items-end gap-6">
-                                    <div className="flex-1">
+                                    <div className="flex-1 w-full">
                                         <div className="flex justify-between items-center mb-4 px-1">
                                             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">PROMOTION CODE</h3>
                                             <button
@@ -219,18 +219,18 @@ export default function Cart() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <div className="relative">
+                                            <div className="flex flex-col sm:relative sm:block gap-3">
                                                 <input
                                                     type="text"
                                                     value={couponCode}
                                                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                                     placeholder="Enter Code"
-                                                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl h-16 pl-6 pr-32 text-sm font-black tracking-widest focus:border-slate-900 focus:bg-white transition-all outline-none"
+                                                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl h-14 sm:h-16 pl-6 pr-6 sm:pr-36 text-sm font-black tracking-widest focus:border-slate-900 focus:bg-white transition-all outline-none"
                                                 />
                                                 <button
                                                     onClick={handleApplyCoupon}
                                                     disabled={isVerifying || !couponCode.trim()}
-                                                    className="absolute right-2 top-2 bottom-2 px-8 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black disabled:bg-slate-200 disabled:text-slate-500 transition-all active:scale-95 shadow-lg shadow-slate-900/10"
+                                                    className="w-full sm:w-auto sm:absolute sm:right-2 sm:top-2 sm:bottom-2 h-12 sm:h-auto px-8 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black disabled:bg-slate-200 disabled:text-slate-500 transition-all active:scale-95 shadow-lg shadow-slate-900/10"
                                                 >
                                                     {isVerifying ? 'Verifying...' : 'Apply Code'}
                                                 </button>
@@ -272,7 +272,7 @@ export default function Cart() {
                         </div>
 
                         {/* Order Summary Sidebar */}
-                        <div className="w-full lg:w-[380px] bg-white p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] sticky top-32">
+                        <div className="w-full lg:w-[380px] bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] sticky top-32">
                             <h2 className="text-lg font-serif font-medium mb-6">Order Summary</h2>
 
                             <div className="space-y-4 text-sm font-medium text-slate-600 border-b border-slate-100 pb-6 mb-6">
