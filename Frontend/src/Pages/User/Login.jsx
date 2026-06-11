@@ -76,7 +76,7 @@ const {showToast}=useToast();
             </div>
 
             {/* Right Side */}
-            <div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-1/2">
+            <div className="flex w-full flex-col items-center justify-center bg-white p-6 sm:p-8 lg:w-1/2">
                 <div className="w-full max-w-md space-y-6">
                     <div className='flex justify-end'>
                         <button onClick={() => navigate('/')}

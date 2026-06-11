@@ -42,13 +42,13 @@ export default function OrderSuccess() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#FDFDFB] pt-10 pb-16 px-4">
+        <div className="min-h-screen bg-[#FDFDFB] pt-[120px] pb-16 px-4">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] border border-slate-50 overflow-hidden"
+                    className="relative bg-white rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-8 md:p-10 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] border border-slate-50 overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-10" />
 
@@ -94,7 +94,7 @@ export default function OrderSuccess() {
 
                         {/* Right */}
                         <div className="w-full lg:w-[450px]">
-                            <div className="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 border border-slate-100 relative overflow-hidden group">
+                            <div className="bg-slate-50 rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-8 md:p-10 border border-slate-100 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full blur-2xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-1000" />
 
                                 <div className="relative z-10 space-y-10">
@@ -111,14 +111,14 @@ export default function OrderSuccess() {
                                     <div className="space-y-8">
                                         <div className="space-y-2">
                                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Order Number</span>
-                                            <span className="text-3xl font-serif font-medium text-slate-900">#{order._id.toString().slice(-8).toUpperCase()}</span>
+                                            <span className="text-xl sm:text-3xl font-serif font-medium text-slate-900">#{order._id.toString().slice(-8).toUpperCase()}</span>
                                         </div>
 
                                         <div className="h-px bg-slate-200 w-full" />
 
                                         <div className="space-y-2">
                                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block">Estimated Delivery</span>
-                                            <span className="text-3xl font-serif font-medium text-slate-900">{formattedDelivery}</span>
+                                            <span className="text-xl sm:text-3xl font-serif font-medium text-slate-900">{formattedDelivery}</span>
                                         </div>
                                     </div>
 

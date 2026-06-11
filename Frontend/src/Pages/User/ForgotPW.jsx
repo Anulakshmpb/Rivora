@@ -73,8 +73,8 @@ const ForgotPW = () => {
 			</div>
 
 			{/* Right Side */}
-			<div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-1/2 overflow-y-auto">
-				<div className="w-full max-w-md space-y-10">
+			<div className="flex w-full flex-col items-center justify-center bg-white p-6 sm:p-8 lg:w-1/2 overflow-y-auto">
+				<div className="w-full max-w-md space-y-6 sm:space-y-10">
 					<div className="flex justify-end">
 						<button onClick={() => navigate('/')}
 							className="text-xs font-medium tracking-wide text-gray-500 hover:text-black transition-all flex items-center gap-2">

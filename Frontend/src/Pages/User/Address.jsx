@@ -142,29 +142,29 @@ export default function Address() {
 
     return (
         <div className="min-h-screen bg-[#F9FAFB] pt-28 pb-20 font-inter">
-            <div className="max-w-6xl mx-auto px-6 lg:px-12">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-12">
 
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="text-[44px] font-extrabold text-[#111827] tracking-tight mb-3">Address Book</h1>
-                    <p className="text-[#6B7280] text-lg max-w-2xl leading-relaxed">
+                    <h1 className="text-3xl sm:text-[44px] font-extrabold text-[#111827] tracking-tight mb-3">Address Book</h1>
+                    <p className="text-[#6B7280] text-base sm:text-lg max-w-2xl leading-relaxed">
                         Manage your shipping destinations for a seamless checkout experience at Lumiere Atelier.
                     </p>
                 </div>
 
                 {success && (
-                    <div className="fixed top-24 right-8 z-50 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-2xl border border-emerald-100 shadow-xl font-bold flex items-center animate-in fade-in slide-in-from-right-4">
+                    <div className="fixed bottom-4 right-4 left-4 sm:top-24 sm:right-8 sm:left-auto z-50 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-2xl border border-emerald-100 shadow-xl font-bold flex items-center animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-right-4">
                         <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                         {success}
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 
                     {/* Add New Address Card */}
                     <button
                         onClick={openAddModal}
-                        className="group h-[320px] bg-transparent border-2 border-dashed border-[#E5E7EB] rounded-[32px] flex flex-col items-center justify-center gap-4 hover:border-[#3B82F6] hover:bg-white transition-all cursor-pointer"
+                        className="group h-[240px] sm:h-[320px] bg-transparent border-2 border-dashed border-[#E5E7EB] rounded-[32px] flex flex-col items-center justify-center gap-4 hover:border-[#3B82F6] hover:bg-white transition-all cursor-pointer"
                     >
                         <div className="w-14 h-14 rounded-2xl bg-[#EFF6FF] text-[#3B82F6] flex items-center justify-center group-hover:scale-110 transition-transform">
                             <svg className="w-6 h-6 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
@@ -174,26 +174,24 @@ export default function Address() {
 
                     {/* Address List */}
                     {addresses.map((addr, index) => (
-                        <div key={index} className="h-auto bg-white rounded-[32px] p-10 shadow-sm border border-[#F3F4F6] flex flex-col justify-between hover:shadow-xl hover:shadow-blue-100/20 transition-all group overflow-hidden relative">
-                            {addr.isDefault && (
-                                <div className="absolute top-8 right-8 flex items-center gap-1.5 bg-[#2563EB] text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-blue-100">
-                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                                    </svg>
-                                    Default
-                                </div>
-                            )}
-
-                            <div>
-                                <div className="text-[#6B7280] font-medium space-y-1.5 leading-relaxed">
+                        <div key={index} className="h-auto bg-white rounded-[32px] p-6 sm:p-10 shadow-sm border border-[#F3F4F6] flex flex-col justify-between hover:shadow-xl hover:shadow-blue-100/20 transition-all group overflow-hidden relative">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+                                <div className="text-[#6B7280] font-medium space-y-1.5 leading-relaxed flex-1">
                                     <p className="text-[#111827] font-bold">{addr.street}{addr.apartment ? `, ${addr.apartment}` : (addr.apartmentSuite ? `, ${addr.apartmentSuite}` : '')}</p>
                                     <p>{addr.city}, {addr.state} {addr.pinCode}</p>
                                     <p>{addr.country}</p>
                                 </div>
-
+                                {addr.isDefault && (
+                                    <div className="shrink-0 flex items-center gap-1.5 bg-[#2563EB] text-white text-[10px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-md shadow-blue-100 sm:mt-0 mt-2">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                        </svg>
+                                        Default
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="border-t border-[#F3F4F6] flex items-center gap-6">
+                            <div className="border-t border-[#F3F4F6] pt-6 flex items-center gap-6">
                                 <button onClick={() => openEditModal(index)} className="text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors">Edit</button>
                                 <button onClick={() => openDeleteModal(index)} className="text-sm font-bold text-gray-400 hover:text-red-500 transition-colors">Remove</button>
                             </div>
@@ -208,12 +206,12 @@ export default function Address() {
                     <div className="absolute inset-0 bg-[#111827]/40 backdrop-blur-sm transition-opacity" onClick={() => setModalOpen(false)}></div>
 
                     <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl relative overflow-y-auto max-h-[90vh] animate-in zoom-in-95 duration-200">
-                        <div className="p-12">
+                        <div className="p-6 sm:p-12">
                             {/* Modal Header */}
-                            <div className="mb-10 text-center sm:text-left">
+                            <div className="mb-6 sm:mb-10 text-center sm:text-left">
                                 <p className="text-[#3B82F6] font-bold text-xs uppercase tracking-[0.2em] mb-3">Shipping Settings</p>
-                                <h2 className="text-4xl font-extrabold text-[#111827] tracking-tight mb-4">Add/Edit Address</h2>
-                                <p className="text-[#6B7280] leading-relaxed">
+                                <h2 className="text-2xl sm:text-4xl font-extrabold text-[#111827] tracking-tight mb-4">Add/Edit Address</h2>
+                                <p className="text-[#6B7280] text-sm sm:text-base leading-relaxed">
                                     Manage your delivery destinations with precision. Ensure your Lumiere orders arrive exactly where they belong.
                                 </p>
                             </div>

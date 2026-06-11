@@ -45,14 +45,14 @@ const Banner = () => {
 
 	if (isLoading) {
 		return (
-			<div className="w-full h-[400px] md:h-[500px] bg-slate-50 flex items-center justify-center">
+			<div className="w-full h-[320px] sm:h-[400px] md:h-[500px] bg-slate-50 flex items-center justify-center">
 				<Loader size="md" variant="user" text="Initializing Rivora..." />
 			</div>
 		);
 	}
 
 	return (
-		<div className="w-full h-[400px] md:h-[500px] bg-gray-100">
+		<div className="w-full h-[320px] sm:h-[400px] md:h-[500px] bg-gray-100">
 			<Swiper
 				modules={[Navigation, Pagination, Autoplay]}
 				navigation={true}
@@ -77,22 +77,22 @@ const Banner = () => {
 							/>
 
 							<div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
-							<div className="absolute top-2/3 left-8 md:left-24 -translate-y-1/2 max-w-sm">
-								<div className="backdrop-blur-md bg-white/10 p-4 md:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-1 transform transition-all duration-500 hover:bg-white/15">
-									<h1 className="text-xl md:text-2xl font-bold text-white leading-tight tracking-tight">
+							<div className="absolute top-3/4 md:top-2/3 left-4 sm:left-8 md:left-24 -translate-y-1/2 md:w-[calc(100%-2rem)] max-w-xs">
+								<div className="backdrop-blur-md bg-white/10 p-5 sm:p-6 md:p-8 rounded-3xl border border-white/10 shadow-2xl space-y-1 transform transition-all duration-500 hover:bg-white/15">
+									<h1 className="text-xs md:text-2xl font-bold text-white leading-tight tracking-tight">
 										{item.title}
 									</h1>
 
-									<p className="text-base md:text-lg text-gray-100 leading-relaxed font-light">
+									<p className="text-[10px] md:text-lg text-gray-100 leading-relaxed font-light">
 										{item.desc}
 									</p>
 
 									<div className="pt-4">
 										<button
 											onClick={() => navigate(item.link || '/product-list')}
-											className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300"
+											className="group relative overflow-hidden bg-white text-black px-2 md:px-6 py-1 md:py-2 rounded-full font-bold text-md hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300"
 										>
-											<span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+											<span className="relative z-10 transition-colors duration-300 group-hover:text-white text-[10px] md:text-md">
 												{item.btn}
 											</span>
 											<div className="absolute inset-0 bg-black translate-y-full transition-transform duration-300 group-hover:translate-y-0"></div>

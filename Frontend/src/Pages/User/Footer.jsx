@@ -19,11 +19,11 @@ const Footer = () => {
 
     return (
         <footer className="footer bg-white text-gray-900 pt-8 border-t border-gray-100 font-inter">
-            <div className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 py-2 lg:gap-8 border-b border-gray-100">
+            <div className="max-w-[1440px] mx-auto px-6 lg:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 py-2 lg:gap-8 border-b border-gray-100">
                 {/* Brand Section */}
                 <div className="space-y-6">
                     <img src={Logo} alt="LOGO" className="h-10 w-auto object-contain" />
-                    <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
+                    <p className="text-gray-500 text-xs md:text-sm leading-relaxed max-w-xs">
                         Defining Luxury Through the lens of timeless elegance and modern sophistication. Modern fashion for modern life.
                     </p>
                     <div className="flex gap-4">
@@ -41,53 +41,53 @@ const Footer = () => {
 
                 {/* Shop Categories */}
                 <div className="space-y-6">
-                    <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">Collections</h4>
+                    <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Collections</h4>
                     <ul className="space-y-4">
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">New Arrivals</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Best Sellers</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Seasonal Edits</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Men's Modern Style</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Women's Collection</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">New Arrivals</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Best Sellers</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Seasonal Edits</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Men's Modern Style</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Women's Collection</button></li>
                     </ul>
                 </div>
 
                 {/* Customer Support */}
                 <div className="space-y-6">
-                    <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">Customer Support</h4>
+                    <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Customer Support</h4>
                     <ul className="space-y-4">
-                        <li><button onClick={() => navigate('/contact')} className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Contact Us</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Shipping & Delivery</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Returns & Exchanges</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Track Order</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">FAQ</button></li>
+                        <li><button onClick={() => navigate('/contact')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Contact Us</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Shipping & Delivery</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Returns & Exchanges</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Track Order</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">FAQ</button></li>
                     </ul>
                 </div>
 
                 {/* Account & Info */}
                 <div className="space-y-6">
-                    <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">Account & Info</h4>
+                    <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Account & Info</h4>
                     <ul className="space-y-4">
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">My Account</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Sustainability</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Our Story</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Careers</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-sm font-medium">Store Locator</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Account</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Sustainability</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Our Story</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Careers</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Store Locator</button></li>
                     </ul>
                 </div>
 
                 {/* Newsletter Section */}
                 <div className="space-y-6">
-                    <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">Newsletter</h4>
-                    <p className="text-gray-500 text-sm leading-relaxed">
+                    <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Newsletter</h4>
+                    <p className="text-gray-500 text-xs md:text-sm leading-relaxed">
                         Join our newsletter and receive 10% off your first order.
                     </p>
                     <div className="flex flex-col gap-3">
                         <input 
                             type="email" 
                             placeholder="Email Address" 
-                            className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 text-sm focus:bg-white focus:border-black transition-all outline-none"
+                            className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 text-xs md:text-sm focus:bg-white focus:border-black transition-all outline-none"
                         />
-                        <button className="w-full bg-black text-white text-xs font-black uppercase tracking-widest py-4 rounded-xl hover:translate-y-[-2px] transition-all active:scale-[0.98]">
+                        <button className="w-full bg-black text-white text-xs md:text-sm font-black uppercase tracking-widest py-4 rounded-xl hover:translate-y-[-2px] transition-all active:scale-[0.98]">
                             Subscribe
                         </button>
                     </div>

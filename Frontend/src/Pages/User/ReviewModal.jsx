@@ -115,12 +115,12 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 						initial={{ opacity: 0, scale: 0.9, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.9, y: 20 }}
-						className="relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-2xl max-w-lg w-full border border-slate-100 overflow-hidden"
+						className="relative bg-white rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl max-w-lg w-full border border-slate-100 overflow-hidden"
 					>
 						<div className="h-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 absolute top-0 left-0 right-0" />
 
 						<div className="mb-8">
-							<h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+							<h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
 								{type === 'site' ? 'Share Your Experience' : 'Review This Product'}
 							</h2>
 							<p className="text-slate-500 font-medium text-sm">
@@ -151,7 +151,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 								{errors.rating && <p className="text-rose-500 text-[10px] font-black uppercase tracking-wider">{errors.rating}</p>}
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div className="space-y-2">
 									<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name <span className="text-red-500">*</span></label>
 									<input

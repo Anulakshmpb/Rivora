@@ -102,22 +102,22 @@ export default function AddInfo() {
                     {/* Header Banner */}
                     <div className="h-32 bg-gradient-to-r from-indigo-600 to-purple-600 relative">
                         <div className="absolute inset-0 bg-black/10"></div>
-                        <div className="absolute -bottom-12 left-8 p-1 bg-white rounded-full shadow-lg">
+                        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 md:left-8 md:-translate-x-0 p-1 bg-white rounded-full shadow-lg">
                             <div className="w-24 h-24 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-3xl font-bold border-2 border-white">
                                 {formData.name.charAt(0).toUpperCase() || 'U'}
                             </div>
                         </div>
                         {formData.isVerifiedBadge && (
-                            <div className="absolute -bottom-8 left-24 bg-blue-500 text-white p-1.5 rounded-full shadow-md border-2 border-white">
+                            <div className="absolute -bottom-8 left-[calc(50%+24px)] md:left-24 bg-blue-500 text-white p-1.5 rounded-full shadow-md border-2 border-white">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
+                                    <path d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 00-1.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
                                 </svg>
                             </div>
                         )}
                     </div>
 
-                    <div className="pt-16 pb-10 px-8">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+                    <div className="pt-16 pb-10 px-4 sm:px-8">
+                        <div className="flex flex-col md:flex-row items-center md:items-start md:justify-between gap-4 mb-10 text-center md:text-left">
                             <div>
                                 <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Personal Information</h1>
                                 <p className="text-gray-500 mt-1">Manage your digital identity and account specifics.</p>

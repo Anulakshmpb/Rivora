@@ -129,7 +129,7 @@ const Profile = () => {
         <div className="min-h-screen bg-gray-50/50 mt-[65px] pb-12">
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
                 {/* Profile Card */}
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-8 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full blur-3xl -z-10 opacity-60 translate-x-20 -translate-y-20 flex-shrink-0"></div>
 
                     {/* Avatar */}
@@ -153,27 +153,27 @@ const Profile = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Navigation Sidebar */}
                     <div className="lg:col-span-1 space-y-4">
-                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-4 sticky top-24">
+                        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-3 sm:p-4 sticky top-24 flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible gap-2 lg:gap-0">
                             <button
                                 onClick={() => setActiveTab('settings')}
-                                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all ${activeTab === 'settings' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                                className={`flex-shrink-0 w-auto lg:w-full flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-2xl transition-all ${activeTab === 'settings' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                <span className="text-sm font-bold uppercase tracking-widest">Settings</span>
+                                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <span className="text-xs lg:text-sm font-bold uppercase tracking-widest">Settings</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab('addresses')}
-                                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all mt-2 ${activeTab === 'addresses' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                                className={`flex-shrink-0 w-auto lg:w-full flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-2xl transition-all lg:mt-2 ${activeTab === 'addresses' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                                <span className="text-sm font-bold uppercase tracking-widest">Addresses</span>
+                                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                <span className="text-xs lg:text-sm font-bold uppercase tracking-widest">Addresses</span>
                             </button>
                             <button
                                 onClick={() => setActiveTab('wallet')}
-                                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all mt-2 ${activeTab === 'wallet' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
+                                className={`flex-shrink-0 w-auto lg:w-full flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-2xl transition-all lg:mt-2 ${activeTab === 'wallet' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50'}`}
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                                <span className="text-sm font-bold uppercase tracking-widest">Wallet</span>
+                                <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                <span className="text-xs lg:text-sm font-bold uppercase tracking-widest">Wallet</span>
                             </button>
                         </div>
 
@@ -191,7 +191,7 @@ const Profile = () => {
                     {/* Content Column */}
                     <div className="lg:col-span-2 space-y-8">
                         {activeTab === 'settings' && (
-                            <div className="bg-white shadow-sm rounded-3xl p-8 border border-gray-100 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="bg-white shadow-sm rounded-3xl p-4 sm:p-8 border border-gray-100 animate-in fade-in slide-in-from-right-4 duration-500">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-8">Account Settings</h2>
                                 <div className="space-y-2">
                                     {accountSettings.map((item, index) => (
@@ -217,10 +217,9 @@ const Profile = () => {
                         )}
 
                         {activeTab === 'addresses' && (
-                            <div className="bg-white shadow-sm rounded-3xl p-8 border border-gray-100 animate-in fade-in slide-in-from-right-4 duration-500">
-
+                            <div className="bg-white shadow-sm rounded-3xl p-4 sm:p-8 border border-gray-100 animate-in fade-in slide-in-from-right-4 duration-500">
                                 {/* Address Manager */}
-                                <div className="bg-white shadow-sm rounded-3xl p-8 border border-gray-100">
+                                <div className="bg-white shadow-sm rounded-3xl p-4 sm:p-8 border border-gray-100">
                                     <div className="flex items-center justify-between mb-8">
                                         <h2 className="text-2xl font-bold text-gray-900">Saved Addresses</h2>
                                         {!isAddingAddress && (

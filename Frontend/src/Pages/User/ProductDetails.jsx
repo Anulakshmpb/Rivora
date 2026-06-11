@@ -130,7 +130,7 @@ export default function ProductDetails() {
           {/* Left */}
           <div className="flex flex-col md:flex-row gap-6 h-fit">
             {productImages.length > 1 && (
-              <div className="flex flex-row md:flex-col gap-4 w-full md:w-20 overflow-x-auto md:overflow-x-visible py-2 md:py-0 order-2 md:order-1">
+              <div className="flex flex-row md:flex-col gap-4 w-full md:w-20 overflow-x-auto md:overflow-x-visible py-2 md:py-0 order-2 md:order-1 max-w-xs sm:max-w-md mx-auto md:max-w-none md:mx-0">
                 {productImages.map((img, i) => (
                   <button
                     key={i}
@@ -151,7 +151,7 @@ export default function ProductDetails() {
             )}
 
             <div
-              className="flex-1 aspect-[3/4] overflow-hidden rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative cursor-zoom-in order-1 md:order-2"
+              className="flex-1 aspect-[3/4] overflow-hidden rounded-3xl sm:rounded-[3rem] bg-slate-50 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.15)] group relative cursor-zoom-in order-1 md:order-2 max-w-xs sm:max-w-md mx-auto w-full md:max-w-none md:mx-0"
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZooming(true)}
               onMouseLeave={() => setIsZooming(false)}
@@ -170,23 +170,23 @@ export default function ProductDetails() {
                 }}
               />
 
-              <div className="absolute top-8 right-8 flex flex-col gap-4 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
-                  <HeartIcon className="w-5 h-5 text-slate-500 group-hover/btn:text-rose-500 transition-colors" />
+              <div className="absolute top-4 right-4 sm:top-8 sm:right-8 flex flex-col gap-2 sm:gap-4 md:translate-x-4 md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100 transition-all duration-500">
+                <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
+                  <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 group-hover/btn:text-rose-500 transition-colors" />
                 </button>
-                <button className="w-12 h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
-                  <ShareIcon className="w-5 h-5 text-slate-500 group-hover/btn:text-indigo-500 transition-colors" />
+                <button className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-xl border border-white/50 shadow-2xl hover:bg-white transition-all hover:scale-110 active:scale-90 group/btn">
+                  <ShareIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 group-hover/btn:text-indigo-500 transition-colors" />
                 </button>
               </div>
 
-              <div className="absolute top-8 left-8 flex flex-col gap-3">
-                <div className="bg-slate-900/90 backdrop-blur-md px-5 py-2 rounded-2xl shadow-xl">
-                  <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">New Edition</span>
+              <div className="absolute top-4 left-4 sm:top-8 sm:left-8 flex flex-col gap-2 sm:gap-3">
+                <div className="bg-slate-900/90 backdrop-blur-md px-3 sm:px-5 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl shadow-xl">
+                  <span className="text-[8px] sm:text-[10px] font-black text-white uppercase tracking-[0.2em]">New Edition</span>
                 </div>
                 {product.return_policy && (
-                  <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/40 shadow-lg flex items-center gap-2">
-                    <CheckBadgeIcon className="w-4 h-4 text-emerald-500" />
-                    <span className="text-[9px] font-black text-slate-900 uppercase tracking-widest">7-Day Returns</span>
+                  <div className="bg-white/80 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl border border-white/40 shadow-lg flex items-center gap-1.5 sm:gap-2">
+                    <CheckBadgeIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+                    <span className="text-[8px] sm:text-[9px] font-black text-slate-900 uppercase tracking-widest">7-Day Returns</span>
                   </div>
                 )}
               </div>
@@ -197,22 +197,22 @@ export default function ProductDetails() {
           <div className="flex flex-col justify-center">
             <header className="space-y-4 mb-10">
               <div className="flex items-center gap-4">
-                <span className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Essential Collection</span>
+                <span className="text-[8px] md:text-[11px] font-black uppercase tracking-[0.3em] text-slate-500">Essential Collection</span>
                 <div className="h-[1px] w-12 bg-slate-200" />
                 <div className="flex items-center gap-1">
                   <StarIcon className="w-3 h-3 text-yellow-500" />
-                  <span className="text-[10px] font-black text-slate-500 italic">
+                  <span className="text-[8px] md:text-[10px] font-black text-slate-500 italic">
                     {productReviews.length > 0
                       ? `${(productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1)} (${productReviews.length} reviews)`
                       : 'No reviews yet'}
                   </span>
                 </div>
               </div>
-              <h1 className="text-3xl sm:text-6xl font-serif font-medium tracking-tight leading-tight">
+              <h1 className="text-lg md:text-3xl font-serif font-medium tracking-tight leading-tight">
                 {product.name}
               </h1>
               <div className="flex items-center gap-6">
-                <span className="text-4xl font-light tracking-tighter">${product.price}</span>
+                <span className="text-xl md:text-4xl font-light tracking-tighter">${product.price}</span>
                 <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border backdrop-blur-sm ${stockStatus.class}`}>
                   {stockStatus.label}
                 </div>
@@ -221,19 +221,19 @@ export default function ProductDetails() {
 
             <div className="space-y-10">
               <div className="space-y-4">
-                <p className="text-slate-500 text-lg font-semibold leading-relaxed max-w-lg">
+                <p className="text-slate-500 text-xs md:text-lg font-semibold leading-relaxed max-w-lg">
                   {product.description}
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Hue</h3>
+                <h3 className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Hue</h3>
                 <div className="flex gap-4">
                   {(Array.isArray(product.color) ? product.color : (product.color ? (Array.isArray(product.color) ? product.color : [product.color]) : [])).map((color, idx) => (
                     <button
                       key={idx}
                       onClick={() => setSelectedColor(color)}
-                      className={`w-8 h-8 rounded-full ring-2 ring-offset-4 transition-transform ${selectedColor === color ? 'ring-slate-900 scale-110' : 'ring-transparent hover:scale-105'}`}
+                      className={`w-4 md:w-8 h-4 md:h-8 rounded-full ring-2 ring-offset-4 transition-transform ${selectedColor === color ? 'ring-slate-900 scale-110' : 'ring-transparent hover:scale-105'}`}
                       style={{ backgroundColor: (typeof color === 'string' && color.startsWith('custom-')) ? `#${color.split('-')[1]}` : color }}
                     />
                   ))}
@@ -243,15 +243,15 @@ export default function ProductDetails() {
               {/* Size */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center max-w-md">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Metric</h3>
-                  <button className="text-[9px] font-black uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-0.5">Size Guide</button>
+                  <h3 className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Metric</h3>
+                  <button className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-slate-900 border-b border-slate-900 pb-0.5">Size Guide</button>
                 </div>
                 <div className="flex gap-3">
                   {(Array.isArray(product.sizes) ? product.sizes : (Array.isArray(product.size) ? product.size : (product.size ? [product.size] : []))).map(size => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`w-16 h-14 flex items-center justify-center rounded-2xl text-xs font-black transition-all border ${selectedSize === size
+                      className={`w-8 md:w-16 h-8 md:h-14 flex items-center justify-center rounded-2xl text-[8px] md:text-xs font-black transition-all border ${selectedSize === size
                         ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-900/20'
                         : 'bg-white border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900'
                         }`}
@@ -263,48 +263,50 @@ export default function ProductDetails() {
               </div>
 
               {/* Quantity & Actions */}
-              <div className="pt-10 flex flex-col sm:flex-row gap-4 max-w-lg">
-                <div className="flex items-center bg-slate-50 rounded-2xl border border-slate-100 p-1">
+              <div className="md:pt-10 flex flex-col sm:flex-row gap-4 max-w-sm md:max-w-lg">
+                <div className="flex items-center justify-between sm:justify-start bg-slate-50 rounded-2xl border border-slate-100 p-1 w-full sm:w-auto">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
+                    className="w-8 md:w-12 h-8 md:h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
                   >
                     —
                   </button>
-                  <span className="w-12 text-center font-black text-sm">{quantity}</span>
+                  <span className="w-8 md:w-12 text-center font-black text-sm">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-12 h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
+                    className="w-8 md:w-12 h-8 md:h-12 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-colors"
                   >
                     +
                   </button>
                 </div>
-                <button
-                  onClick={() => {
-                    const exists = cartItems.some(item =>
-                      item.product._id === product._id
-                    );
+                <div className="flex gap-4 flex-1 w-full">
+                  <button
+                    onClick={() => {
+                      const exists = cartItems.some(item =>
+                        item.product._id === product._id
+                      );
 
-                    if (exists) {
-                      showToast('This item is already in your bag.', 'warning');
+                      if (exists) {
+                        showToast('This item is already in your bag.', 'warning');
+                        navigate('/cart');
+                        return;
+                      }
+
+                      addToCart(product, quantity, selectedSize, selectedColor);
                       navigate('/cart');
-                      return;
-                    }
-
-                    addToCart(product, quantity, selectedSize, selectedColor);
-                    navigate('/cart');
-                  }}
-                  className="flex-1 bg-slate-900 text-white h-14 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-slate-900/30 hover:bg-black hover:-translate-y-1 transition-all active:scale-95"
-                >
-                  Add to Bag
-                </button>
-                <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all group">
-                  <HeartIcon className="w-5 h-5 text-slate-500 group-hover:text-red-500 group-hover:scale-110 transition-all" />
-                </button>
+                    }}
+                    className="flex-1 bg-slate-900 text-white h-10 md:h-14 rounded-2xl text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-slate-900/30 hover:bg-black hover:-translate-y-1 transition-all active:scale-95"
+                  >
+                    Add to Bag
+                  </button>
+                  <button onClick={() => { addToWishlist(product); navigate('/wishlist'); }} className="w-10 md:w-14 h-10 md:h-14 flex items-center justify-center rounded-2xl border border-slate-200 hover:border-slate-900 transition-all flex-shrink-0 group">
+                    <HeartIcon className="w-5 h-5 text-slate-500 group-hover:text-red-500 group-hover:scale-110 transition-all" />
+                  </button>
+                </div>
               </div>
 
               {/* Features List */}
-              <div className="grid grid-cols-2 gap-8 pt-10 border-t border-slate-100">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 md:pt-10 border-t border-slate-100">
                 <Feature icon={<TruckIcon />} title="Ethical Shipping" desc="Carbon neutral delivery" />
                 <Feature icon={<ShieldIcon />} title="Secure Checkout" desc="256-bit SSL encryption" />
               </div>
@@ -315,9 +317,9 @@ export default function ProductDetails() {
       </div>
 
       {/* Product Reviews Section */}
-      <section className="border-t border-slate-100 pt-24 max-w-5xl mx-auto px-4">
+      <section className="border-t border-slate-100 md:pt-24 max-w-5xl mx-auto px-4">
         <div className="text-center space-y-4 mb-20">
-          <h2 className="text-4xl font-serif font-medium tracking-tight">Customer Reviews</h2>
+          <h2 className="text-lg md:text-4xl font-serif font-medium tracking-tight">Customer Reviews</h2>
           <div className="flex items-center justify-center gap-4">
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map(star => (
@@ -329,13 +331,13 @@ export default function ProductDetails() {
                 ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1)
                 : '0.0'}
             </span>
-            <span className="text-slate-400 font-medium">({productReviews.length} reviews)</span>
+            <span className="text-slate-500 font-medium">({productReviews.length} reviews)</span>
           </div>
           <div className="h-1 w-20 bg-slate-900 mx-auto rounded-full mt-4" />
         </div>
 
         {productReviews.length === 0 ? (
-          <div className="bg-slate-50 rounded-[3rem] p-20 text-center border border-slate-100">
+          <div className="bg-slate-50 rounded-[3rem] md:p-20 text-center border border-slate-100">
             <p className="text-slate-500 font-medium italic">Be the first to review this exquisite piece.</p>
           </div>
         ) : (
@@ -375,9 +377,9 @@ export default function ProductDetails() {
         )}
       </section>
       {/* Similar Products Section */}
-      <section className="mt-40 space-y-16">
+      <section className="ms-1 mt-2 md:mt-40 space-y-16">
         <div className="flex flex-col items-start text-left space-y-4">
-          <h2 className="text-3xl font-serif font-medium tracking-tight">Similar Products</h2>
+          <h2 className="text-lg md:text-3xl font-serif font-medium tracking-tight">Similar Products</h2>
           <div className="h-1 w-20 bg-slate-900 rounded-full" />
         </div>
 
@@ -386,7 +388,7 @@ export default function ProductDetails() {
             {[1, 2, 3, 4].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 animate-in fade-in duration-1000">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-12 animate-in fade-in duration-1000">
             {similarProducts.map(p => (
               <ProductCard key={p._id} product={p} />
             ))}
@@ -431,7 +433,7 @@ function ProductCard({ product }) {
       className="group cursor-pointer"
       onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-slate-50 rounded-[2.5rem] mb-6 group-hover:shadow-2xl transition-all duration-700">
+      <div className="relative aspect-[3/4] overflow-hidden bg-slate-50 rounded-2xl sm:rounded-[2.5rem] mb-3 sm:mb-6 group-hover:shadow-2xl transition-all duration-700">
         <img
           src={(() => {
             const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
@@ -444,16 +446,16 @@ function ProductCard({ product }) {
         <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors duration-500" />
 
         {/* Quick Wishlist */}
-        <button onClick={(e) => { e.stopPropagation(); addToWishlist(product); navigate('/wishlist'); }} className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/40 shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-white hover:scale-110">
-          <HeartIcon className="w-4 h-4 text-slate-500 hover:text-rose-500 transition-colors" />
+        <button onClick={(e) => { e.stopPropagation(); addToWishlist(product); navigate('/wishlist'); }} className="absolute top-3 right-3 sm:top-6 sm:right-6 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-white/40 shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all duration-500 hover:bg-white hover:scale-110">
+          <HeartIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 hover:text-rose-500 transition-colors" />
         </button>
       </div>
-      <div className="space-y-2 text-center">
-        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block">
+      <div className="space-y-1 sm:space-y-2 text-center">
+        <span className="text-[7px] sm:text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block">
           {Array.isArray(product.category) ? product.category[0] : (product.category || 'Collection')}
         </span>
-        <h3 className="text-sm font-bold text-slate-800 tracking-tight uppercase group-hover:text-slate-500 transition-colors">{product.name}</h3>
-        <span className="text-xl font-light tracking-tighter block">${product.price}</span>
+        <h3 className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight uppercase group-hover:text-slate-500 transition-colors">{product.name}</h3>
+        <span className="text-base sm:text-xl font-light tracking-tighter block">${product.price}</span>
       </div>
     </div>
   );

@@ -61,39 +61,47 @@ export default function Category() {
 		return getCatName(p.category) === selectedCategory;
 	});
 	return (
-		<div className="max-w-screen-4xl mx-auto px-6 py-16">
-			<div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 mb-20">
+		<div className="max-w-screen-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+			<style>{`
+				.no-scrollbar::-webkit-scrollbar {
+					display: none;
+				}
+			`}</style>
+			<div 
+				className="flex overflow-x-auto md:flex-wrap items-center justify-start md:justify-center gap-4 sm:gap-6 md:gap-8 mb-10 sm:mb-20 pb-4 md:pb-0 no-scrollbar scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+				style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+			>
 				{categories.map((item, index) => (
 					<div
 						key={index}
 						onClick={() => setSelectedCategory(item.name)}
-						className={`group flex flex-col items-center justify-center cursor-pointer transition-all duration-500 ${selectedCategory === item.name ? 'scale-110' : 'opacity-89 hover:opacity-100'}`}
+						className={`flex-shrink-0 group flex flex-col items-center justify-center cursor-pointer transition-all duration-500 ${selectedCategory === item.name ? 'scale-110' : 'opacity-89 hover:opacity-100'}`}
 					>
-						<div className={`relative overflow-hidden rounded-full mb-6 transition-all duration-700 ${selectedCategory === item.name ? 'ring-4 ring-black ring-offset-4 shadow-2xl' : 'shadow-sm group-hover:shadow-xl'}`}>
+						<div className={`relative overflow-hidden rounded-full mb-3 md:mb-6 transition-all duration-700 ${selectedCategory === item.name ? 'ring-2 md:ring-4 ring-black ring-offset-2 md:ring-offset-4 shadow-2xl' : 'shadow-sm group-hover:shadow-xl'}`}>
 							<img
-								className="h-20 w-20 md:h-32 md:w-32 object-cover transition-transform duration-700 group-hover:scale-105"
+								className="h-14 w-14 sm:h-20 sm:w-20 md:h-32 md:w-32 object-cover transition-transform duration-700 group-hover:scale-105"
 								src={item.img}
 								alt={item.title}
 							/>
 							<div className={`absolute inset-0 bg-black/0 transition-colors duration-300 ${selectedCategory === item.name ? '' : 'group-hover:bg-black/5'}`}></div>
 						</div>
 
-						<h2 className={`text-xs font-bold uppercase tracking-[0.2em] text-center transition-colors duration-300 ${selectedCategory === item.name ? 'text-black' : 'text-gray-500 group-hover:text-black'}`}>
+						<h2 className={`text-[5px] md:text-xs font-bold uppercase tracking-[0.2em] text-center transition-colors duration-300 ${selectedCategory === item.name ? 'text-black' : 'text-gray-500 group-hover:text-black'}`}>
 							{item.title}
 						</h2>
 
-						<div className={`h-0.5 bg-black mt-2 transition-all duration-500 rounded-full ${selectedCategory === item.name ? 'w-full' : 'w-0 group-hover:w-8'}`}></div>
+						<div className={`h-0.5 bg-black mt-1.5 md:mt-2 transition-all duration-500 rounded-full ${selectedCategory === item.name ? 'w-full' : 'w-0 group-hover:w-8'}`}></div>
 					</div>
 				))}
 			</div>
 
 			{/* Products Section */}
-			<div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 ms-16 me-16">
+			<div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 mx-4 sm:mx-8 md:mx-16">
 				<div className="flex items-center justify-between border-b border-gray-100 pb-8">
-					<h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">
+					<h3 className="md:text-2xl text-[10px] font-black text-gray-900 tracking-tighter uppercase italic">
 						{selectedCategory}
 					</h3>
-					<span className="text-gray-500 font-bold text-xs uppercase tracking-widest">
+					<span className="text-gray-500 font-bold text-[8px] md:text-xs uppercase tracking-widest">
 						{filteredProducts.length} Pieces Found
 					</span>
 				</div>
@@ -136,7 +144,7 @@ export default function Category() {
 									</div>
 								</div>
 								<div className="space-y-1 text-center px-4">
-									<h4 className="text-lg font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
+									<h4 className="text-[10px] md:text-lg font-bold text-gray-900 tracking-tight group-hover:text-blue-600 transition-colors">
 										{product.name}
 									</h4>
 									<p className="text-gray-500 font-medium">${product.price}</p>

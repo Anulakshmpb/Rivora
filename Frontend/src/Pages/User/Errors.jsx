@@ -44,7 +44,7 @@ export function NotFound404() {
 				className="max-w-2xl w-full text-center"
 			>
 				<motion.div variants={itemVariants} className="relative mb-8">
-					<div className="text-[150px] md:text-[200px] font-black text-gray-100 leading-none select-none">
+					<div className="text-[100px] sm:text-[150px] md:text-[200px] font-black text-gray-100 leading-none select-none">
 						404
 					</div>
 					<div className="absolute inset-0 flex items-center justify-center">
@@ -114,7 +114,7 @@ export default function BadRequest400() {
 					<div className="w-24 h-24 bg-red-50 text-red-600 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-red-100/50">
 						<AlertCircle className="w-12 h-12" />
 					</div>
-					<h1 className="text-8xl font-black text-gray-100 leading-none mb-2">
+					<h1 className="text-6xl sm:text-8xl font-black text-gray-100 leading-none mb-2">
 						400
 					</h1>
 				</motion.div>
@@ -180,7 +180,7 @@ export function InternalServer500() {
 					>
 						<ServerCrash className="w-12 h-12" />
 					</motion.div>
-					<h1 className="text-8xl font-black text-gray-100 leading-none">
+					<h1 className="text-6xl sm:text-8xl font-black text-gray-100 leading-none">
 						500
 					</h1>
 				</motion.div>

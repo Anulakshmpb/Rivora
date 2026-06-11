@@ -23,6 +23,13 @@ export default function ProductListing() {
 	const [search, setSearch] = useState(searchQuery);
 	const [selectedRating, setSelectedRating] = useState(0);
 
+	// Close sidebar on mobile on mount
+	useEffect(() => {
+		if (window.innerWidth < 1024) {
+			setIsSidebarOpen(false);
+		}
+	}, []);
+
 	// Fetch Categories on mount
 	useEffect(() => {
 		const fetchCategories = async () => {
@@ -108,7 +115,7 @@ export default function ProductListing() {
 
 			{/* Banner */}
 			<div className="max-w-[1800px] mx-auto px-4 sm:px-8 pt-10 mt-[50px]">
-				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
+				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
 					<div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
 					<div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
 						<div className="space-y-4">
@@ -117,7 +124,7 @@ export default function ProductListing() {
 								<span className="w-1 h-1 rounded-full bg-slate-300" />
 								<span className="text-black">Collection 2025</span>
 							</nav>
-							<h1 className="text-4xl sm:text-7xl font-serif font-medium tracking-tight leading-[0.9]">
+							<h1 className="text-4xl sm:text-7xl font-serif font-medium tracking-tight leading-none sm:leading-[0.9]">
 								The <span className="italic text-slate-600">Essential</span> Edit
 							</h1>
 							<p className="text-slate-600 max-w-lg text-base sm:text-lg font-light leading-relaxed">
@@ -456,7 +463,7 @@ function ProductCard({ product, onClick }) {
 				<div className="flex justify-between items-start">
 					<div className="space-y-1">
 						<span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">Atelier Collection</span>
-						<h3 className="text-lg font-serif font-medium leading-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
+						<h3 className="text-base sm:text-lg font-serif font-medium leading-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
 					</div>
 					<div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg">
 						<StarIcon className="w-2.5 h-2.5 text-yellow-500" />
@@ -467,7 +474,7 @@ function ProductCard({ product, onClick }) {
 				</div>
 
 				<div className="flex items-center gap-4">
-					<span className="text-xl font-light tracking-tight text-slate-900">${product.price}</span>
+					<span className="text-lg sm:text-xl font-light tracking-tight text-slate-900">${product.price}</span>
 					<div className="flex -space-x-1.5">
 						{[1, 2].map(i => (
 							<div key={i} className="w-3 h-3 rounded-full border-2 border-white bg-slate-200 shadow-sm" />

@@ -105,8 +105,8 @@ const Otp = () => {
     return (
         <div className="flex min-h-screen lg:h-[calc(100vh-2.5rem)] w-full lg:w-[calc(100vw-2.5rem)] overflow-y-auto lg:overflow-hidden font-inter my-0 mx-0 lg:m-5 rounded-none lg:rounded-3xl bg-white shadow-2xl flex-col lg:flex-row">
             {/* Right Side */}
-            <div className="flex w-full flex-col items-center justify-center bg-white p-8 lg:w-full overflow-y-auto">
-                <div className="w-full max-w-md space-y-10">
+            <div className="flex w-full flex-col items-center justify-center bg-white p-6 sm:p-8 lg:w-full overflow-y-auto">
+                <div className="w-full max-w-md space-y-6 sm:space-y-10">
                     <div className="space-y-2 text-center lg:text-left">
                         <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Security & Access</p>
                         <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 leading-tight">

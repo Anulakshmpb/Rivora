@@ -10,7 +10,7 @@ export default function PaymentFailed() {
             <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="max-w-xl w-full bg-white rounded-[3rem] p-12 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] border border-rose-50 text-center"
+                className="max-w-xl w-full bg-white rounded-3xl sm:rounded-[3rem] p-6 sm:p-12 shadow-[0_40px_100px_-30px_rgba(0,0,0,0.05)] border border-rose-50 text-center"
             >
                 <div className="mb-8 flex justify-center">
                     <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center border border-rose-100 shadow-inner">
@@ -22,7 +22,7 @@ export default function PaymentFailed() {
                     Transaction Failed
                 </span>
 
-                <h1 className="text-4xl md:text-5xl font-serif font-medium tracking-tight mb-8">
+                <h1 className="text-3xl sm:text-5xl font-serif font-medium tracking-tight mb-8">
                     Something went <br />
                     <span className="italic text-slate-500">incorrect.</span>
                 </h1>
@@ -46,7 +46,7 @@ export default function PaymentFailed() {
                     </button>
                 </div>
 
-                <div className="mt-12 pt-10 border-t border-slate-100">
+                <div className="mt-6 sm:mt-12 pt-6 sm:pt-10 border-t border-slate-100">
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest leading-loose">
                         Need assistance? Our concierge is here to help. <br />
                         <span className="text-slate-900 cursor-pointer hover:underline">Contact Support</span> or call <span className="text-slate-900 font-black">1-800-RIVORA</span>

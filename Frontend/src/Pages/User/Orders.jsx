@@ -293,22 +293,22 @@ export default function Orders() {
     }
 
     return (
-        <div className="bg-[#FDFDFB] min-h-screen pt-[120px] pb-20 px-8">
+        <div className="bg-[#FDFDFB] min-h-screen pt-[120px] pb-20 px-4 sm:px-8">
             <div className="max-w-5xl mx-auto">
                 <div className="mb-12">
-                    <h1 className="text-5xl font-serif font-medium tracking-tight">Your Orders</h1>
+                    <h1 className="text-3xl sm:text-5xl font-serif font-medium tracking-tight">Your Orders</h1>
                     <p className="text-slate-500 mt-3 font-medium">Track and manage your luxury selections</p>
                 </div>
 
                 {orders.length === 0 ? (
-                    <div className="bg-white rounded-[3rem] p-20 text-center border border-slate-100 shadow-sm">
+                    <div className="bg-white rounded-3xl sm:rounded-[3rem] p-6 sm:p-20 text-center border border-slate-100 shadow-sm">
                         <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8">
                             <PackageIcon />
                         </div>
                         <h2 className="text-2xl font-serif italic text-slate-500 mb-6">No orders yet</h2>
                         <button
                             onClick={() => navigate('/product-list')}
-                            className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all"
+                            className="bg-slate-900 text-white px-10 py-4 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all w-full sm:w-auto"
                         >
                             Explore Collection
                         </button>
@@ -322,11 +322,11 @@ export default function Orders() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     key={order._id}
-                                    className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-700"
+                                    className="bg-white rounded-3xl sm:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-700"
                                 >
                                     {/* Order Header */}
-                                    <div className="p-8 border-b border-slate-50 bg-slate-50/30 flex flex-wrap justify-between items-center gap-6">
-                                        <div className="flex gap-10">
+                                    <div className="p-4 sm:p-8 border-b border-slate-50 bg-slate-50/30 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 w-full md:w-auto">
                                             <div>
                                                 <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-1">Order Placed</p>
                                                 <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
@@ -343,35 +343,37 @@ export default function Orders() {
                                                 <p className="text-sm font-medium text-slate-500">#{order._id.slice(-8).toUpperCase()}</p>
                                             </div>
                                         </div>
-                                        <div className={`px-5 py-2 rounded-2xl text-[12px] font-black uppercase tracking-widest border ${getStatusColor(order.orderStatus)}`}>
+                                        <div className={`px-5 py-2 rounded-2xl text-[12px] font-black uppercase tracking-widest border self-end sm:self-auto ${getStatusColor(order.orderStatus)}`}>
                                             {order.orderStatus}
                                         </div>
                                     </div>
 
                                     {/* Order Items */}
-                                    <div className="p-8 space-y-6">
+                                    <div className="p-4 sm:p-8 space-y-6">
                                         {order.items.map((item, i) => (
-                                            <div key={i} className="flex gap-6 items-center">
-                                                <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
-                                                    <img
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
-                                                        alt={item.product?.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-3">
-                                                        <h4 className="text-base font-serif font-medium">{item.product?.name || 'Product'}</h4>
-                                                        {item.status && item.status !== 'Ordered' && (
-                                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(item.status)}`}>
-                                                                {item.status}
-                                                            </span>
-                                                        )}
+                                            <div key={i} className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-between items-start sm:items-center py-4 border-b border-slate-50 last:border-b-0 w-full">
+                                                <div className="flex gap-4 items-center flex-1 w-full">
+                                                    <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
+                                                        <img
+                                                            src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
+                                                            alt={item.product?.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
                                                     </div>
-                                                    <p className="text-xs text-slate-500 mt-1">Qty: {item.quantity} | Size: {item.size} | Color: {item.color}</p>
-                                                    <p className="text-sm font-bold text-slate-900 mt-2">${item.price || item.product?.price}</p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <h4 className="text-base font-serif font-medium truncate">{item.product?.name || 'Product'}</h4>
+                                                            {item.status && item.status !== 'Ordered' && (
+                                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(item.status)}`}>
+                                                                    {item.status}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 mt-1">Qty: {item.quantity} | Size: {item.size} | Color: {item.color}</p>
+                                                        <p className="text-sm font-bold text-slate-900 mt-2">${item.price || item.product?.price}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="flex gap-4 items-center">
+                                                <div className="flex gap-4 items-center self-end sm:self-auto mt-2 sm:mt-0">
                                                     {item.status === 'Delivered' && (
                                                         <button
                                                             onClick={() => setReviewModal({ isOpen: true, productId: item.product._id })}
@@ -413,10 +415,10 @@ export default function Orders() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="p-8 bg-slate-50/20 border-t border-slate-50 flex justify-end">
+                                    <div className="p-4 sm:p-8 bg-slate-50/20 border-t border-slate-50 flex justify-end">
                                         <button
                                             onClick={() => handleViewDetails(order)}
-                                            className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-black transition-all"
+                                            className="px-6 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-black transition-all w-full sm:w-auto text-center"
                                         >
                                             View Details
                                         </button>
@@ -506,10 +508,10 @@ export default function Orders() {
                             initial={{ opacity: 0, scale: 0.9, y: 30 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9, y: 30 }}
-                            className="relative bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                            className="relative bg-white w-full max-w-2xl rounded-3xl sm:rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                         >
                             {/* Modal Header */}
-                            <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+                            <div className="p-4 sm:p-8 border-b border-slate-50 flex flex-col sm:flex-row gap-4 justify-between sm:items-center bg-slate-50/30">
                                 <div>
                                     <h3 className="text-2xl font-serif font-medium text-slate-900">Order Details</h3>
                                     <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mt-1">#{detailsModal.order._id.toUpperCase()}</p>
@@ -534,8 +536,8 @@ export default function Orders() {
                             </div>
 
                             {/* Modal Content */}
-                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                            <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 mb-10">
                                     {/* Shipping Address */}
                                     <div>
                                         <h4 className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-4">Shipping Destination</h4>
@@ -598,7 +600,7 @@ export default function Orders() {
                                 </div>
 
                                 {/* Pricing Breakdown */}
-                                <div className="bg-slate-900 rounded-[2rem] p-8 text-white">
+                                <div className="bg-slate-900 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-8 text-white">
                                     {(() => {
                                         const activeItems = detailsModal.order.items.filter(item => !['Cancelled', 'Returned'].includes(item.status));
                                         const subtotal = activeItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -631,7 +633,7 @@ export default function Orders() {
                                                 </div>
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-xs font-black uppercase tracking-[0.3em] text-white/40">Total Amount</span>
-                                                    <span className="text-3xl font-serif tracking-tighter">${total.toFixed(2)}</span>
+                                                    <span className="text-xl sm:text-3xl font-serif tracking-tighter">${total.toFixed(2)}</span>
                                                 </div>
                                             </>
                                         );
