@@ -1,7 +1,7 @@
 const Product = require('../Modals/Product');
 const logger = require('../utils/logger');
 const { NotFoundError, AuthorizationError } = require('../utils/errors');
-const s3Service = require('./s3Service');
+const { deleteLocalFile } = require('../utils/fileHelper');
 
 
 class ProductService {
@@ -106,10 +106,7 @@ class ProductService {
       const removedImages = oldImages.filter(img => !newImages.includes(img));
       
       for (const imgUrl of removedImages) {
-        const key = s3Service.getS3KeyFromUrl(imgUrl);
-        if (key) {
-          await s3Service.deleteImage(key);
-        }
+        deleteLocalFile(imgUrl);
       }
     }
 
@@ -130,10 +127,7 @@ class ProductService {
     // Delete all S3 images associated with the product
     if (product.image && Array.isArray(product.image)) {
       for (const imgUrl of product.image) {
-        const key = s3Service.getS3KeyFromUrl(imgUrl);
-        if (key) {
-          await s3Service.deleteImage(key);
-        }
+        deleteLocalFile(imgUrl);
       }
     }
 

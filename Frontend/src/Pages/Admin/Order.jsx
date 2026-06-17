@@ -293,19 +293,19 @@ export default function Order() {
                     </div>
 
                     {/* Filters */}
-                    <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 mb-8">
+                    <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-100 mb-8">
                         <div className="flex flex-wrap items-center justify-between">
                             <div className="flex flex-wrap items-center gap-2 flex-1">
                                 <div className="flex bg-slate-100 p-1.5 rounded-2xl">
                                     <button
                                         onClick={() => setViewMode('orders')}
-                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'orders' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        className={`px-3 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'orders' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         All Orders
                                     </button>
                                     <button
                                         onClick={() => setViewMode('returns')}
-                                        className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'returns' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        className={`px-2 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${viewMode === 'returns' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         Return Requests
                                     </button>
