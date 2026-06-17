@@ -56,7 +56,6 @@ export default function ProductListing() {
 		}
 	}, [categoryParam]);
 
-	// Fetch filtered products from backend
 	useEffect(() => {
 		const fetchFilteredProducts = async () => {
 			setIsLoading(true);
@@ -85,7 +84,7 @@ export default function ProductListing() {
 		return () => clearTimeout(debounceTimer);
 	}, [search, selectedCategories, priceRange, selectedRating]);
 
-	// Clientside filters and sorting
+	//  filters and sorting
 	const filteredProducts = useMemo(() => {
 		let result = [...products];
 
@@ -114,7 +113,7 @@ export default function ProductListing() {
 		<div className="bg-[#FDFDFB] min-h-screen text-[#1A1A1A] font-sans selection:bg-slate-900 selection:text-white mt-[50px]">
 
 			{/* Banner */}
-			<div className="max-w-[1800px] mx-auto px-4 sm:px-8 pt-10 mt-[50px]">
+			<div className="max-w-[1800px] mx-auto px-4 sm:px-8 pt-10">
 				<div className="bg-white/40 backdrop-blur-xl border border-white/20 rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] overflow-hidden relative">
 					<div className="absolute top-0 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -mr-20 -mt-20 animate-pulse" />
 					<div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
@@ -131,7 +130,20 @@ export default function ProductListing() {
 								A meticulously curated selection of timeless pieces, designed for the discerning individual who appreciates subtle luxury.
 							</p>
 						</div>
-						<div className="flex items-center gap-4 bg-white/80 p-2 rounded-2xl shadow-sm border border-slate-100 w-full md:w-auto justify-between md:justify-start">
+						<div className="flex items-center gap-4 p-2 rounded-2xl shadow-sm border border-slate-100 w-full md:w-auto justify-between md:justify-start">
+							{/* Keyword Search */}
+							<div className="space-y-6">
+								<div className="min-w-[400px] flex items-center bg-slate-50 border border-slate-100 focus-within:border-slate-900 rounded-xl px-4 py-3 transition-all duration-300">
+									<input
+										type="text"
+										placeholder="Search products..."
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										className="bg-transparent border-none text-xs w-full outline-none font-bold text-slate-900 placeholder:text-slate-400"
+									/>
+									<SearchIcon className="w-4 h-4 text-slate-400" />
+								</div>
+							</div>
 							<button
 								onClick={() => setIsSidebarOpen(!isSidebarOpen)}
 								className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
@@ -181,23 +193,7 @@ export default function ProductListing() {
 							</button>
 						</div>
 
-						{/* Keyword Search */}
-						<div className="space-y-6">
-							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
-								Keyword Search
-								<div className="flex-1 h-px bg-slate-100" />
-							</h3>
-							<div className="flex items-center bg-slate-50 border border-slate-200 focus-within:border-slate-900 rounded-xl px-4 py-3 transition-all duration-300">
-								<input
-									type="text"
-									placeholder="Search products..."
-									value={search}
-									onChange={(e) => setSearch(e.target.value)}
-									className="bg-transparent border-none text-xs w-full outline-none font-bold text-slate-900 placeholder:text-slate-400"
-								/>
-								<SearchIcon className="w-4 h-4 text-slate-400" />
-							</div>
-						</div>
+
 
 						<div className="space-y-6">
 							<h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-600 flex items-center gap-4">
@@ -255,8 +251,8 @@ export default function ProductListing() {
 										key={stars}
 										onClick={() => setSelectedRating(selectedRating === stars ? 0 : stars)}
 										className={`flex items-center justify-between px-4 py-3 rounded-xl border text-[11px] font-bold transition-all duration-300 ${selectedRating === stars
-												? 'bg-slate-900 border-slate-900 text-white shadow-md'
-												: 'bg-white border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900'
+											? 'bg-slate-900 border-slate-900 text-white shadow-md'
+											: 'bg-white border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900'
 											}`}
 									>
 										<div className="flex items-center gap-1.5">
@@ -437,8 +433,8 @@ function ProductCard({ product, onClick }) {
 						else addToWishlist(product);
 					}}
 					className={`absolute top-6 right-6 p-3 backdrop-blur-md rounded-full border transition-all duration-500 translate-y-2 group-hover:translate-y-0 hover:scale-110 active:scale-95 ${isWishlisted
-							? 'bg-red-50/80 border-red-200 opacity-100'
-							: 'bg-white/60 border-white/40 opacity-0 group-hover:opacity-100 hover:bg-white'
+						? 'bg-red-50/80 border-red-200 opacity-100'
+						: 'bg-white/60 border-white/40 opacity-0 group-hover:opacity-100 hover:bg-white'
 						}`}
 				>
 					<HeartIcon className={`w-4 h-4 transition-colors duration-300 ${isWishlisted ? 'text-red-500 fill-red-500' : 'text-slate-900'}`} filled={isWishlisted} />

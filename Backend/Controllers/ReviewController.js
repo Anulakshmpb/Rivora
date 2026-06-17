@@ -8,7 +8,7 @@ const ReviewController = {
 			let imgPath = '';
 
 			if (req.file) {
-				imgPath = req.file.s3Url || `/uploads/${req.file.filename}`;
+				imgPath = `/uploads/${req.file.filename}`;
 			}
 			const newReview = await Review.create({
 				name,

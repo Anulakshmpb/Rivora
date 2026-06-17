@@ -49,6 +49,9 @@ module.exports = {
           secondary: '#0f172a',
           accent: '#b45309',
           gold: '#c5a880',
+          blue: '#2563eb',
+          emerald: '#10b981',
+          rose: '#f43f5e',
         }
       }
     },

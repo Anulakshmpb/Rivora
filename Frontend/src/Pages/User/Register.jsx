@@ -101,7 +101,7 @@ const {showToast}=useToast();
             </div>
 
             {/* Right Side */}
-            <div className="flex w-full flex-col items-center justify-center bg-white p-4 sm:p-8 lg:w-1/2 mt-5">
+            <div className="flex w-full flex-col items-center justify-center bg-white p-6 sm:p-8 lg:w-1/2">
                 <div className="w-full max-w-lg space-y-6">
                     <div className="text-center lg:text-left">
                         <p className="text-md font-bold uppercase tracking-widest text-gray-700 mb-2">Create Account</p>

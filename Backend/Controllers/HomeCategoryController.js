@@ -1,6 +1,6 @@
 const BaseController = require('./BaseController');
 const HomeCategory = require('../Modals/HomeCategory');
-const s3Service = require('../Services/s3Service');
+const { deleteLocalFile } = require('../utils/fileHelper');
 
 
 class HomeCategoryController extends BaseController {
@@ -11,7 +11,7 @@ class HomeCategoryController extends BaseController {
 
 	static create = BaseController.asyncHandler(async (req, res) => {
 		const { title, description, buttonText, link } = req.body;
-		const image = req.file ? (req.file.s3Url || `/uploads/${req.file.filename}`) : null;
+		const image = req.file ? `/uploads/${req.file.filename}` : null;
 
 		if (!title || !description || !buttonText || !link || !image) {
 			return BaseController.sendError(res, 'All fields are required (title, description, buttonText, link, image)', 400);
@@ -41,7 +41,7 @@ class HomeCategoryController extends BaseController {
 		};
 
 		if (req.file) {
-			updateData.image = req.file.s3Url || `/uploads/${req.file.filename}`;
+			updateData.image = `/uploads/${req.file.filename}`;
 		}
 
 		const oldItem = await HomeCategory.findById(req.params.id);
@@ -51,10 +51,7 @@ class HomeCategoryController extends BaseController {
 
 		// Delete old image from S3 if a new one is uploaded
 		if (req.file && oldItem.image) {
-			const oldKey = s3Service.getS3KeyFromUrl(oldItem.image);
-			if (oldKey) {
-				await s3Service.deleteImage(oldKey);
-			}
+			deleteLocalFile(oldItem.image);
 		}
 
 		const item = await HomeCategory.findByIdAndUpdate(
@@ -74,12 +71,8 @@ class HomeCategoryController extends BaseController {
 			return BaseController.sendError(res, 'Home category not found', 404);
 		}
 
-		// Delete image from S3
 		if (item.image) {
-			const key = s3Service.getS3KeyFromUrl(item.image);
-			if (key) {
-				await s3Service.deleteImage(key);
-			}
+			deleteLocalFile(item.image);
 		}
 
 		await item.deleteOne();
