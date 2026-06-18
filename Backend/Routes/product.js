@@ -1,6 +1,6 @@
 const express = require('express');
 const ProductController = require('../Controllers/ProductController');
-const { authenticateUserOrAdmin } = require('../Middlewares/auth');
+const { authenticateUserOrAdmin, optionalAuth } = require('../Middlewares/auth');
 const checkUserStatus = require('../Middlewares/checkUserStatus');
 const upload = require('../Middlewares/multer');
 
@@ -12,9 +12,9 @@ const {
 
 const router = express.Router();
 
-// Public
-router.get('/', ProductController.getAll);
-router.get('/:id', ProductController.getOne);
+// Public (but attach admin/user context if token present)
+router.get('/', optionalAuth, ProductController.getAll);
+router.get('/:id', optionalAuth, ProductController.getOne);
 
 // Protected 
 router.use(checkUserStatus, authenticateUserOrAdmin);

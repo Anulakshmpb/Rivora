@@ -11,6 +11,7 @@ export default function HomeCategory() {
     const [form, setForm] = useState({ title: '', description: '', buttonText: '', link: '', image: null });
     const [preview, setPreview] = useState(null);
     const [editId, setEditId] = useState(null);
+    const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null, title: '' });
 
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -89,22 +90,17 @@ export default function HomeCategory() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Delete this item?')) return;
+    const handleDelete = (id, title) => {
+        setDeleteModal({ isOpen: true, id, title });
+    };
+
+    const confirmDelete = async () => {
         try {
-            await axiosInstance.delete(`/api/home-categories/${id}`);
+            await axiosInstance.delete(`/api/home-categories/${deleteModal.id}`);
             fetchItems();
         } catch (err) { alert('Delete failed'); }
+        finally { setDeleteModal({ isOpen: false, id: null, title: '' }); }
     };
-
-    const inputStyle = {
-        width: '100%', padding: '12px 16px', border: '2px solid #e2e8f0', borderRadius: '12px',
-        fontSize: '14px', fontFamily: 'Inter, sans-serif', fontWeight: 500, color: '#1e293b',
-        background: '#f8fafc', outline: 'none', transition: 'all 0.2s',
-    };
-
-    const labelStyle = { fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block' };
-
     return (
         <div className="min-h-screen bg-slate-50 flex font-inter">
             <SideBar />
@@ -257,7 +253,7 @@ export default function HomeCategory() {
                                                         <button onClick={() => handleEdit(item)} className="p-2 bg-white text-amber-500 rounded-xl shadow-sm border border-slate-100 hover:bg-amber-50 transition-all duration-300">
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                                         </button>
-                                                        <button onClick={() => handleDelete(item._id)} className="p-2 bg-white text-rose-500 rounded-xl shadow-sm border border-slate-100 hover:bg-rose-50 transition-all duration-300">
+                                                        <button onClick={() => handleDelete(item._id, item.title)} className="p-2 bg-white text-rose-500 rounded-xl shadow-sm border border-slate-100 hover:bg-rose-50 transition-all duration-300">
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                         </button>
                                                     </div>
@@ -271,6 +267,42 @@ export default function HomeCategory() {
                     </div>
                 </div>
             </main>
+
+            {/* Delete Confirmation Modal */}
+            {deleteModal.isOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 space-y-6 animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-black text-slate-900">Delete Item</h2>
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">This action cannot be undone</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-slate-600 font-medium">
+                            Are you sure you want to delete <span className="font-black text-slate-900">&ldquo;{deleteModal.title}&rdquo;</span>?
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setDeleteModal({ isOpen: false, id: null, title: '' })}
+                                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-600 hover:bg-slate-50 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-black transition-all shadow-lg shadow-rose-600/20 active:scale-95"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

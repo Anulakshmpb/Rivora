@@ -22,8 +22,8 @@ export default function Checkout() {
     const [isProcessing, setIsProcessing] = useState(false);
 
     const [shippingMethod, setShippingMethod] = useState('standard');
-    const [couponCode, setCouponCode] = useState('');
-    const [isVerifying, setIsVerifying] = useState(false);
+    // const [couponCode, setCouponCode] = useState('');
+    // const [isVerifying, setIsVerifying] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function Checkout() {
             } catch (err) {
                 console.error('Failed to fetch addresses:', err);
                 if (err.status !== 401) {
-                    showToast('Error', 'Failed to fetch addresses', 'error');
+                    showToast('Failed to fetch addresses', 'error');
                 }
             } finally {
                 setLoadingAddresses(false);
@@ -59,7 +59,7 @@ export default function Checkout() {
     useEffect(() => {
         if (appliedCoupon && cartTotalPrice < appliedCoupon.minAmount) {
             setAppliedCoupon(null);
-            showToast('Coupon Removed', `Cart total is now below ₹${appliedCoupon.minAmount}. Coupon removed.`, 'warning');
+            showToast(`Cart total is now below ₹${appliedCoupon.minAmount}. Coupon removed.`, 'warning');
         }
     }, [cartTotalPrice, appliedCoupon, showToast]);
 
@@ -213,16 +213,16 @@ export default function Checkout() {
                         });
 
                         if (verifyRes.success) {
-                            showToast('Success', 'Order placed successfully!', 'success');
+                            showToast('Order placed successfully!', 'success');
                             addNotification(`Order placed successfully! Order #${verifyRes.data._id.slice(-8).toUpperCase()}`, 'success');
                             clearCart();
                             navigate('/order-success', { state: { order: verifyRes.data } });
                         } else {
-                            showToast('Error', 'Payment verification failed', 'error');
+                            showToast('Payment verification failed', 'error');
                             navigate('/payment-failed');
                         }
                     } catch (err) {
-                        showToast('Error', err.message || 'Verification failed', 'error');
+                        showToast(err.message || 'Verification failed', 'error');
                         navigate('/payment-failed');
                     }
                 },
@@ -249,7 +249,7 @@ export default function Checkout() {
 
         } catch (err) {
             console.error('Payment Error:', err);
-            showToast('Error', err.message || 'Something went wrong', 'error');
+            showToast(err.message || 'Something went wrong', 'error');
             setIsProcessing(false);
         }
     };
