@@ -36,11 +36,11 @@ export default function UserManagement() {
 	);
 
 	const openView = (user) => { setSelectedUser(user); setModalMode("view"); };
-	const openEdit = (user) => {
-		setSelectedUser(user);
-		setEditForm({ name: user.name || "", email: user.email || "", phone: user.phone || "" });
-		setModalMode("edit");
-	};
+	// const openEdit = (user) => {
+	// 	setSelectedUser(user);
+	// 	setEditForm({ name: user.name || "", email: user.email || "", phone: user.phone || "" });
+	// 	setModalMode("edit");
+	// };
 	const openDelete = (user) => { setSelectedUser(user); setModalMode("delete"); };
 	const closeModal = () => { setSelectedUser(null); setModalMode(null); };
 
@@ -88,12 +88,12 @@ export default function UserManagement() {
 		</div>
 	);
 
-	const InfoRow = ({ label, value }) => (
-		<div className="flex justify-between items-center py-2.5 border-b border-slate-50 last:border-0">
-			<span className="text-[12px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
-			<span className="text-sm font-semibold text-slate-700 text-right max-w-[60%]">{value || "—"}</span>
-		</div>
-	);
+	// const InfoRow = ({ label, value }) => (
+	// 	<div className="flex justify-between items-center py-2.5 border-b border-slate-50 last:border-0">
+	// 		<span className="text-[12px] font-bold text-gray-500 uppercase tracking-widest">{label}</span>
+	// 		<span className="text-sm font-semibold text-slate-700 text-right max-w-[60%]">{value || "—"}</span>
+	// 	</div>
+	// );
 
 	const formatDate = (d) => d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "N/A";
 

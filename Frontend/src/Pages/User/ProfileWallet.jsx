@@ -34,7 +34,7 @@ export default function ProfileWallet() {
                 }
             } catch (err) {
                 console.error('Error fetching wallet:', err);
-                showToast('Error', 'Failed to load wallet data', 'error');
+                showToast( 'Failed to load wallet data', 'error');
             } finally {
                 setIsLoading(false);
             }

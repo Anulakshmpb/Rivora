@@ -175,10 +175,40 @@ const authenticateUserOrAdmin = async (req, res, next) => {
 
 const verifyAdminToken = authenticateAdmin;
 
+// Optional: attaches req.admin or req.user if token present, never blocks the request
+const optionalAuth = async (req, res, next) => {
+    try {
+        const adminToken = extractToken(req, 'admin');
+        const userToken = extractToken(req, 'user');
+
+        if (adminToken) {
+            try {
+                const decodedAdmin = jwtVerifyAdminToken(adminToken);
+                const admin = await findAdmin(decodedAdmin.id);
+                if (admin && admin.status !== 'banned') {
+                    req.admin = admin;
+                }
+            } catch (_) { /* invalid admin token – ignore */ }
+        }
+
+        if (!req.admin && userToken) {
+            try {
+                const decodedUser = verifyUserToken(userToken);
+                const user = await findUser(decodedUser.id);
+                if (user && user.status !== 'banned') {
+                    req.user = user;
+                }
+            } catch (_) { /* invalid user token – ignore */ }
+        }
+    } catch (_) { /* silently fail */ }
+    return next();
+};
+
 module.exports = {
     authenticateUser,
     authenticateAdmin,
     verifyAdminToken,
     requireAdmin,
-    authenticateUserOrAdmin
+    authenticateUserOrAdmin,
+    optionalAuth
 };

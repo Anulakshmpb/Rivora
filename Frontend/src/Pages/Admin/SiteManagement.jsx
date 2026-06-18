@@ -150,7 +150,7 @@ export const Coupons = () => {
             const res = await axiosInstance.get('/api/coupons');
             setCoupons(res.data?.coupons || []);
         } catch (err) {
-            showToast('Failed to fetch coupons', err.message || 'Something went wrong', 'error');
+            showToast( err.message || 'Something went wrong', 'error');
         } finally {
             setLoading(false);
         }
@@ -172,22 +172,22 @@ export const Coupons = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!form.name || !form.code || !form.discount || form.minAmount === '' || !form.expiryDate) {
-            return showToast('Warning', 'All fields are required', 'warning');
+            return showToast('All fields are required', 'warning');
         }
 
         setSaving(true);
         try {
             if (editId) {
                 await axiosInstance.put(`/api/coupons/${editId}`, form);
-                showToast('Success', 'Coupon updated successfully', 'success');
+                showToast( 'Coupon updated successfully', 'success');
             } else {
                 await axiosInstance.post('/api/coupons', form);
-                showToast('Success', 'Coupon created successfully', 'success');
+                showToast( 'Coupon created successfully', 'success');
             }
             resetForm();
             fetchCoupons();
         } catch (err) {
-            showToast('Error', err.response?.data?.message || 'Failed to save coupon', 'error');
+            showToast( err.response?.data?.message || 'Failed to save coupon', 'error');
         } finally {
             setSaving(false);
         }
@@ -209,10 +209,10 @@ export const Coupons = () => {
         if (!itemToDelete) return;
         try {
             await axiosInstance.delete(`/api/coupons/${itemToDelete._id}`);
-            showToast('Success', 'Coupon deleted permanently', 'success');
+            showToast('Coupon deleted permanently', 'success');
             fetchCoupons();
         } catch (err) {
-            showToast('Error', err.response?.data?.message || 'Delete failed', 'error');
+            showToast( err.response?.data?.message || 'Delete failed', 'error');
         } finally {
             setIsDeleteModalOpen(false);
             setItemToDelete(null);
@@ -587,7 +587,7 @@ export const Contact = () => {
                     setForm({ email, phone, address, googleMapsUrl, socialLinks: mappedSocial });
                 }
             } catch (err) {
-                showToast('Error', 'Failed to fetch contact info', 'error');
+                showToast( 'Failed to fetch contact info', 'error');
             } finally {
                 setLoading(false);
             }
@@ -610,9 +610,9 @@ export const Contact = () => {
         setSaving(true);
         try {
             await axiosInstance.put('/api/contact', form);
-            showToast('Success', 'Contact information updated successfully', 'success');
+            showToast( 'Contact information updated successfully', 'success');
         } catch (err) {
-            showToast('Error', err.response?.data?.message || 'Failed to update', 'error');
+            showToast( err.response?.data?.message || 'Failed to update', 'error');
         } finally {
             setSaving(false);
         }

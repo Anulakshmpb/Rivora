@@ -88,13 +88,13 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 				headers: { 'Content-Type': 'multipart/form-data' }
 			});
 
-			showToast('Thank you!', 'Your review has been submitted successfully.', 'success');
+			showToast('Thank you!,Your review has been submitted successfully.', 'success');
 			setForm({ name: '', email: '', rating: 0, review: '' });
 			setImage(null);
 			setImagePreview(null);
 			onClose();
 		} catch (err) {
-			showToast('Error', err.response?.data?.message || 'Failed to submit review', 'error');
+			showToast( err.response?.data?.message || 'Failed to submit review', 'error');
 		} finally {
 			setIsSubmitting(false);
 		}

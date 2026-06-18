@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import authService from '../../api/authService';
 import Loader from '../../Components/Loader';
 
 export default function Address() {
-    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);

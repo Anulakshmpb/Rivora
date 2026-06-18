@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Users, ShoppingCart, DollarSign, Activity, CheckCircle, Clock, AlertCircle, TrendingUp
+    Users, ShoppingCart, DollarSign, Activity, CheckCircle, Clock, TrendingUp
 } from 'lucide-react';
 import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';

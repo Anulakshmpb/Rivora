@@ -6,15 +6,15 @@ const Footer = () => {
     const navigate = useNavigate();
     // SVG Icons
     const InstagramIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
     );
 
     const FacebookIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
     );
 
     const TwitterIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" /></svg>
     );
 
     return (
@@ -27,13 +27,16 @@ const Footer = () => {
                         Defining Luxury Through the lens of timeless elegance and modern sophistication. Modern fashion for modern life.
                     </p>
                     <div className="flex gap-4">
-                        <button className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
+                        <button onClick={navigate("https://instagram.com")}
+                            className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <InstagramIcon />
                         </button>
-                        <button className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
+                        <button onClick={navigate("https://facebook.com")}
+                            className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <FacebookIcon />
                         </button>
-                        <button className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
+                        <button onClick={navigate("https://twitter.com")}
+                            className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <TwitterIcon />
                         </button>
                     </div>
@@ -68,10 +71,10 @@ const Footer = () => {
                     <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Account & Info</h4>
                     <ul className="space-y-4">
                         <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Account</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Sustainability</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Our Story</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Careers</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Store Locator</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Orders</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wallet</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Addresses</button></li>
+                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wishlist</button></li>
                     </ul>
                 </div>
 
@@ -82,9 +85,9 @@ const Footer = () => {
                         Join our newsletter and receive 10% off your first order.
                     </p>
                     <div className="flex flex-col gap-3">
-                        <input 
-                            type="email" 
-                            placeholder="Email Address" 
+                        <input
+                            type="email"
+                            placeholder="Email Address"
                             className="bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 text-xs md:text-sm focus:bg-white focus:border-black transition-all outline-none"
                         />
                         <button className="w-full bg-black text-white text-xs md:text-sm font-black uppercase tracking-widest py-4 rounded-xl hover:translate-y-[-2px] transition-all active:scale-[0.98]">
@@ -102,7 +105,7 @@ const Footer = () => {
                     <button className="text-xs text-gray-500 hover:text-black transition-colors">Terms of Service</button>
                     <button className="text-xs text-gray-500 hover:text-black transition-colors">Refund Policy</button>
                 </div>
-                
+
                 <div className="flex items-center gap-4 grayscale opacity-100 hover:grayscale-0 transition-all duration-500">
                     <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Secure Checkout</p>
                 </div>

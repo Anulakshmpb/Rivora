@@ -35,7 +35,7 @@ export default function Cart() {
     React.useEffect(() => {
         if (appliedCoupon && cartTotalPrice < appliedCoupon.minAmount) {
             setAppliedCoupon(null);
-            showToast('Coupon Removed', `Cart total is now below ₹${appliedCoupon.minAmount}. Coupon removed.`, 'warning');
+            showToast(`Cart total is now below ₹${appliedCoupon.minAmount}. Coupon removed.`, 'warning');
         }
     }, [cartTotalPrice, appliedCoupon, showToast]);
 
@@ -48,9 +48,9 @@ export default function Cart() {
                 cartTotal: cartTotalPrice
             });
             setAppliedCoupon(res.data);
-            showToast('Success', `Coupon "${res.data.code}" applied!`, 'success');
+            showToast(`Coupon "${res.data.code}" applied!`, 'success');
         } catch (err) {
-            showToast('Invalid Coupon', err.message || 'Failed to apply coupon', 'error');
+            showToast(err.message || 'Failed to apply coupon', 'error');
             setAppliedCoupon(null);
         } finally {
             setIsVerifying(false);
@@ -60,7 +60,7 @@ export default function Cart() {
     const removeCoupon = () => {
         setAppliedCoupon(null);
         setCouponCode('');
-        showToast('Coupon Removed', 'The discount has been removed', 'info');
+        showToast('The discount has been removed', 'info');
     };
 
     const shipping = cartTotalItems > 0 ? 15.00 : 0;
@@ -70,7 +70,7 @@ export default function Cart() {
 
     const handleCheckout = () => {
         if (!isAuthenticated) {
-            showToast('Login Required', 'Please login to proceed with checkout.', 'info');
+            showToast('Please login to proceed with checkout.', 'info');
             navigate('/login', { state: { from: '/cart' } });
             return;
         }
@@ -82,7 +82,7 @@ export default function Cart() {
 
         if (outOfStockItems.length > 0) {
             const firstItem = outOfStockItems[0];
-            showToast('Insufficient Stock', `"${firstItem.product.name}" only has ${firstItem.product.quantity} items left.`, 'error');
+            showToast(`"${firstItem.product.name}" only has ${firstItem.product.quantity} items left.`, 'error');
             return;
         }
 

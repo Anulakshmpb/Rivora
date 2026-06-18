@@ -18,7 +18,6 @@ const CalendarIcon = () => (
 );
 
 export default function Orders() {
-    const { addNotification } = useNotification();
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [returnReason, setReturnReason] = useState('');
@@ -201,7 +200,7 @@ export default function Orders() {
             }
         } catch (err) {
             console.error('Error fetching orders:', err);
-            showToast('Error', 'Failed to load your orders', 'error');
+            showToast('Failed to load your orders', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -269,11 +268,11 @@ export default function Orders() {
                         successMessage += ` Available coupons: ${couponsList}`;
                     }
                 }
-                showToast('Success', successMessage, 'success');
+                showToast( successMessage, 'success');
                 fetchOrders();
             }
         } catch (err) {
-            showToast('Error', err.response?.data?.message || `Failed to ${type} item`, 'error');
+            showToast( err.response?.data?.message || `Failed to ${type} item`, 'error');
         }
     };
 
