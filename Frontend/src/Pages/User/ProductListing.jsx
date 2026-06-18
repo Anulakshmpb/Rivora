@@ -323,7 +323,7 @@ export default function ProductListing() {
 						</div>
 					) : paginatedProducts.length > 0 ? (
 						<>
-							<div className={`grid grid-cols-1 md:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-x-10 gap-y-20 transition-all duration-700 ease-in-out flex-1`}>
+							<div className={`grid grid-cols-2 md:grid-cols-2 ${isSidebarOpen ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-x-10 gap-y-20 transition-all duration-700 ease-in-out flex-1`}>
 								{paginatedProducts.map(product => (
 									<ProductCard
 										key={product._id}
