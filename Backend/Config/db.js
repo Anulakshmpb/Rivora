@@ -31,8 +31,6 @@ class DbConnection {
 			console.log("db connected");
 			this.registerEvents();
 
-
-
 		} catch (error) {
 			console.log("Database connection error:", error);
 			process.exit(1);
