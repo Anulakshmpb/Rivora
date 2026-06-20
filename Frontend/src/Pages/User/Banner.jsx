@@ -12,7 +12,7 @@ const Banner = () => {
 	const navigate = useNavigate();
 	const [banners, setBanners] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+	const API_URL = process.env.REACT_APP_API_URL || 'http://13.238.159.254:5000';
 
 
 	useEffect(() => {

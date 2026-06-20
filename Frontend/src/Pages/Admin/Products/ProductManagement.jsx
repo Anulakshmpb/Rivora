@@ -245,7 +245,7 @@ export default function ProductManagement() {
                           <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden ring-1 ring-slate-200 shadow-sm">
                             {product.displayImage ? (
                               <img
-                                src={product.displayImage.startsWith('http') || product.displayImage.startsWith('/uploads') ? (product.displayImage.startsWith('http') ? product.displayImage : `http://localhost:5000${product.displayImage}`) : product.displayImage}
+                                src={product.displayImage.startsWith('http') || product.displayImage.startsWith('/uploads') ? (product.displayImage.startsWith('http') ? product.displayImage : `http://13.238.159.254:5000${product.displayImage}`) : product.displayImage}
                                 alt={product.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
