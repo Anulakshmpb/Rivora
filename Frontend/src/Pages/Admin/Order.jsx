@@ -466,7 +466,7 @@ export default function Order() {
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-10 h-12 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0">
                                                                     <img
-                                                                        src={item.product?.image?.[0] ? `http://localhost:5000${item.product.image[0]}` : '/placeholder.png'}
+                                                                        src={item.product?.image?.[0] ? `http://13.238.159.254:5000${item.product.image[0]}` : '/placeholder.png'}
                                                                         className="w-full h-full object-cover"
                                                                         alt=""
                                                                     />
@@ -731,7 +731,7 @@ export default function Order() {
                                                         {/* Product Image */}
                                                         <div className="relative w-20 h-20 rounded-2xl bg-white border border-slate-100 overflow-hidden flex-shrink-0 shadow-sm group-hover:shadow-md transition-all">
                                                             <img
-                                                                src={item.product?.image?.[0] ? `http://localhost:5000${item.product.image[0]}` : '/placeholder.png'}
+                                                                src={item.product?.image?.[0] ? `http://13.238.159.254:5000${item.product.image[0]}` : '/placeholder.png'}
                                                                 alt={item.product?.name}
                                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                             />

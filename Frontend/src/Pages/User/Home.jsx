@@ -121,7 +121,7 @@ function Home() {
 												const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
 												if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
 												return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
-													? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`)
+													? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`)
 													: imgPath;
 											})()}
 											alt={product.name}
@@ -164,7 +164,7 @@ function Home() {
 											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
 											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
 											return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
-												? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`)
+												? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`)
 												: imgPath;
 										})()}
 										alt={product.name}
@@ -410,7 +410,7 @@ function Home() {
 											<div className="w-8 md:w-14 h-8 md:h-14 rounded-full bg-black flex items-center justify-center text-white font-black text-xl uppercase shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
 												{item.img ? (
 													<img
-														src={item.img.startsWith('http') ? item.img : `http://localhost:5000${item.img}`}
+														src={item.img.startsWith('http') ? item.img : `http://13.238.159.254:5000${item.img}`}
 														alt={item.name}
 														className="w-full h-full object-cover"
 													/>

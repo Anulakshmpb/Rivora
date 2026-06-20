@@ -354,7 +354,7 @@ export default function Orders() {
                                                 <div className="flex gap-4 items-center flex-1 w-full">
                                                     <div className="w-20 h-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
                                                         <img
-                                                            src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
+                                                            src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://13.238.159.254:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
                                                             alt={item.product?.name}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -574,7 +574,7 @@ export default function Orders() {
                                             <div key={i} className="flex gap-4 items-center bg-slate-50/50 p-4 rounded-2xl border border-slate-50">
                                                 <div className="w-16 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
                                                     <img
-                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://localhost:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
+                                                        src={item.product?.image?.[0] ? (item.product.image[0].startsWith('http') ? item.product.image[0] : `http://13.238.159.254:5000${item.product.image[0]}`) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E"}
                                                         alt={item.product?.name}
                                                         className="w-full h-full object-cover"
                                                     />

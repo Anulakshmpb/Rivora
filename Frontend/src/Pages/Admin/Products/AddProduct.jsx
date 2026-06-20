@@ -80,7 +80,7 @@ export default function AddProduct() {
 	useEffect(() => {
 		const fetchCategories = async () => {
 			try {
-				const response = await axios.get('http://localhost:5000/api/categories', {
+				const response = await axios.get('http://13.238.159.254:5000/api/categories', {
 					withCredentials: true
 				});
 				if (response.data.success) {
@@ -350,7 +350,7 @@ export default function AddProduct() {
 									{images.map((img, idx) => (
 										<div key={img.id || idx} className="aspect-[3/4] rounded-2xl bg-slate-100 relative overflow-hidden group border border-slate-100 shadow-sm">
 											<img
-												src={img.url.startsWith('http') || img.url.startsWith('/uploads') ? (img.url.startsWith('http') ? img.url : `http://localhost:5000${img.url}`) : img.url}
+												src={img.url.startsWith('http') || img.url.startsWith('/uploads') ? (img.url.startsWith('http') ? img.url : `http://13.238.159.254:5000${img.url}`) : img.url}
 												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 												alt="Preview"
 											/>

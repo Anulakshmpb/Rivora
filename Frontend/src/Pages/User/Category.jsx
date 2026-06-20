@@ -25,7 +25,7 @@ export default function Category() {
 						img: (() => {
 							const imgPath = cat.images?.[0] || '';
 							if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-							return imgPath.startsWith('http') || imgPath.startsWith('/uploads') || imgPath.startsWith('data:') ? (imgPath.startsWith('http') || imgPath.startsWith('data:') ? imgPath : `http://localhost:5000${imgPath}`) : imgPath;
+							return imgPath.startsWith('http') || imgPath.startsWith('/uploads') || imgPath.startsWith('data:') ? (imgPath.startsWith('http') || imgPath.startsWith('data:') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
 						})(),
 					}));
 
@@ -130,7 +130,7 @@ export default function Category() {
 											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
 											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
 											return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
-												? (imgPath.startsWith('http') ? imgPath : `http://localhost:5000${imgPath}`) 
+												? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) 
 												: imgPath;
 										})()}
 										alt={product.name}
