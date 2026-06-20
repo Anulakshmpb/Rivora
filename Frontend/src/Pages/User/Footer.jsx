@@ -27,15 +27,15 @@ const Footer = () => {
                         Defining Luxury Through the lens of timeless elegance and modern sophistication. Modern fashion for modern life.
                     </p>
                     <div className="flex gap-4">
-                        <button onClick={navigate("https://instagram.com")}
+                        <button onClick={() => window.open("https://instagram.com", "_blank")}
                             className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <InstagramIcon />
                         </button>
-                        <button onClick={navigate("https://facebook.com")}
+                        <button onClick={() => window.open("https://facebook.com", "_blank")}
                             className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <FacebookIcon />
                         </button>
-                        <button onClick={navigate("https://twitter.com")}
+                        <button onClick={() => window.open("https://twitter.com", "_blank")}
                             className="p-2 bg-gray-50 hover:bg-black hover:text-white rounded-full transition-all duration-300">
                             <TwitterIcon />
                         </button>
@@ -46,11 +46,12 @@ const Footer = () => {
                 <div className="space-y-6">
                     <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Collections</h4>
                     <ul className="space-y-4">
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">New Arrivals</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Best Sellers</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Seasonal Edits</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Men's Modern Style</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Women's Collection</button></li>
+                        <li><button onClick={() => navigate("/product-list?category=Summer Collections")}
+                         className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Summer Collections</button></li>
+                        <li><button onClick={() => navigate("/product-list?category=Trending Collections")} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Trending Collections</button></li>
+                        <li><button onClick={() => navigate("/product-list?category=Western Collections")} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Western Collections</button></li>
+                        <li><button onClick={() => navigate("/product-list?category=Men's Collections")} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Men's Modern Style</button></li>
+                        <li><button onClick={() => navigate("/product-list?category=Women's Collections")} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Women's Collection</button></li>
                     </ul>
                 </div>
 
@@ -59,10 +60,10 @@ const Footer = () => {
                     <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Customer Support</h4>
                     <ul className="space-y-4">
                         <li><button onClick={() => navigate('/contact')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Contact Us</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Shipping & Delivery</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Returns & Exchanges</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Track Order</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">FAQ</button></li>
+                        <li><button onClick={() => navigate('/orders')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Shipping & Delivery</button></li>
+                        <li><button onClick={() => navigate('/orders')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Returns & Exchanges</button></li>
+                        <li><button onClick={() => navigate('/orders')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">Track Order</button></li>
+                        <li><button onClick={() => navigate('/contact')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">FAQ</button></li>
                     </ul>
                 </div>
 
@@ -70,11 +71,11 @@ const Footer = () => {
                 <div className="space-y-6">
                     <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-gray-900">Account & Info</h4>
                     <ul className="space-y-4">
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Account</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Orders</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wallet</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Addresses</button></li>
-                        <li><button className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wishlist</button></li>
+                        <li><button onClick={() => navigate('/profile')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Account</button></li>
+                        <li><button onClick={() => navigate('/orders')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Orders</button></li>
+                        <li><button onClick={() => navigate('/profile')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wallet</button></li>
+                        <li><button onClick={() => navigate('/address')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Addresses</button></li>
+                        <li><button onClick={() => navigate('/wishlist')} className="text-gray-500 hover:text-black transition-colors text-xs md:text-sm font-medium">My Wishlist</button></li>
                     </ul>
                 </div>
 
@@ -101,9 +102,9 @@ const Footer = () => {
             <div className="max-w-[1440px] mx-auto px-3 lg:px-6 pt-5 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="flex flex-wrap justify-center md:justify-start gap-x-8 gap-y-2">
                     <p className="text-xs text-gray-400">© 2026. All rights reserved.</p>
-                    <button className="text-xs text-gray-500 hover:text-black transition-colors">Privacy Policy</button>
-                    <button className="text-xs text-gray-500 hover:text-black transition-colors">Terms of Service</button>
-                    <button className="text-xs text-gray-500 hover:text-black transition-colors">Refund Policy</button>
+                    <button onClick={() => navigate('/')} className="text-xs text-gray-500 hover:text-black transition-colors">Privacy Policy</button>
+                    <button onClick={() => navigate('/')} className="text-xs text-gray-500 hover:text-black transition-colors">Terms of Service</button>
+                    <button onClick={() => navigate('/')} className="text-xs text-gray-500 hover:text-black transition-colors">Refund Policy</button>
                 </div>
 
                 <div className="flex items-center gap-4 grayscale opacity-100 hover:grayscale-0 transition-all duration-500">
