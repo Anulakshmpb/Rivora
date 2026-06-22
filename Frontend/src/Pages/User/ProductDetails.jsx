@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useToast } from '../../Toast/ToastContext';
 import ReviewModal from './ReviewModal';
+import { getImageUrl } from '../../utils/getImageUrl';
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -141,7 +142,7 @@ export default function ProductDetails() {
                       }`}
                   >
                     <img
-                      src={img.startsWith('http') || img.startsWith('/uploads') ? (img.startsWith('http') ? img : `http://13.238.159.254:5000${img}`) : img}
+                      src={getImageUrl(img)}
                       className="w-full h-full object-cover"
                       alt={`Thumbnail ${i + 1}`}
                     />
@@ -160,7 +161,7 @@ export default function ProductDetails() {
                 src={(() => {
                   const imgPath = productImages[activeImage];
                   if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
-                  return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+                  return getImageUrl(imgPath);
                 })()}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-500 ease-out"
@@ -349,7 +350,7 @@ export default function ProductDetails() {
                     <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-black font-black text-lg overflow-hidden shadow-lg">
                       {item.img ? (
                         <img
-                          src={item.img.startsWith('http') ? item.img : `http://13.238.159.254:5000${item.img}`}
+                          src={item.img.startsWith('http') ? item.img : getImageUrl(item.img)}
                           alt={item.name.charAt(0).toUpperCase()}
                           className="w-full h-full object-cover"
                         />
@@ -438,7 +439,7 @@ function ProductCard({ product }) {
           src={(() => {
             const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
             if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
-            return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+            return getImageUrl(imgPath);
           })()}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"

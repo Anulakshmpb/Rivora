@@ -11,7 +11,7 @@ class HomeCategoryController extends BaseController {
 
 	static create = BaseController.asyncHandler(async (req, res) => {
 		const { title, description, buttonText, link } = req.body;
-		const image = req.file ? `/uploads/${req.file.filename}` : null;
+		const image = req.file ? (req.file.location || `/uploads/${req.file.filename}`) : null;
 
 		if (!title || !description || !buttonText || !link || !image) {
 			return BaseController.sendError(res, 'All fields are required (title, description, buttonText, link, image)', 400);
@@ -41,7 +41,7 @@ class HomeCategoryController extends BaseController {
 		};
 
 		if (req.file) {
-			updateData.image = `/uploads/${req.file.filename}`;
+			updateData.image = req.file.location || `/uploads/${req.file.filename}`;
 		}
 
 		const oldItem = await HomeCategory.findById(req.params.id);

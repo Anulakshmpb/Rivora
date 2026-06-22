@@ -3,6 +3,7 @@ import SideBar from './Layouts/SideBar';
 import Header from './Layouts/Header';
 import axiosInstance from '../../api/axiosInstance';
 import Loader from '../../Components/Loader';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 export default function HomeCategory() {
     const [items, setItems] = useState([]);
@@ -233,7 +234,7 @@ export default function HomeCategory() {
                                                 <td className="px-4 py-4 rounded-l-2xl text-xs font-black text-slate-500">{idx + 1}</td>
                                                 <td className="px-4 py-4">
                                                     <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-sm flex-shrink-0">
-                                                        <img src={`${API_URL}${item.image}`} alt={item.title} className="w-full h-full object-cover"
+                                                        <img src={getImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover"
                                                             onError={e => { e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect width='1' height='1' fill='%23f1f5f9'/%3E%3C/svg%3E"; }} />
                                                     </div>
                                                 </td>

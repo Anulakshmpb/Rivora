@@ -6,6 +6,7 @@ import axiosInstance from '../../api/axiosInstance';
 import { useToast } from '../../Toast/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Loader from '../../Components/Loader';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 const managementPages = [
     {
@@ -511,7 +512,7 @@ export const Reviews = () => {
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center gap-3">
                                             {review.img ? (
-                                                <img src={review.img.startsWith('http') || review.img.startsWith('/uploads') ? (review.img.startsWith('http') ? review.img : `http://13.238.159.254:5000${review.img}`) : review.img} alt={review.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100" />
+                                                <img src={getImageUrl(review.img)} alt={review.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100" />
                                             ) : (
                                                 <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
                                                     {review.name.charAt(0).toUpperCase()}

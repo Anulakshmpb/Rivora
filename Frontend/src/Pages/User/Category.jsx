@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
+import { getImageUrl } from '../../utils/getImageUrl';
 export default function Category() {
 	const [categories, setCategories] = useState([]);
 	const [products, setProducts] = useState([]);
@@ -24,8 +25,7 @@ export default function Category() {
 						title: cat.name,
 						img: (() => {
 							const imgPath = cat.images?.[0] || '';
-							if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-							return imgPath.startsWith('http') || imgPath.startsWith('/uploads') || imgPath.startsWith('data:') ? (imgPath.startsWith('http') || imgPath.startsWith('data:') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+							return getImageUrl(imgPath);
 						})(),
 					}));
 
@@ -126,13 +126,7 @@ export default function Category() {
 							>
 								<div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-50 mb-4 shadow-sm group-hover:shadow-2xl transition-all duration-700">
 									<img 
-										src={(() => {
-											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
-											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-											return imgPath.startsWith('http') || imgPath.startsWith('/uploads') 
-												? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) 
-												: imgPath;
-										})()}
+										src={getImageUrl(Array.isArray(product.image) ? product.image[0] : product.image)}
 										alt={product.name}
 										className="w-full h-full object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110"
 									/>

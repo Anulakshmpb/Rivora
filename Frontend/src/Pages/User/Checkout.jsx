@@ -7,6 +7,7 @@ import axiosInstance from '../../api/axiosInstance';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
 import Loader from '../../Components/Loader';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 export default function Checkout() {
     const { cartItems, cartTotalPrice, cartTotalItems, clearCart, appliedCoupon, setAppliedCoupon } = useCart();
@@ -431,7 +432,7 @@ export default function Checkout() {
                                             src={(() => {
                                                 const imgPath = Array.isArray(item.product.image) ? item.product.image[0] : (item.product.image || '');
                                                 if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
-                                                return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+                                                return getImageUrl(imgPath);
                                             })()}
                                             alt={item.product.name}
                                             className="w-full h-full object-cover"

@@ -165,7 +165,7 @@ const updateProductRules = [
 
 const preprocessProductData = (req, res, next) => {
   if (req.files && req.files.length > 0) {
-    const newImages = req.files.map(file => `/uploads/${file.filename}`);
+    const newImages = req.files.map(file => file.location || `/uploads/${file.filename}`);
     let existingImages = [];
     if (req.body.image) {
       try {

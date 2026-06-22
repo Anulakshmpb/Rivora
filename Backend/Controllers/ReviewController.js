@@ -8,7 +8,7 @@ const ReviewController = {
 			let imgPath = '';
 
 			if (req.file) {
-				imgPath = `/uploads/${req.file.filename}`;
+				imgPath = req.file.location || `/uploads/${req.file.filename}`;
 			}
 			const newReview = await Review.create({
 				name,
