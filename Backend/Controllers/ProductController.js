@@ -4,7 +4,8 @@ const { matchedData } = require('express-validator');
 
 class ProductController extends BaseController {
 	static getAll = BaseController.asyncHandler(async (req, res) => {
-		const ownerId = req.admin ? null : (req.user?._id || null);
+		// All users should see all active products
+		const ownerId = null; 
 		const { search, category, minPrice, maxPrice, rating } = req.query;
 
 		const queryOptions = {
@@ -20,7 +21,7 @@ class ProductController extends BaseController {
 	});
 
 	static getOne = BaseController.asyncHandler(async (req, res) => {
-		const ownerId = req.admin ? null : (req.user?._id || null);
+		const ownerId = null;
 		const product = await ProductService.getOne(req.params.id, ownerId, !!req.admin);
 		BaseController.sendSuccess(res, 'Product received successfully', { product });
 	});
