@@ -47,7 +47,7 @@ export default function Category() {
 
 	const filteredProducts = products.filter(p => {
 		if (!selectedCategory) return false;
-				const getCatName = (cat) => {
+		const getCatName = (cat) => {
 			if (!cat) return null;
 			if (typeof cat === 'string') return cat;
 			if (typeof cat === 'object' && cat.name) return cat.name;
@@ -57,7 +57,7 @@ export default function Category() {
 		if (Array.isArray(p.category)) {
 			return p.category.some(cat => getCatName(cat) === selectedCategory);
 		}
-		
+
 		return getCatName(p.category) === selectedCategory;
 	});
 	return (
@@ -67,7 +67,7 @@ export default function Category() {
 					display: none;
 				}
 			`}</style>
-			<div 
+			<div
 				className="flex overflow-x-auto md:flex-wrap items-center justify-start md:justify-center gap-4 sm:gap-6 md:gap-8 mb-10 sm:mb-20 pb-4 md:pb-0 no-scrollbar scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
 				style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
 			>
@@ -79,7 +79,7 @@ export default function Category() {
 					>
 						<div className={`relative overflow-hidden rounded-full mb-3 md:mb-6 transition-all duration-700 ${selectedCategory === item.name ? 'ring-2 md:ring-4 ring-black ring-offset-2 md:ring-offset-4 shadow-2xl' : 'shadow-sm group-hover:shadow-xl'}`}>
 							<img
-								className="h-14 w-14 sm:h-20 sm:w-20 md:h-32 md:w-32 object-cover transition-transform duration-700 group-hover:scale-105"
+								className="sm:h-10 sm:w-10 md:h-14 md:w-14 object-cover transition-transform duration-700 group-hover:scale-105"
 								src={item.img}
 								alt={item.title}
 							/>
@@ -119,13 +119,13 @@ export default function Category() {
 				) : filteredProducts.length > 0 ? (
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-6 gap-y-12">
 						{filteredProducts.map(product => (
-							<div 
+							<div
 								key={product._id}
 								onClick={() => navigate(`/product-list/${product._id}`, { state: { product } })}
 								className="group cursor-pointer flex flex-col"
 							>
 								<div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-50 mb-4 shadow-sm group-hover:shadow-2xl transition-all duration-700">
-									<img 
+									<img
 										src={getImageUrl(Array.isArray(product.image) ? product.image[0] : product.image)}
 										alt={product.name}
 										className="w-full h-full object-cover transition-all duration-[1.5s] ease-out group-hover:scale-110"
