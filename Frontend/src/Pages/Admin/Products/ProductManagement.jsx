@@ -181,7 +181,7 @@ export default function ProductManagement() {
                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
               />
             </div>
-            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex flex-nowrap overflow-x-auto items-center gap-3 w-full lg:w-auto pb-2 scrollbar-hide">
               <ActionButton icon={<FilterIcon />}>Filter</ActionButton>
               <div className="relative group">
                 <select
