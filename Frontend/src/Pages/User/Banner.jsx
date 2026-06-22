@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
+import { getImageUrl } from '../../utils/getImageUrl';
 import Loader from '../../Components/Loader';
 import "swiper/css";
 import "swiper/css/navigation";
@@ -23,7 +24,7 @@ const Banner = () => {
 
 				if (items.length > 0) {
 					const mappedBanners = items.map(item => ({
-						img: `${API_URL}${item.image}`,
+						img: getImageUrl(item.image),
 						title: item.title,
 						desc: item.description,
 						btn: item.buttonText,

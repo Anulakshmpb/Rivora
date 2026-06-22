@@ -6,6 +6,8 @@ import axiosInstance from '../../api/axiosInstance';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReviewModal from './ReviewModal';
+import { getImageUrl } from '../../utils/getImageUrl';
+
 function Home() {
 	const [products, setProducts] = useState([]);
 	const [categories, setCategories] = useState([]);
@@ -119,10 +121,7 @@ function Home() {
 										<img
 											src={(() => {
 												const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
-												if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-												return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
-													? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`)
-													: imgPath;
+												return getImageUrl(imgPath);
 											})()}
 											alt={product.name}
 											className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
@@ -162,10 +161,7 @@ function Home() {
 									<img
 										src={(() => {
 											const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
-											if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-											return imgPath.startsWith('http') || imgPath.startsWith('/uploads')
-												? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`)
-												: imgPath;
+											return getImageUrl(imgPath);
 										})()}
 										alt={product.name}
 										className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
@@ -410,7 +406,7 @@ function Home() {
 											<div className="w-8 md:w-14 h-8 md:h-14 rounded-full bg-black flex items-center justify-center text-white font-black text-xl uppercase shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
 												{item.img ? (
 													<img
-														src={item.img.startsWith('http') ? item.img : `http://13.238.159.254:5000${item.img}`}
+														src={getImageUrl(item.img)}
 														alt={item.name}
 														className="w-full h-full object-cover"
 													/>

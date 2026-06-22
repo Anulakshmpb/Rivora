@@ -7,6 +7,7 @@ import axiosInstance from '../../../api/axiosInstance';
 import Joi from 'joi';
 import { useToast } from '../../../Toast/ToastContext';
 import Loader from '../../../Components/Loader';
+import { getImageUrl } from '../../../utils/getImageUrl';
 
 const schema = Joi.object({
 	name: Joi.string().min(3).max(50).required().messages({
@@ -350,7 +351,7 @@ export default function AddProduct() {
 									{images.map((img, idx) => (
 										<div key={img.id || idx} className="aspect-[3/4] rounded-2xl bg-slate-100 relative overflow-hidden group border border-slate-100 shadow-sm">
 											<img
-												src={img.url.startsWith('http') || img.url.startsWith('/uploads') ? (img.url.startsWith('http') ? img.url : `http://13.238.159.254:5000${img.url}`) : img.url}
+												src={getImageUrl(img.url)}
 												className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
 												alt="Preview"
 											/>

@@ -6,11 +6,35 @@ const logger = require('./logger');
  * Safely deletes a local file given its URL path (e.g. "/uploads/filename.ext")
  * @param {string} fileUrl - The relative or absolute URL path of the file
  */
-const deleteLocalFile = (fileUrl) => {
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+require('dotenv').config();
+
+const s3Config = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+});
+
+const deleteLocalFile = async (fileUrl) => {
   if (!fileUrl || typeof fileUrl !== 'string') return;
 
-  // We expect URLs to be like "/uploads/filename.ext" or "http://domain/uploads/filename.ext"
-  if (fileUrl.includes('/uploads/')) {
+  if (fileUrl.includes('.amazonaws.com/')) {
+    const parts = fileUrl.split('.amazonaws.com/');
+    const key = parts[1];
+    if (key) {
+      try {
+        await s3Config.send(new DeleteObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key
+        }));
+        logger.info(`Successfully deleted S3 file: ${key}`);
+      } catch (err) {
+        logger.error(`Failed to delete S3 file: ${key}`, err);
+      }
+    }
+  } else if (fileUrl.includes('/uploads/')) {
     const parts = fileUrl.split('/uploads/');
     const filename = parts[1];
     

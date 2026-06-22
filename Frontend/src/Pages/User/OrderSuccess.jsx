@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axiosInstance from '../../api/axiosInstance';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 export default function OrderSuccess() {
     const location = useLocation();
@@ -171,7 +172,7 @@ function ProductCard({ product }) {
                     src={(() => {
                         const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
                         if (!imgPath) return "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 4'%3E%3Crect width='3' height='4' fill='%23f1f5f9'/%3E%3C/svg%3E";
-                        return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+                        return getImageUrl(imgPath);
                     })()}
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"

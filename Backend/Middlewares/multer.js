@@ -2,13 +2,25 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = 'uploads';
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
-const storage = multer.diskStorage({
-    destination: 'uploads/',
-    filename: function (req, file, cb) {
+const { S3Client } = require('@aws-sdk/client-s3');
+const multerS3 = require('multer-s3');
+require('dotenv').config();
+
+const s3Config = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+});
+
+const storage = multerS3({
+    s3: s3Config,
+    bucket: process.env.AWS_BUCKET_NAME,
+    metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
 });

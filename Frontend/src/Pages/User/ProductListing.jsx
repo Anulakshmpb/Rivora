@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useWishlist } from '../../context/WishlistContext';
 import axiosInstance from '../../api/axiosInstance';
+import { getImageUrl } from '../../utils/getImageUrl';
 
 export default function ProductListing() {
 	const [products, setProducts] = useState([]);
@@ -418,8 +419,10 @@ function ProductCard({ product, onClick }) {
 				<img
 					src={(() => {
 						const imgPath = Array.isArray(product.image) ? product.image[0] : (product.image || '');
-						if (!imgPath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';
-						return imgPath.startsWith('http') || imgPath.startsWith('/uploads') ? (imgPath.startsWith('http') ? imgPath : `http://13.238.159.254:5000${imgPath}`) : imgPath;
+						console.log("PRODUCT IMAGE:", product.image);
+						console.log("IMG PATH:", imgPath);
+						console.log("FINAL URL:", getImageUrl(imgPath));
+						return getImageUrl(imgPath);
 					})()}
 					alt={product.name}
 					className={`w-full h-full object-cover transition-all duration-[1.5s] ease-out ${isHovered ? 'scale-110 blur-[2px]' : 'scale-100'}`}
