@@ -207,10 +207,17 @@ class AuthController extends BaseController {
 
     res.clearCookie('token');
     res.clearCookie('user_token');
-    res.clearCookie('admin_token');
 
     BaseController.logAction('USER_LOGOUT', req);
     BaseController.sendSuccess(res, 'Logged out successfully');
+  });
+
+  static adminLogout = BaseController.asyncHandler(async (req, res) => {
+
+    res.clearCookie('admin_token');
+
+    BaseController.logAction('ADMIN_LOGOUT', req);
+    BaseController.sendSuccess(res, 'Admin logged out successfully');
   });
 
   static adminLogin = BaseController.asyncHandler(async (req, res) => {

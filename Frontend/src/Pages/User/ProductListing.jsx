@@ -131,10 +131,10 @@ export default function ProductListing() {
 								A meticulously curated selection of timeless pieces, designed for the discerning individual who appreciates subtle luxury.
 							</p>
 						</div>
-						<div className="flex items-center gap-4 p-2 rounded-2xl shadow-sm border border-slate-100 w-full md:w-auto justify-between md:justify-start">
+						<div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-2 rounded-3xl md:rounded-2xl shadow-sm border border-slate-100 w-full md:w-auto">
 							{/* Keyword Search */}
-							<div className="space-y-6">
-								<div className="min-w-[400px] flex items-center bg-slate-50 border border-slate-100 focus-within:border-slate-900 rounded-xl px-4 py-3 transition-all duration-300">
+							<div className="w-full md:w-auto">
+								<div className="w-full md:min-w-[300px] lg:min-w-[400px] flex items-center bg-slate-50 border border-slate-100 focus-within:border-slate-900 rounded-xl px-4 py-3 transition-all duration-300">
 									<input
 										type="text"
 										placeholder="Search products..."
@@ -145,23 +145,28 @@ export default function ProductListing() {
 									<SearchIcon className="w-4 h-4 text-slate-400" />
 								</div>
 							</div>
-							<button
-								onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-								className="flex items-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
-							>
-								<AdjustmentsIcon className="w-4 h-4" />
-								{isSidebarOpen ? 'Hide Filters' : 'Show Filters'}
-							</button>
-							<div className="h-8 w-px bg-slate-200 mx-2" />
-							<select
-								value={sortBy}
-								onChange={(e) => setSortBy(e.target.value)}
-								className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer px-4 appearance-none"
-							>
-								<option value="newest">Newest Arrivals</option>
-								<option value="price-low">Price Low to High</option>
-								<option value="price-high">Price High to Low</option>
-							</select>
+
+							<div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+								<button
+									onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+									className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
+								>
+									<AdjustmentsIcon className="w-4 h-4" />
+									{isSidebarOpen ? 'Hide Filters' : 'Show Filters'}
+								</button>
+								<div className="hidden md:block h-8 w-px bg-slate-200 mx-1" />
+								<div className="flex-1 md:flex-initial bg-slate-50 border border-slate-100 md:border-none md:bg-transparent rounded-xl md:rounded-none px-4 py-3 md:py-0 flex items-center justify-center">
+									<select
+										value={sortBy}
+										onChange={(e) => setSortBy(e.target.value)}
+										className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer w-full text-center md:text-left appearance-none"
+									>
+										<option value="newest">Newest Arrivals</option>
+										<option value="price-low">Price Low to High</option>
+										<option value="price-high">Price High to Low</option>
+									</select>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

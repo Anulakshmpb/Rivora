@@ -39,15 +39,26 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        const handleAuthError = () => {
-            setUser(null);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user_token');
-            localStorage.removeItem('admin_token');
+        const handleUserAuthError = () => {
+            const isAdminPath = window.location.pathname.startsWith('/admin');
+            if (!isAdminPath) {
+                setUser(null);
+            }
         };
 
-        window.addEventListener('auth-error', handleAuthError);
-        return () => window.removeEventListener('auth-error', handleAuthError);
+        const handleAdminAuthError = () => {
+            const isAdminPath = window.location.pathname.startsWith('/admin');
+            if (isAdminPath) {
+                setUser(null);
+            }
+        };
+
+        window.addEventListener('user-auth-error', handleUserAuthError);
+        window.addEventListener('admin-auth-error', handleAdminAuthError);
+        return () => {
+            window.removeEventListener('user-auth-error', handleUserAuthError);
+            window.removeEventListener('admin-auth-error', handleAdminAuthError);
+        };
     }, []);
 
     const login = async (userData, token) => {
@@ -66,13 +77,11 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
             localStorage.removeItem('token');
             localStorage.removeItem('user_token');
-            localStorage.removeItem('admin_token');
         } catch (err) {
             console.error('Logout failed', err);
             setUser(null);
             localStorage.removeItem('token');
             localStorage.removeItem('user_token');
-            localStorage.removeItem('admin_token');
         }
     };
 

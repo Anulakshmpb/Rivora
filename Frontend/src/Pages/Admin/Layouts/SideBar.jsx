@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axiosInstance from '../../../api/axiosInstance';
 
 export default function SideBar() {
     const navigate = useNavigate();
@@ -36,8 +37,13 @@ export default function SideBar() {
         return () => window.removeEventListener('toggle-sidebar', handleToggle);
     }, []);
 
-    const handleLogout = () => {
-        localStorage.clear();
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.post('/api/admin/logout');
+        } catch (err) {
+            console.error('Admin logout failed', err);
+        }
+        localStorage.removeItem('admin_token');
         window.location.href = '/admin/login';
     };
 

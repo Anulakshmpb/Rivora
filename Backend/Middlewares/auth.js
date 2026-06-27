@@ -7,7 +7,26 @@ const extractToken = (req, type) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
-        return authHeader.split(" ")[1];
+        const token = authHeader.split(" ")[1];
+        try {
+            if (type === 'admin') {
+                jwtVerifyAdminToken(token);
+                return token;
+            } else if (type === 'user') {
+                verifyUserToken(token);
+                return token;
+            } else {
+                try {
+                    verifyUserToken(token);
+                    return token;
+                } catch {
+                    jwtVerifyAdminToken(token);
+                    return token;
+                }
+            }
+        } catch (err) {
+            // Header token is not of the requested type; fall back to cookies
+        }
     }
 
     if (req.cookies) {
@@ -96,6 +115,7 @@ const authenticateAdmin = async (req, res, next) => {
             error: error.message
         });
 
+        res.clearCookie('admin_token');
         return sendError(res, "Invalid admin token", 401);
     }
 };
@@ -161,9 +181,9 @@ const authenticateUserOrAdmin = async (req, res, next) => {
             return next();
         }
 
+        if (adminToken) res.clearCookie('admin_token');
+        if (userToken) res.clearCookie('user_token');
         res.clearCookie('token');
-        res.clearCookie('user_token');
-        res.clearCookie('admin_token');
         return sendError(res, "Invalid or expired token", 401);
     } catch (error) {
         const fs = require('fs');

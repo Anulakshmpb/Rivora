@@ -94,7 +94,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 			setImagePreview(null);
 			onClose();
 		} catch (err) {
-			showToast( err.response?.data?.message || 'Failed to submit review', 'error');
+			showToast(err.response?.data?.message || 'Failed to submit review', 'error');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -115,12 +115,12 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 						initial={{ opacity: 0, scale: 0.9, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.9, y: 20 }}
-						className="relative bg-white rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl max-w-lg w-full border border-slate-100 overflow-hidden"
+						className="relative bg-white rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl max-w-lg w-full border border-slate-100 max-h-[90vh] overflow-y-auto"
 					>
 						<div className="h-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-pink-900 absolute top-0 left-0 right-0" />
 
-						<div className="mb-8">
-							<h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
+						<div className="mb-3">
+							<h2 className="text-xl md:2xl font-black text-slate-900 tracking-tight mb-2">
 								{type === 'site' ? 'Share Your Experience' : 'Review This Product'}
 							</h2>
 							<p className="text-slate-500 font-medium text-sm">
@@ -128,8 +128,8 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 							</p>
 						</div>
 
-						<form onSubmit={handleSubmit} className="space-y-6">
-							<div className="flex flex-col items-center gap-3 p-6 bg-slate-50 rounded-3xl border border-slate-100">
+						<form onSubmit={handleSubmit} className="space-y-4">
+							<div className="flex flex-col items-center gap-3 p-3 bg-slate-50 rounded-3xl border border-slate-100">
 								<span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Your Rating</span>
 								<div className="flex gap-2">
 									{[1, 2, 3, 4, 5].map((star) => (
@@ -160,7 +160,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 										value={form.name}
 										onChange={handleChange}
 										placeholder="Enter Name"
-										className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl text-sm font-bold placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'border-rose-500' : 'border-slate-100'}`}
+										className={`w-full px-5 py-2 bg-slate-50 border-2 rounded-2xl text-sm font-bold placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.name ? 'border-rose-500' : 'border-slate-100'}`}
 									/>
 									{errors.name && <p className="text-rose-500 text-[10px] font-black uppercase tracking-wider ml-1">{errors.name}</p>}
 								</div>
@@ -172,7 +172,7 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 										value={form.email}
 										onChange={handleChange}
 										placeholder="Enter your Email"
-										className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl text-sm font-bold placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.email ? 'border-rose-500' : 'border-slate-100'}`}
+										className={`w-full px-5 py-2 bg-slate-50 border-2 rounded-2xl text-sm font-bold placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none ${errors.email ? 'border-rose-500' : 'border-slate-100'}`}
 									/>
 									{errors.email && <p className="text-rose-500 text-[10px] font-black uppercase tracking-wider ml-1">{errors.email}</p>}
 								</div>
@@ -186,16 +186,16 @@ const ReviewModal = ({ isOpen, onClose, productId = null, type = 'site' }) => {
 									onChange={handleChange}
 									rows="4"
 									placeholder="Tell us what you liked (or didn't like)..."
-									className={`w-full px-5 py-4 bg-slate-50 border-2 rounded-2xl text-sm font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none resize-none ${errors.review ? 'border-rose-500' : 'border-slate-100'}`}
+									className={`w-full px-5 py-2 bg-slate-50 border-2 rounded-2xl text-sm font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500/20 transition-all outline-none resize-none ${errors.review ? 'border-rose-500' : 'border-slate-100'}`}
 								/>
 								{errors.review && <p className="text-rose-500 text-[10px] font-black uppercase tracking-wider ml-1">{errors.review}</p>}
 							</div>
 
 							{/* Image Upload */}
-							<div className="space-y-4">
+							<div className="space-y-2">
 								<label className="text-[12px] font-black uppercase tracking-widest text-slate-500 ml-1">Add Photo (Optional)</label>
 								<div className="flex items-center gap-4">
-									<label className="cursor-pointer group flex flex-col items-center justify-center w-24 h-24 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] hover:bg-slate-100 hover:border-indigo-300 transition-all duration-300">
+									<label className="cursor-pointer group flex flex-col items-center justify-center w-18 h-18 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] hover:bg-slate-100 hover:border-indigo-300 transition-all duration-300">
 										<input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
 										{imagePreview ? (
 											<img src={imagePreview} className="w-full h-full object-cover rounded-[1.8rem]" alt="Preview" />

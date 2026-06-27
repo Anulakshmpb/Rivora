@@ -249,7 +249,7 @@ export default function NavBar() {
 
 
                     <button onClick={() => navigate('/profile')}
-                        className="hidden sm:block p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
+                        className="p-2 text-gray-700 hover:text-black hover:bg-gray-100 rounded-full transition-all">
                         <UserIcon />
                     </button>
 
@@ -345,12 +345,6 @@ export default function NavBar() {
                         ))}
                     </div>
                     <div className="mt-auto pt-8 border-t border-gray-100 space-y-6">
-                        <button 
-                            onClick={() => { navigate('/profile'); setIsMobileMenuOpen(false); }}
-                            className="flex items-center gap-4 text-gray-700 font-semibold w-full text-left p-2 hover:bg-gray-50 rounded-xl transition-all"
-                        >
-                            <UserIcon /> Profile
-                        </button>
                         {isAuthenticated ? (
                             <button onClick={handleLogout} className="flex items-center gap-4 text-red-600 font-bold w-full text-left p-2 hover:bg-red-50 rounded-xl transition-all">
                                 Logout

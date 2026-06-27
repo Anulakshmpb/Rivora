@@ -1,6 +1,7 @@
 const express = require('express');
 const {
 	adminLogin,
+	adminLogout,
 	getAllUsers,
 	getUserById,
 	updateUserStatus,
@@ -15,10 +16,11 @@ const { getAllOrders, updateOrderStatus, approveReturn, rejectReturn, getReturnR
 const { verifyAdminToken } = require('../Middlewares/auth');
 const { loginLimiter } = require('../Middlewares/setup');
 const { validateLogin } = require('../Middlewares/validation');
-
+ 
 const router = express.Router();
-
+ 
 router.post('/login', loginLimiter, validateLogin, adminLogin);
+router.post('/logout', verifyAdminToken, adminLogout);
 router.get('/users', verifyAdminToken, getAllUsers);
 router.get('/users/:id', verifyAdminToken, getUserById);
 router.put('/users/:id', verifyAdminToken, updateUser);
