@@ -149,17 +149,17 @@ export default function ProductListing() {
 							<div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto">
 								<button
 									onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-									className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
+									className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-1 md:px-5 py-3 rounded-xl bg-slate-900 text-white text-[8px] md:text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95"
 								>
 									<AdjustmentsIcon className="w-4 h-4" />
 									{isSidebarOpen ? 'Hide Filters' : 'Show Filters'}
 								</button>
 								<div className="hidden md:block h-8 w-px bg-slate-200 mx-1" />
-								<div className="flex-1 md:flex-initial bg-slate-50 border border-slate-100 md:border-none md:bg-transparent rounded-xl md:rounded-none px-4 py-3 md:py-0 flex items-center justify-center">
+								<div className="flex-1 md:flex-initial bg-slate-50 border border-slate-100 md:border-none md:bg-transparent rounded-xl md:rounded-none px-1 md:px-4 py-3 md:py-0 flex items-center justify-center">
 									<select
 										value={sortBy}
 										onChange={(e) => setSortBy(e.target.value)}
-										className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer w-full text-center md:text-left appearance-none"
+										className="bg-transparent text-[8px] md:text-xs font-black uppercase tracking-widest outline-none cursor-pointer w-full text-center md:text-left appearance-none"
 									>
 										<option value="newest">Newest Arrivals</option>
 										<option value="price-low">Price Low to High</option>
