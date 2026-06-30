@@ -1,4 +1,4 @@
-const IMAGE_SERVER_URL = 'http://13.238.159.254:5000';
+const IMAGE_SERVER_URL = process.env.REACT_APP_API_URL || 'http://13.238.159.254:5000';
 
 export const getImageUrl = (imagePath) => {
     if (!imagePath) return 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600&h=800';

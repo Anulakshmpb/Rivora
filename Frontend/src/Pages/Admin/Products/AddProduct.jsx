@@ -81,11 +81,9 @@ export default function AddProduct() {
 	useEffect(() => {
 		const fetchCategories = async () => {
 			try {
-				const response = await axios.get('http://13.238.159.254:5000/api/categories', {
-					withCredentials: true
-				});
-				if (response.data.success) {
-					setCategories(response.data.data.categories);
+				const response = await axiosInstance.get('/api/categories');
+				if (response.success) {
+					setCategories(response.data.categories);
 				}
 			} catch (error) {
 				console.error('Failed to fetch categories:', error);
